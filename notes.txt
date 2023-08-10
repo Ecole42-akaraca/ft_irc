@@ -1,3 +1,7 @@
+LINK: https://modern.ircdocs.horse/#irc-concepts
+LINK: https://irssi.org/documentation/
+
+
 What is .hpp, .ipp, .tpp and .cpp files?
 {
 	
@@ -66,7 +70,32 @@ IRC Server <- -> IRC Client: Connection Setup
 {
 	LINK: https://modern.ircdocs.horse/#connection-setup
 
+	EN
 	IRC client-server connections work over TCP/IP. The standard ports for
 	 client-server connections are TCP/6667 for plaintext, and TCP/6697
 	 for TLS connections.
+	
+	TR
+	IRC istemci-sunucu bağlantıları TCP/IP üzerinden çalışır. İstemci-sunucu
+	 bağlantıları için standart bağlantı noktaları, düz metin için TCP/6667
+	 ve TLS bağlantıları için TCP/6697'dir.
+}
+
+What is Irssi?
+{
+	LINK: https://wiki.archlinux.org/title/irssi
+}
+
+COMMANDS
+{
+	Write colored on Irssi
+	{
+		/set hide_colors OFF
+		ctrl+c 3 Helloo -> Writing colored text (green).
+		LINK: https://stackoverflow.com/questions/22429108/how-can-i-write-colored-text-to-an-irc-channel-with-irssi
+		ctrl+c 8,7 BRUH -> Writing colored text and different background.
+		LINK: https://www.mirc.com/colors.html
+		^C5,12colored text and background^C after the default text -> Look like this
+		^C5colored^C not colored(default)^C2,8colored eheheh^C end.
+	}
 }
