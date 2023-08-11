@@ -1,0 +1,10 @@
+.idea/
+.vscode/
+cmake-build-debug/
+.DS_Store
+objs/
+ircserv
+
+bot/ircbot
+bot/cmake-build-debug
+bot/objs
