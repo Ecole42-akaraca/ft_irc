@@ -6,7 +6,7 @@
 #    By: gsever <gsever@student.42kocaeli.com.tr    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/18 18:46:27 by gsever            #+#    #+#              #
-#    Updated: 2023/07/21 22:41:59 by gsever           ###   ########.fr        #
+#    Updated: 2023/08/17 18:05:28 by gsever           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,8 +15,8 @@ NAME		= ircserv
 
 #	Flags for compile
 CC			= c++
-FLAGS		= -Wall -Werror -Wextra -std=c++98 -Wshadow -O3 $(INCLUDE_FLAGS)
-# INCLUDE_FLAGS = -I $(HEADERS_DIRECTORY)/
+FLAGS		= -Wall -Werror -Wextra -std=c++98 -Wshadow -O3 \
+				$(INCLUDE_FLAGS) $(LIBRARIES)
 
 #	All process use for compiling.
 UNAME		:= $(shell uname -s)
@@ -24,15 +24,36 @@ NUMPROC		:= 8
 
 OS			:= NULL
 
+# Checking if Brew is installed.
+# IF_BREW_INSTALLED := $(shell which brew)
+# Checking if Irssi is installed inside Brew.
+# IF_IRSSI_INSTALLED := $(shell brew list --versions irssi)
+# These 'brew --prefix' command returning brew's installed location.
+BREW_PREFIX	:= $(shell brew --prefix)
+
+OPENSSL_INC_OS	:= $(BREW_PREFIX)/Cellar/openssl/*/include
+OPENSSL_LIB_OS	:= $(BREW_PREFIX)/Cellar/openssl/*/lib
+
 INCLUDE_FLAGS	= \
-	-I$(HEADERS_DIRECTORY)
+	-I$(HEADERS_DIRECTORY) \
+	# -I$(OPENSSL_INC_OS)
+
+#	Locations Part --> OK
+LIBRARIES	= \
+	# -L$(OPENSSL_LIB_OS)
+
+# Getting all include and library files.
+# BREW_INC_OS := $(shell find $(BREW_PREFIX)/Cellar -type d -name include)
+# BREW_LIB_OS := $(shell find $(BREW_PREFIX)/Cellar -type d -name lib)
+# Brew's all include and library files.
+# BREW_INCLUDE_FLAGS := $(addprefix -I,$(BREW_INC_OS))
+# BREW_LIBRARY_FLAGS := $(addprefix -L,$(BREW_LIB_OS))
 
 HEADERS_DIRECTORY = includes
 HEADERS		= $(wildcard $(HEADERS_DIRECTORY)/*.hpp)
 SOURCES_DIRECTORY = sources
 SOURCES		= $(wildcard $(SOURCES_DIRECTORY)/*.cpp)
 OBJECTS_DIRECTORY = objects
-# OBJECTS		= $(SOURCES:%.cpp=%.o)
 OBJECTS		= $(addprefix $(OBJECTS_DIRECTORY)/, $(notdir $(SOURCES:%.cpp=%.o)))
 
 #	COLORS --> 🟥 🟩 🟦
@@ -108,4 +129,60 @@ re:
 	@$(MAKE) fclean --no-print-directory
 	@$(MAKE) all --no-print-directory
 
-.PHONY: all clean fclean re
+print:
+	@echo "$(BREW_PREFIX) burada."
+	@echo "$(BREW_INC_OS) inc burada."
+	@echo "$(BREW_LIB_OS) inc burada."
+	@echo "$(FLAGS)"
+	@grep -q '$(BREW_PREFIX)' ~/.zshrc && echo "Var" || echo "Yok"
+
+
+open:
+	@echo "$(BREW_PREFIX)"
+	$(BREW_PREFIX)/bin/irssi
+
+# Checking if brew(For install irssi) and irssi(IRC Client) is installed.
+# install_brew:
+# 	ifeq ($(IF_BREW_INSTALLED), )
+# 		@echo "$(B_BLUE)Brew is not installed, installing 'Brew'...$(RESET)"
+# 		@mkdir -p /goinfre/brew
+# 		@git clone --depth=1 https://github.com/Homebrew/brew /goinfre/brew
+# 		@if ! grep -q '$(BREW_PREFIX)/bin' $(HOME)/.zshrc; then \
+# 			@echo 'export PATH=/goinfre/$(USER)/brew/bin:$(PATH)' >> $(HOME)/.zshrc; \
+# 		@fi
+# 		@echo "$(B_GREEN)Brew installed inside '$(BREW_PREFIX)'.$(RESET)"
+# 	else
+# 		@echo "$(B_YELLOW)Brew is already installed at '$(BREW_PREFIX)'.$(RESET)"
+# 	endif
+# 	ifeq ($(IF_IRSSI_INSTALLED), )
+# 		@echo "$(B_BLUE)Brew is not installed, installing 'Irssi'.$(RESET)"
+# 		brew install irssi
+# 		@echo "$(B_GREEN)Irssi is installed inside '$(shell which irssi)'.$(RESET)"
+# 	else
+# 		@echo "$(B_YELLOW)Irssi is already installed at '$(shell which irssi)'.$(RESET)"
+# 	endif
+
+IF_BREW_INSTALLED := $(shell command -v brew 2> /dev/null)
+IF_IRSSI_INSTALLED := $(shell command -v irssi 2> /dev/null)
+
+install_brew:
+	@if [ -z "$(IF_BREW_INSTALLED)" ]; then \
+		echo "$(B_BLUE)Brew is not installed, installing 'Brew'...$(RESET)"; \
+		mkdir -p $(BREW_PREFIX); \
+		git clone --depth=1 https://github.com/Homebrew/brew $(BREW_PREFIX); \
+		if ! grep -q '$(BREW_PREFIX)/bin' $(HOME)/.zshrc; then \
+			echo 'export PATH=$(BREW_PREFIX)/bin:$$PATH' >> $(HOME)/.zshrc; \
+		fi; \
+		echo "$(B_GREEN)Brew installed inside '$(BREW_PREFIX)'.$(RESET)"; \
+	else \
+		echo "$(B_YELLOW)Brew is already installed at '$(BREW_PREFIX)'.$(RESET)"; \
+	fi
+	@if [ -z "$(IF_IRSSI_INSTALLED)" ]; then \
+		echo "$(B_BLUE)Irssi is not installed, installing 'Irssi'.$(RESET)"; \
+		brew install irssi; \
+		echo "$(B_GREEN)Irssi is installed inside '$(shell which irssi)'.$(RESET)"; \
+	else \
+		echo "$(B_YELLOW)Irssi is already installed at '$(shell which irssi)'.$(RESET)"; \
+	fi
+
+.PHONY: all clean fclean re print open brew_readline
