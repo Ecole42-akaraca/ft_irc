@@ -46,6 +46,7 @@ void Server::start() {
 int Server::newSocket() {
 
 	int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	std::cout << "Socket olusturduk morq!!!!!!!!!!!!!!!!!!!!!!!" << std::cout << std::endl;
 	if (sockfd < 0)
 		throw std::runtime_error("Error while opening socket.");
 
@@ -114,6 +115,7 @@ void Server::onClientConnect() {
 	_clients.insert(std::make_pair(fd, client));
 
 	char message[1000];
+	std::cout << "BIRI BAGLANDI ABI" << std::endl << std::flush;
 	// sprintf(message, "%s:%d has connected.", client->getHostname().c_str(), client->getPort());
 	snprintf(message, sizeof(message), "%s:%d has connected.", client->getHostname().c_str(), client->getPort());
 	ft_log(message);
@@ -142,6 +144,7 @@ void Server::onClientDisconnect(int fd) {
 		}
 
 		delete client;
+		std::cout << "ne oldu ya baglantin gitti abi" << std::endl << std::flush;
 	}
 	catch (const std::out_of_range &ex) {
 	}
@@ -149,6 +152,7 @@ void Server::onClientDisconnect(int fd) {
 
 void Server::onClientMessage(int fd) {
 	try {
+		std::cout << "Mesaj atildii" << std::endl << std::flush;
 		Client *client = _clients.at(fd);
 		_commandHandler->invoke(client, readMessage(fd));
 	}
