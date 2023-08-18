@@ -1,6 +1,13 @@
 LINK: https://modern.ircdocs.horse/#irc-concepts
 LINK: https://irssi.org/documentation/
 
+NOTES
+{
+	Max port size: 65536 -> 0 to 65535
+
+	Max MTU size: 1500-byte.
+}
+
 
 What is .hpp, .ipp, .tpp and .cpp files?
 {
@@ -81,6 +88,11 @@ IRC Server <- -> IRC Client: Connection Setup
 	 ve TLS bağlantıları için TCP/6697'dir.
 }
 
+What is MTU?
+{
+	Max MTU size: 1500-byte
+}
+
 What is Irssi?
 {
 	LINK: https://wiki.archlinux.org/title/irssi
@@ -98,4 +110,31 @@ COMMANDS
 		^C5,12colored text and background^C after the default text -> Look like this
 		^C5colored^C not colored(default)^C2,8colored eheheh^C end.
 	}
+
+	How can i watch any pid?
+	{
+		$> ps
+			gsever@k2m14s08 ~ % ps
+			PID TTY           TIME CMD
+			73718 ttys000    0:00.05 /bin/zsh
+			80562 ttys000    0:00.00 ./ircserv 8888 asdf
+			80543 ttys001    0:00.06 /bin/zsh
+			73732 ttys002    0:00.01 /bin/zsh
+		Copy the PID.
+		$> top -pid <PID>
+			Processes: 355 total, 2 running, 353 sleeping, 2076 threads
+			20:07:58 Load Avg: 1.08, 1.26, 1.35
+			CPU usage: 1.21% user, 0.97% sys, 97.81% idle
+			SharedLibs: 197M resident, 58M data, 21M linkedit.
+			MemRegions: 379594 total, 2181M resident, 73M private, 913M sha
+			PhysMem: 7687M used (1994M wired), 502M unused.
+			VM: 32T vsize, 1991M framework vsize, 2146344(0) swapins, 23228
+			Networks: packets: 22062050/23G in, 22557963/18G out.
+			Disks: 3714066/69G read, 1779503/75G written.
+
+			PID    COMMAND      %CPU TIME     #TH  #WQ  #POR MEM  PURG CMPR
+			80562  ircserv      0.0  00:00.00 1    0    14   396K 0B   0B
+	}
+
+
 }
