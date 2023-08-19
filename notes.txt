@@ -111,7 +111,7 @@ COMMANDS
 		^C5colored^C not colored(default)^C2,8colored eheheh^C end.
 	}
 
-	How can i watch any pid?
+	CMD: 'top' -> How can i watch any pid?
 	{
 		$> ps
 			gsever@k2m14s08 ~ % ps
@@ -136,5 +136,9 @@ COMMANDS
 			80562  ircserv      0.0  00:00.00 1    0    14   396K 0B   0B
 	}
 
+	CMD: strace
+	{
+		strace -p <PID>
+	}
 
 }
