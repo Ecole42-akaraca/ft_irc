@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ircserv.hpp                                        :+:      :+:    :+:   */
+/*   IRCServ.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gsever <gsever@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*   By: akaraca <akaraca@student.42.tr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 19:26:25 by gsever            #+#    #+#             */
-/*   Updated: 2023/07/21 23:01:23 by gsever           ###   ########.fr       */
+/*   Updated: 2023/08/19 15:08:25 by akaraca          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define IRCSERV_HPP
 
 # include <iostream>
+# include <cstdlib>
 # include "Colors.hpp"
 
 class IRCServ
