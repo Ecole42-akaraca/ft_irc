@@ -13,15 +13,11 @@
 #include "../includes/Server.hpp"
 
 Server::Server( int argc, char **argv )
-	:	_port(port(argv[1])),
-		_password(password(argv[2])),
-		_host("127.0.0.1")
+	:	_check(check( argc )),
+		_port(port( argv[1] )),
+		_password(password( argv[2] )),
+		_host( "127.0.0.1" )
 {
-	if (argc != 3)
-		throw( Server::exceptionInvalidArgument(RED "Error: Invalid Argument Count\n"
-		"Usage: './ircserv <port> <password>'" END) );
-	std::cout << GREEN "Parameters okay." END << std::endl;
-
 	std::cout << "Server Constructor called." << std::endl;
 	this->_socket = Server::newSocket();
 	std::cout << GREEN "Socket succesfully configured." END << std::endl;
@@ -102,7 +98,15 @@ int		Server::newSocket( void )
 /* -------------------------------------------------------------------------- */
 
 /* _________________________ UTILS __________________________________________ */
-unsigned short Server::port(std::string port){
+bool			Server::check( int argc ){
+	std::cout << YELLOW "Checking parameters..." END << std::endl;
+	if (argc != 3)
+		throw( Server::exceptionInvalidArgument(RED "Error: Invalid Argument Count\n"
+		"Usage: './ircserv <port> <password>'" END) );
+	return (true);
+}
+
+unsigned short	Server::port( std::string port ){
 	for (size_t i = 0; i < port.length(); ++i){
 		if (!isdigit(port[i])){
 			throw( Server::exceptionInvalidArgument(RED "Error: Invalid Port\n"
@@ -122,13 +126,14 @@ unsigned short Server::port(std::string port){
 	return (portVal);
 }
 
-std::string		Server::password(std::string password){
+std::string		Server::password( std::string password ){
 
 	// for: ' $> ./ircserv 1234 "" '
 	//		' $> ./ircserv 1234 '' '
 	if (password.empty())
 		throw( Server::exceptionInvalidArgument(RED "Error: Invalid Password\n"
 		"Password cannot be empty." END) );
+	std::cout << GREEN "Parameters okay." END << std::endl;
 	return (password);
 }
 /* -------------------------------------------------------------------------- */

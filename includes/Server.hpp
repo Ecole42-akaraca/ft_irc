@@ -6,7 +6,7 @@
 /*   By: akaraca <akaraca@student.42.tr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 19:26:25 by gsever            #+#    #+#             */
-/*   Updated: 2023/08/20 17:50:44 by akaraca          ###   ########.fr       */
+/*   Updated: 2023/08/20 18:10:44 by akaraca          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 class Server
 {
 	private:
+		bool					_check;
 		const unsigned short	_port;
 		const std::string		_password;
 		const std::string		_host;
@@ -52,8 +53,9 @@ class Server
 /* -------------------------------------------------------------------------- */
 /* _________________________ UTILS __________________________________________ */
 	private:
-		unsigned short	port(std::string argv);
-		std::string		password(std::string argv);
+		bool			check( int argc );
+		unsigned short	port( std::string argv );
+		std::string		password( std::string argv );
 /* -------------------------------------------------------------------------- */
 /* _________________________ EXCEPTIONS _____________________________________ */
 
@@ -65,7 +67,7 @@ class Server
 			exceptionInvalidArgument( const std::string &message ) : _message(message) {}
 			~exceptionInvalidArgument() throw() {}
 			const char *what() const throw(){
-				return (_message.c_str());
+				return ( _message.c_str() );
 			}
 	};
 

@@ -6,7 +6,7 @@
 /*   By: akaraca <akaraca@student.42.tr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 19:08:12 by gsever            #+#    #+#             */
-/*   Updated: 2023/08/20 17:51:07 by akaraca          ###   ########.fr       */
+/*   Updated: 2023/08/20 18:04:52 by akaraca          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ int	main( int argc, char **argv )
 {
 	try
 	{
-		std::cout << YELLOW "Checking parameters..." END << std::endl;
 		Server Server(argc, argv);
 		Server.start();
 		std::cout << B_GREEN "IRC Server started!" END << std::endl;
