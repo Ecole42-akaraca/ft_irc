@@ -3,15 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gsever <gsever@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*   By: akaraca <akaraca@student.42.tr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 19:08:12 by gsever            #+#    #+#             */
-/*   Updated: 2023/08/20 16:19:25 by gsever           ###   ########.fr       */
+/*   Updated: 2023/08/20 17:51:07 by akaraca          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "../includes/Server.hpp"
-# include "../includes/Utils.hpp"
 
 /**
  * @brief 
@@ -32,9 +31,9 @@ int	main( int argc, char **argv )
 {
 	try
 	{
-		Utils::validateArguments(argc, argv);
-		Server server(argc, argv);
-		server.start();
+		std::cout << YELLOW "Checking parameters..." END << std::endl;
+		Server Server(argc, argv);
+		Server.start();
 		std::cout << B_GREEN "IRC Server started!" END << std::endl;
 	}
 	catch (std::exception &e)

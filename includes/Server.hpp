@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gsever <gsever@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*   By: akaraca <akaraca@student.42.tr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 19:26:25 by gsever            #+#    #+#             */
-/*   Updated: 2023/08/20 16:29:15 by gsever           ###   ########.fr       */
+/*   Updated: 2023/08/20 17:50:44 by akaraca          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,15 @@
 
 # include <iostream>
 # include <cstdlib>
+# include <stdint.h>
+# include <limits>
 # include <sys/socket.h>
 # include <sys/types.h>
 // # include <arpa/inet.h>
+# include <cstring>
 # include <netinet/in.h>
 # include <fcntl.h>
 # include "Colors.hpp"
-# include "Utils.hpp"
 
 #define MAX_CONNECTIONS 1000
 
@@ -48,7 +50,24 @@ class Server
 /* -------------------------------------------------------------------------- */
 /* _________________________ PRINT FUCTIONS _________________________________ */
 /* -------------------------------------------------------------------------- */
+/* _________________________ UTILS __________________________________________ */
+	private:
+		unsigned short	port(std::string argv);
+		std::string		password(std::string argv);
+/* -------------------------------------------------------------------------- */
 /* _________________________ EXCEPTIONS _____________________________________ */
+
+	class exceptionInvalidArgument : public std::exception
+	{
+		private:
+			std::string _message;
+		public:
+			exceptionInvalidArgument( const std::string &message ) : _message(message) {}
+			~exceptionInvalidArgument() throw() {}
+			const char *what() const throw(){
+				return (_message.c_str());
+			}
+	};
 
 /* exception -> Array Not Sorted */
 

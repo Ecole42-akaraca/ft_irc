@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: gsever <gsever@student.42kocaeli.com.tr    +#+  +:+       +#+         #
+#    By: akaraca <akaraca@student.42.tr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/18 18:46:27 by gsever            #+#    #+#              #
-#    Updated: 2023/08/17 18:05:28 by gsever           ###   ########.fr        #
+#    Updated: 2023/08/20 17:52:08 by akaraca          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -184,5 +184,8 @@ install_brew:
 	else \
 		echo "$(B_YELLOW)Irssi is already installed at '$(shell which irssi)'.$(RESET)"; \
 	fi
+
+valgrind:
+	valgrind --leak-check=full ./$(NAME) 1234 abc
 
 .PHONY: all clean fclean re print open brew_readline
