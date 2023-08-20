@@ -14,7 +14,7 @@ int main()
 	int opt = 1; // soket seçeneklerini yapılandırmak için kullanılan bir değişkendir.
 	int addrlen = sizeof(address); // soket adresinin boyutunu tutar.
 	char buffer[1024] = { 0 }; // veri alışverişi için kullanılacak bir tampon dizisidir.
-	char* hello = "Hello from server"; // istemcilere gönderilecek mesajını içeren bir karakter dizisidir.
+	char* hello = "Hello from server\n"; // istemcilere gönderilecek mesajını içeren bir karakter dizisidir.
 
 	// socket(); fonksiyonu bir socket oluşturur.
 	// 'AF_INET' adres ailesi olarak IPv4'ü belirtir.

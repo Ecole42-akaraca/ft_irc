@@ -1,25 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   IRCServ.cpp                                        :+:      :+:    :+:   */
+/*   Server.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gsever <gsever@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*   By: akaraca <akaraca@student.42.tr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 19:29:23 by gsever            #+#    #+#             */
-/*   Updated: 2023/07/21 23:02:25 by gsever           ###   ########.fr       */
+/*   Updated: 2023/08/20 13:46:51 by akaraca          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/IRCServ.hpp"
+#include "../includes/Server.hpp"
 
-IRCServ::IRCServ( void ) {}
+Server::Server( void ) {}
 
-IRCServ::IRCServ( int argc, char **argv )
+Server::Server( int argc, char **argv )
 {
 	(void)argc;
 	(void)argv;
 }
 
-IRCServ::~IRCServ( void ) {}
+Server::~Server( void ) {}
 
 /* _________________________ MAIN FUCTION ___________________________________ */
+/* -------------------------------------------------------------------------- */

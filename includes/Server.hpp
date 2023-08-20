@@ -1,30 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   IRCServ.hpp                                        :+:      :+:    :+:   */
+/*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: akaraca <akaraca@student.42.tr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 19:26:25 by gsever            #+#    #+#             */
-/*   Updated: 2023/08/19 15:08:25 by akaraca          ###   ########.fr       */
+/*   Updated: 2023/08/20 14:44:10 by akaraca          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef	IRCSERV_HPP
-# define IRCSERV_HPP
+#ifndef	SERVER_HPP
+# define SERVER_HPP
 
 # include <iostream>
 # include <cstdlib>
 # include "Colors.hpp"
+# include "Utils.hpp"
 
-class IRCServ
+class Server
 {
 	private:
 		// int	i;
 	public:
-	IRCServ( void ); // Default Constructor.
-	IRCServ( int argc, char **argv );
-	~IRCServ( void ); // Destructor.
+	Server( void ); // Default Constructor.
+	Server( int argc, char **argv );
+	~Server( void ); // Destructor.
 /* _________________________ MAIN FUCTION ___________________________________ */
 /* -------------------------------------------------------------------------- */
 /* _________________________ SET/GET FUNCTIONS ______________________________ */
@@ -63,4 +64,4 @@ class IRCServ
 /* -------------------------------------------------------------------------- */
 };
 
-#endif // IRCSERV_HPP
+#endif // Server_HPP
