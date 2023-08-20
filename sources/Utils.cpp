@@ -5,7 +5,7 @@ void	Utils::validateArguments(int argc, char **argv){
 	std::cout << YELLOW "Checking parameters..." END << std::endl;
 	if (argc != 3)
 		throw( Utils::exceptionInvalidArgument(RED \
-		"Error: Invalid Argument, usage: './ircserv <port> <password>'" END) );	
+		"Error: Invalid Argument, usage: './ircserv <port> <password>'" END) );
 
 	const std::string port = argv[1];
 	const std::string password = argv[2];
@@ -17,6 +17,7 @@ void	Utils::validateArguments(int argc, char **argv){
 	// 		' $> ./ircserv 1234 "" '
 	if (password.empty())
 		throw( Utils::exceptionInvalidArgument(RED "Error: Invalid Password" END) );
+			std::cout << GREEN "Parameters okay." END << std::endl;
 }
 
 bool	Utils::isValidPort( const std::string &port ){

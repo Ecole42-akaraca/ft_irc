@@ -6,7 +6,7 @@
 /*   By: gsever <gsever@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 19:26:25 by gsever            #+#    #+#             */
-/*   Updated: 2023/08/20 15:33:11 by gsever           ###   ########.fr       */
+/*   Updated: 2023/08/20 16:29:15 by gsever           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,28 +15,36 @@
 
 # include <iostream>
 # include <cstdlib>
+# include <sys/socket.h>
+# include <sys/types.h>
+// # include <arpa/inet.h>
+# include <netinet/in.h>
+# include <fcntl.h>
 # include "Colors.hpp"
 # include "Utils.hpp"
+
+#define MAX_CONNECTIONS 1000
 
 class Server
 {
 	private:
-		const uint16_t		_port;
-		const std::string	_password;
+		const unsigned short	_port;
+		const std::string		_password;
+		const std::string		_host;
+		int						_socket;
 		Server( void ); // Default Constructor.
 	public:
 		Server( int argc, char **argv );
 		~Server( void ); // Destructor.
 /* _________________________ MAIN FUCTION ___________________________________ */
 		void	start( void );
+		int		newSocket( void );
 /* -------------------------------------------------------------------------- */
 /* _________________________ SET/GET FUNCTIONS ______________________________ */
 /* -------------------------------------------------------------------------- */
 /* _________________________ TIME FUNCTIONS _________________________________ */
 /* -------------------------------------------------------------------------- */
 /* _________________________ IF FUNCTIONS ___________________________________ */
-/* -------------------------------------------------------------------------- */
-/* _________________________ SORTING FUNCTIONS ______________________________ */
 /* -------------------------------------------------------------------------- */
 /* _________________________ PRINT FUCTIONS _________________________________ */
 /* -------------------------------------------------------------------------- */

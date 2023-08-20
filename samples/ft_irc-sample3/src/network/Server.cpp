@@ -46,7 +46,7 @@ void Server::start() {
 int Server::newSocket() {
 
 	int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	std::cout << "Socket olusturduk morq!!!!!!!!!!!!!!!!!!!!!!!" << std::cout << std::endl;
+	std::cout << "Socket olusturduk morq!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
 	if (sockfd < 0)
 		throw std::runtime_error("Error while opening socket.");
 
