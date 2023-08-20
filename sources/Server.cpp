@@ -107,6 +107,13 @@ bool			Server::check( int argc ){
 }
 
 unsigned short	Server::port( std::string port ){
+
+	// for: ' $> ./ircserv "" 1234 '
+	//		' $> ./ircserv '' 1234 '
+	if (port.empty())
+		throw( Server::exceptionInvalidArgument(RED "Error: Invalid Port\n"
+		"Port cannot be empty." END) );
+
 	for (size_t i = 0; i < port.length(); ++i){
 		if (!isdigit(port[i])){
 			throw( Server::exceptionInvalidArgument(RED "Error: Invalid Port\n"
