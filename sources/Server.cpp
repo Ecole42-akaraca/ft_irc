@@ -12,15 +12,22 @@
 
 #include "../includes/Server.hpp"
 
-Server::Server( void ) {}
-
 Server::Server( int argc, char **argv )
+	: _port(static_cast<unsigned short>(std::atoi(argv[1]))),
+	_password(argv[2])
 {
 	(void)argc;
-	(void)argv;
 }
 
 Server::~Server( void ) {}
 
 /* _________________________ MAIN FUCTION ___________________________________ */
+void	Server::start( void )
+{
+	std::cout << "Server's first step." << std::endl;
+	std::cout << "_port: " << this->_port << " _password: " << this->_password\
+		<< std::endl;
+}
+/* -------------------------------------------------------------------------- */
+/* _________________________ SET/GET FUNCTIONS ______________________________ */
 /* -------------------------------------------------------------------------- */

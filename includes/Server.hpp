@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: akaraca <akaraca@student.42.tr>            +#+  +:+       +#+        */
+/*   By: gsever <gsever@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 19:26:25 by gsever            #+#    #+#             */
-/*   Updated: 2023/08/20 14:44:10 by akaraca          ###   ########.fr       */
+/*   Updated: 2023/08/20 15:33:11 by gsever           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,14 @@
 class Server
 {
 	private:
-		// int	i;
+		const uint16_t		_port;
+		const std::string	_password;
+		Server( void ); // Default Constructor.
 	public:
-	Server( void ); // Default Constructor.
-	Server( int argc, char **argv );
-	~Server( void ); // Destructor.
+		Server( int argc, char **argv );
+		~Server( void ); // Destructor.
 /* _________________________ MAIN FUCTION ___________________________________ */
+		void	start( void );
 /* -------------------------------------------------------------------------- */
 /* _________________________ SET/GET FUNCTIONS ______________________________ */
 /* -------------------------------------------------------------------------- */

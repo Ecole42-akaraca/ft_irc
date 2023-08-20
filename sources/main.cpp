@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: akaraca <akaraca@student.42.tr>            +#+  +:+       +#+        */
+/*   By: gsever <gsever@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/18 19:08:12 by gsever            #+#    #+#             */
-/*   Updated: 2023/08/20 14:45:10 by akaraca          ###   ########.fr       */
+/*   Updated: 2023/08/20 15:40:54 by gsever           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "../includes/Server.hpp"
+# include "../includes/Utils.hpp"
 
 /**
  * @brief 
@@ -23,8 +24,8 @@
  * ornek: ./ircserv --DEBUG=true <port> <password>
  * istemci ornek: telnet localhost 8080
  * 
- * @param argc 
- * @param argv 
+ * @param argc: Server port number.
+ * @param argv: Server password.
  * @return int 
  */
 int	main( int argc, char **argv )
@@ -32,8 +33,9 @@ int	main( int argc, char **argv )
 	try
 	{
 		Utils::validateArguments(argc, argv);
-		std::cout << "IRC Server started!" << std::flush << std::endl;
 		Server server(argc, argv);
+		server.start();
+		std::cout << B_GREEN "IRC Server started!" END << std::endl;
 	}
 	catch (std::exception &e)
 	{
