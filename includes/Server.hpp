@@ -19,13 +19,15 @@
 # include <limits>
 # include <sys/socket.h>
 # include <sys/types.h>
-// # include <arpa/inet.h>
+# include <arpa/inet.h>
 # include <cstring>
 # include <netinet/in.h>
+# include <unistd.h>
 # include <fcntl.h>
 # include "Colors.hpp"
 
-#define MAX_CONNECTIONS 1000
+# define MAX_CONNECTIONS 1000
+# define MAX_BUFFER 1024
 
 class Server
 {
@@ -34,14 +36,19 @@ class Server
 		const unsigned short	_port;
 		const std::string		_password;
 		const std::string		_host;
-		int						_socket;
+		int						_serverSocket;
+		int						_clientSocket; // _activeSocket;
+		struct sockaddr_in 		_serverAddr;
+		struct sockaddr_in 		_clientAddr;
+		char					_buffer[MAX_BUFFER];
+		bool					_running;
 		Server( void ); // Default Constructor.
 	public:
 		Server( int argc, char **argv );
 		~Server( void ); // Destructor.
 /* _________________________ MAIN FUCTION ___________________________________ */
 		void	start( void );
-		int		newSocket( void );
+		void	newSocket( void );
 /* -------------------------------------------------------------------------- */
 /* _________________________ SET/GET FUNCTIONS ______________________________ */
 /* -------------------------------------------------------------------------- */
