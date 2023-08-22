@@ -32,7 +32,7 @@ void Server::start() {
 				break;
 			}
 
-			if ((it->revents & POLLIN) == POLLIN) {
+			if ((it->revents & POLLIN)) {
 				if (it->fd == _sock) {
 					onClientConnect();
 					break;
@@ -152,7 +152,7 @@ void Server::onClientDisconnect(int fd) {
 
 void Server::onClientMessage(int fd) {
 	try {
-		std::cout << "Mesaj atildii" << std::endl << std::flush;
+		// std::cout << "Mesaj atildii" << std::endl << std::flush;
 		Client *client = _clients.at(fd);
 		_commandHandler->invoke(client, readMessage(fd));
 	}

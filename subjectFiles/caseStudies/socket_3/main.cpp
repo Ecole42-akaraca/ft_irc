@@ -131,6 +131,7 @@ void handleClient(int clientSocket) {
 
     buffer[bytesRead] = '\0';
     std::cout << "Received from client: " << buffer << std::endl;
+    send(clientSocket, buffer, strlen(buffer), 0);
 
     // Handle client message here
 }

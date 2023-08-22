@@ -1,16 +1,4 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: akaraca <akaraca@student.42.tr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/18 19:08:12 by gsever            #+#    #+#             */
-/*   Updated: 2023/08/20 18:04:52 by akaraca          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-# include "../includes/Server.hpp"
+#include "../includes/Server.hpp"
 
 /**
  * @brief 
@@ -42,7 +30,6 @@ int	main( int argc, char **argv )
 	{
 		Server Server(argc, argv);
 		Server.start();
-		std::cout << B_GREEN "IRC Server started!" END << std::endl;
 	}
 	catch (std::exception &e)
 	{

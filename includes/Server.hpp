@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: akaraca <akaraca@student.42.tr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/18 19:26:25 by gsever            #+#    #+#             */
-/*   Updated: 2023/08/20 18:10:44 by akaraca          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef	SERVER_HPP
 # define SERVER_HPP
 
@@ -24,31 +12,50 @@
 # include <netinet/in.h>
 # include <unistd.h>
 # include <fcntl.h>
+# include <map>
+# include <vector>
+# include <sys/poll.h>
+# include <netdb.h>
 # include "Colors.hpp"
+# include "Client.hpp"
+# include "Channel.hpp"
 
-# define MAX_CONNECTIONS 1000
+# define MAX_CONNECTIONS 10
 # define MAX_BUFFER 1024
+
+class Client;
+
+class Channel;
+
+typedef std::vector<pollfd>::iterator itPoll;
+typedef std::map<int, Client *>::iterator itClients;
+typedef std::vector<Channel *>::iterator itChannels;
 
 class Server
 {
 	private:
-		bool					_check;
-		const unsigned short	_port;
-		const std::string		_password;
-		const std::string		_host;
-		int						_serverSocket;
-		int						_clientSocket; // _activeSocket;
-		struct sockaddr_in 		_serverAddr;
-		struct sockaddr_in 		_clientAddr;
-		char					_buffer[MAX_BUFFER];
-		bool					_running;
+		bool					_isCheck; // arguments size is okay.
+		const unsigned short	_port; // server port number.
+		const std::string		_password; // server password.
+		const std::string		_host; // server ip 127.0.0.1
+		bool					_isRun; // program is running?
+		int						_serverFd; // server's fd number.
+		std::vector<pollfd>		_pollfds;
+		std::map<int, Client*>	_clients; // client's with fd numbers.
+		std::vector<Channel*>	_channels; // channel's vector.
+
 		Server( void ); // Default Constructor.
 	public:
 		Server( int argc, char **argv );
 		~Server( void ); // Destructor.
 /* _________________________ MAIN FUCTION ___________________________________ */
-		void	start( void );
 		void	newSocket( void );
+		void	start( void );
+/* -------------------------------------------------------------------------- */
+/* _________________________ CONNECTION FUNCTIONS ___________________________ */
+		// void onClientDisconnect(int fd);
+		void	onClientConnect( void );
+		// void onClientMessage(int fd);
 /* -------------------------------------------------------------------------- */
 /* _________________________ SET/GET FUNCTIONS ______________________________ */
 /* -------------------------------------------------------------------------- */
@@ -65,41 +72,7 @@ class Server
 		std::string		password( std::string argv );
 /* -------------------------------------------------------------------------- */
 /* _________________________ EXCEPTIONS _____________________________________ */
-
-	class exceptionInvalidArgument : public std::exception
-	{
-		private:
-			std::string _message;
-		public:
-			exceptionInvalidArgument( const std::string &message ) : _message(message) {}
-			~exceptionInvalidArgument() throw() {}
-			const char *what() const throw(){
-				return ( _message.c_str() );
-			}
-	};
-
-/* exception -> Array Not Sorted */
-
-	// class exceptionArrayNotSorted : public std::exception
-	// {
-	// 	public:
-	// 		virtual const char	*what() const throw();
-	// };
-/* ------------------------- */
-/* exception -> Invalid Argument */
-
-	// class exceptionInvalidArgument : public std::exception
-	// {
-	// 	private:
-	// 		std::string	_message;
-	// 	public:
-	// 		exceptionInvalidArgument( void );
-	// 		exceptionInvalidArgument( std::string string );
-	// 		~exceptionInvalidArgument() throw(); // err; fixed: exception specification of overriding function is more lax than base version
-	// 		virtual const char	*what() const throw();
-	// };
-/* ------------------------- */
 /* -------------------------------------------------------------------------- */
 };
 
-#endif // Server_HPP
+#endif

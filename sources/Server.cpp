@@ -1,72 +1,26 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.cpp                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: akaraca <akaraca@student.42.tr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/18 19:29:23 by gsever            #+#    #+#             */
-/*   Updated: 2023/08/20 13:46:51 by akaraca          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../includes/Server.hpp"
 
 Server::Server( int argc, char **argv )
-	:	_check(check( argc )),
+	:	_isCheck(check( argc )),
 		_port(port( argv[1] )),
 		_password(password( argv[2] )),
 		_host( "127.0.0.1" ),
-		_running(true)
+		_isRun( true )
 {
 	std::cout << "Server Constructor called." << std::endl;
+
 	Server::newSocket();
 	std::cout << GREEN "Socket succesfully configured." END << std::endl;
 
 }
 
-Server::~Server( void ) {
-	//shutdown(this->_serverSocket, SHUT_RDWR);
+Server::~Server( void )
+{
+	close(this->_serverFd); // Closing the server.
+	std::cout << "Server succesfully closed!" << std::endl;
 }
 
 /* _________________________ MAIN FUCTION ___________________________________ */
-void	Server::start( void )
-{
-	std::cout << "_port: " << this->_port << " _password: " << this->_password\
-		<< " _host: " << this->_host << " _serverSocket: " << this->_serverSocket\
-		<< " _clientSocket: " << this->_clientSocket << std::endl;
-
-	std::cout << "Server listening on port " << this->_port << std::endl;
-	while (this->_running){
-
-		socklen_t clientAddrSize = sizeof(this->_clientAddr);
-		this->_clientSocket = accept(this->_serverSocket, (struct sockaddr*)&this->_clientAddr, &clientAddrSize);
-		if (this->_clientSocket < 0)
-			throw std::runtime_error("Error while accepting on socket.");
-		std::cout << YELLOW "Socket address setted incoming connections pending queue." END << std::endl;
-
-		std::cout << "Accepted connection from " << inet_ntoa(this->_clientAddr.sin_addr) << std::endl;
-
-		while (this->_running){
-			// Receive data from client
-			int bytesRead = recv(this->_clientSocket, this->_buffer, sizeof(this->_buffer), 0); // bu yapı doğrudan while'a koyulabilir??
-			if (bytesRead <= 0)
-				break;
-
-			this->_buffer[bytesRead] = '\0';
-			std::cout << "Received from client: " << this->_buffer << std::endl;
-
-			// Process received data if needed
-			// ...
-
-			// Send response back to client
-			send(this->_clientSocket, this->_buffer, strlen(this->_buffer), 0);
-		}
-		close(this->_clientSocket);
-		std::cout << "Connection closed" << std::endl;
-	}
-	close(this->_serverSocket);
-}
 
 /**
  * @brief 
@@ -80,15 +34,15 @@ void		Server::newSocket( void )
 	// AF_INET: Address Family IPv4. Internetwork: UDP, TCP, etc.
 	// SOCK_STREAM: For TCP.
 	// '0': Automatically choose the appropriate protocol.
-	this->_serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-	if (this->_serverSocket < 0)
+	this->_serverFd = socket(AF_INET, SOCK_STREAM, 0);
+	if (this->_serverFd < 0)
 		throw std::runtime_error("Error while opening socket.");
 	std::cout << YELLOW "Socket opened." END << std::endl;
 
 	// SOL_SOCKET: Setting this SO_REUSEADDR flag to sockfd.
 	// SO_REUSEADDR: Reuse local address.
 	int val = 1;
-	if (setsockopt(this->_serverSocket, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val)))
+	if (setsockopt(this->_serverFd, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val)))
 		throw std::runtime_error("Error while setting socket options.");
 	std::cout << YELLOW "Socket settings setted." END << std::endl;
 
@@ -100,82 +54,103 @@ void		Server::newSocket( void )
 	//std::cout << YELLOW "Socket set to NON-BLOCKING." END << std::endl;
 
 	// <netinet/in.h>
-	//struct sockaddr_in socketAddress;
+	struct sockaddr_in serverAddress;
 
-	// Setting 0 &socketAddress's sizeof() bytes.
-	//memset((char *) &socketAddress, 0, sizeof(socketAddress));
-	//std::cout << YELLOW "Socket address created." END << std::endl;
+	// Setting 0 &serverAddress's sizeof() bytes.
+	memset((char *) &serverAddress, 0, sizeof(serverAddress));
+	std::cout << YELLOW "Socket address created." END << std::endl;
 
 	// INADDR_ANY: Bind all interfaces.
 	// If you wish to bind your socket to localhost only, the syntax would be my_sockaddress.sin_addr.s_addr = inet_addr("127.0.0.1");,
 	// htons(): Converts the unsigned short integer this->_port from host byte order to network byte order.
-	this->_serverAddr.sin_family = AF_INET;
-	this->_serverAddr.sin_addr.s_addr = INADDR_ANY;
-	this->_serverAddr.sin_port = htons(this->_port);
+	serverAddress.sin_family = AF_INET;
+	serverAddress.sin_addr.s_addr = INADDR_ANY;
+	serverAddress.sin_port = htons(this->_port);
 	std::cout << YELLOW "Socket address settings setted." END << std::endl;
 
-	// bind(): Assigns &socketAddress to sockfd address.
-	if (bind(this->_serverSocket, (struct sockaddr *) &this->_serverAddr, sizeof(this->_serverAddr)) < 0)
+	// bind(): Assigns &serverAddress to sockfd address.
+	if (bind(this->_serverFd, (struct sockaddr *) &serverAddress, sizeof(serverAddress)) < 0)
 		throw std::runtime_error("Error while binding socket.");
 	std::cout << YELLOW "Socket address binded." END << std::endl;
 
 	// listen(): First arg; Accepting incoming connection request;
 	// listen(): Second arg; MAX_CONNECTIONS, maximum length of the
 	// 	queue of pending connections.
-	if (listen(this->_serverSocket, MAX_CONNECTIONS) < 0)
+	if (listen(this->_serverFd, MAX_CONNECTIONS) < 0)
 		throw std::runtime_error("Error while listening on socket.");
 	std::cout << YELLOW "Socket address setted listenning pending queue." END << std::endl;
 	// return: Configured socketfd.
+	std::cout << "_port: " << this->_port << " _password: " << this->_password\
+		<< " _host: " << this->_host << " _serverFd: " << this->_serverFd << std::endl;
 }
 
-/* -------------------------------------------------------------------------- */
-/* _________________________ SET/GET FUNCTIONS ______________________________ */
-/* -------------------------------------------------------------------------- */
+void	Server::start( void )
+{
+	pollfd serverFd;
 
-/* _________________________ UTILS __________________________________________ */
-bool			Server::check( int argc ){
-	std::cout << YELLOW "Checking parameters..." END << std::endl;
-	if (argc != 3)
-		throw( Server::exceptionInvalidArgument(RED "Error: Invalid Argument Count\n"
-		"Usage: './ircserv <port> <password>'" END) );
-	return (true);
-}
+	serverFd.fd = this->_serverFd;
+	serverFd.events = POLLIN;
+	serverFd.revents = 0;
+	this->_pollfds.push_back(serverFd);
 
-unsigned short	Server::port( std::string port ){
+	// _pollfds.begin().base()->fd = this->_serverFd;
+	// _pollfds.begin().base()->events = POLLIN;
+	// _pollfds.begin().base()->revents = 0;
+	std::cout << "Server listening port on: " << this->_port << std::endl;
+	while (this->_isRun)
+	{
+		if (poll(this->_pollfds.begin().base(), this->_pollfds.size(), -1) < 0)
+			throw std::runtime_error("Error while polling from fd.");
+		for (itPoll it = this->_pollfds.begin(); it != this->_pollfds.end(); it++)
+		{
+			if (it->revents == 0) // 0 ise hicbir eylem gerceklestirilmeyecegini temsil eder.
+				continue;
 
-	// for: ' $> ./ircserv "" 1234 '
-	//		' $> ./ircserv '' 1234 '
-	if (port.empty())
-		throw( Server::exceptionInvalidArgument(RED "Error: Invalid Port\n"
-		"Port cannot be empty." END) );
+			if (it->revents & POLLHUP)
+			{
+				// onClientDisconnect(it->fd);
+				break;
+			}
 
-	for (size_t i = 0; i < port.length(); ++i){
-		if (!isdigit(port[i])){
-			throw( Server::exceptionInvalidArgument(RED "Error: Invalid Port\n"
-			"Port must be a integer." END) );
+			if (it->revents & POLLIN)
+			{
+				if (it->fd == this->_serverFd)
+				{
+					this->onClientConnect();
+					break;
+				}
+				// onClientMessage(it->fd);
+			}
 		}
 	}
-
-	unsigned short portVal = atoi(port.c_str());
-
-	// Port numaraları, özel ayrılmış bazı portlar dışında genellikle 0 ile 65535 arasında değer alır.
-	//	Ancak, 0 ile 1023 arasındaki port numaraları "well-known ports" olarak adlandırılır ve genellikle sistem servisleri veya tanınmış protokoller tarafından kullanılır.
-	//	Bu port numaralarının birçoğu belirli bir protokol veya servis tarafından rezerve edilmiştir.
-	//	Bu nedenle, kullanıcı tarafından belirlenecek port numaralarının genellikle 1024'den başlaması tercih edilir. 
-	if (portVal < 1024 || portVal > std::numeric_limits<unsigned short>::max())
-		throw( Server::exceptionInvalidArgument(RED "Error: Invalid Port\n"
-		"Port must be between 1024 and 65535." END) );
-	return (portVal);
 }
 
-std::string		Server::password( std::string password ){
+void	Server::onClientConnect( void )
+{
+	int			clientFd;
+	sockaddr_in	clientAddress;
+	socklen_t	clientAddressSize = sizeof(clientAddress);
 
-	// for: ' $> ./ircserv 1234 "" '
-	//		' $> ./ircserv 1234 '' '
-	if (password.empty())
-		throw( Server::exceptionInvalidArgument(RED "Error: Invalid Password\n"
-		"Password cannot be empty." END) );
-	std::cout << GREEN "Parameters okay." END << std::endl;
-	return (password);
+	clientFd = accept(this->_serverFd, (sockaddr *) &clientAddress, &clientAddressSize);
+	if (clientFd < 0)
+			throw std::runtime_error("Error while accepting on socket.");
+	std::cout << YELLOW "Socket address setted incoming connections pending queue." END << std::endl;
+	std::cout << "Accepted connection from " << inet_ntoa(clientAddress.sin_addr) << std::endl;
+
+	pollfd clientPollFd;
+
+	clientPollFd.fd = clientFd;
+	clientPollFd.events = POLLIN;
+	clientPollFd.revents = 0;
+	this->_pollfds.push_back(clientPollFd);
+
+	char	hostname[NI_MAXHOST];
+	if (getnameinfo((struct sockaddr *) &clientAddress, sizeof(clientAddress), hostname, NI_MAXHOST, NULL, 0, NI_NUMERICSERV) != 0)
+		throw std::runtime_error("Error while getting hostname on new client.");
+
+	Client *client = new Client(clientFd, ntohs(clientAddress.sin_port), hostname);
+	_clients.insert(std::make_pair(clientFd, client));
+
+	// char message[1000];
+	// snprintf(message, sizeof(message), "%s:%d has connected.", client->getHostname().c_str(), client->getPort());
 }
-/* -------------------------------------------------------------------------- */
