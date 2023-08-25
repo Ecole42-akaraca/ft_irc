@@ -16,6 +16,7 @@
 # include <vector>
 # include <sys/poll.h>
 # include <netdb.h>
+# include <error.h>
 # include "Colors.hpp"
 # include "Client.hpp"
 # include "Channel.hpp"
@@ -45,33 +46,29 @@ class Server
 		std::vector<Channel*>	_channels; // channel's vector.
 
 		Server( void ); // Default Constructor.
+		void			openSocket( void );
+		void			setSocketOptions( void );
+		void			createSocketAddress( void );
+		void			startListening( void );
+		void			welcomeServer( void );
+
 	public:
 		Server( int argc, char **argv );
 		~Server( void ); // Destructor.
 /* _________________________ MAIN FUCTION ___________________________________ */
-		void	newSocket( void );
 		void	start( void );
-/* -------------------------------------------------------------------------- */
-/* _________________________ CONNECTION FUNCTIONS ___________________________ */
-		// void onClientDisconnect(int fd);
-		void	onClientConnect( void );
-		// void onClientMessage(int fd);
-/* -------------------------------------------------------------------------- */
-/* _________________________ SET/GET FUNCTIONS ______________________________ */
-/* -------------------------------------------------------------------------- */
-/* _________________________ TIME FUNCTIONS _________________________________ */
-/* -------------------------------------------------------------------------- */
-/* _________________________ IF FUNCTIONS ___________________________________ */
-/* -------------------------------------------------------------------------- */
-/* _________________________ PRINT FUCTIONS _________________________________ */
+		void	acceptClients( void );
+		void	commandHandler( itPoll &itClient );
 /* -------------------------------------------------------------------------- */
 /* _________________________ UTILS __________________________________________ */
 	private:
 		bool			check( int argc );
 		unsigned short	port( std::string argv );
 		std::string		password( std::string argv );
-/* -------------------------------------------------------------------------- */
-/* _________________________ EXCEPTIONS _____________________________________ */
+		void			addToPollfds( int fd,  short events, short revents );
+		void			initCommands( void );
+		std::map<std::string, std::string> splitMessage( std::string message );
+		std::string		trim(const std::string& str);
 /* -------------------------------------------------------------------------- */
 };
 
