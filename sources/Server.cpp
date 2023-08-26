@@ -78,12 +78,20 @@ void	Server::commandHandler( itPoll &itClient )
 	if (bytesRead > 0)
 	{
 		buffer[bytesRead] = '\0';
-		std::map<std::string, std:string> tokens = splitMessage(buffer);
-		if (this->_clients.find(itClient->fd)->second->getFirstContact() == true)
+		std::map<std::string, std::string> tokens = splitMessage(buffer);
+		//if (this->_clients.find(itClient->fd)->second->getFirstContact() == true)
+		for(std::map<std::string, std::string>::iterator itToken = tokens.begin(); itToken != tokens.end(); ++itToken)
 		{
-			
+			std::cout << BLUE << "Message:>" << itToken->first << "-" << itToken->second << "<" << END << std::endl;
+			std::map<std::string, CommandFunction>::iterator itFunc;
+			for (itFunc = t_cmdFunc.begin(); itFunc != t_cmdFunc.end(); ++itFunc) {
+				if (itToken->first.compare(itFunc->first) == 0)
+				{
+					(this->*(itFunc->second))( _clients.at(itClient->fd), itToken->second );
+					break;
+				}
+			}
 		}
-
 	}
 }
 

@@ -77,10 +77,14 @@ std::map<std::string, std::string> Server::splitMessage( std::string message )
 	{
 		int posFirst = message.find(' ');
 		// 1. Kısım: USER 2. Kısım: A B C D E F G asdf
-		tokens.insert(std::make_pair(message.substr(0, posFirst), message.substr(posFirst + 1, pos)));
+		//posFirst + 1; CAP'ten sonra gelene boşluğun indexi
+		//pos - posFirst - 1; "CAP LS\r\n" yapısında LS'i almak için LS'in uzunluğuna bulmaya ihtiyaç var, -1 ise \r'ı almak istemiyoruz.
+		tokens.insert(std::make_pair(message.substr(0, posFirst), message.substr(posFirst + 1, pos - posFirst - 1)));
 		message.erase(0, pos + delimeter.length());
 	}
-	tokens.insert(std::make_pair("UNKNOWN", message));
+	// mesaj boş olarak geliyor. Kontrol için yapılandırılabilir.
+	if (!message.empty())
+		tokens.insert(std::make_pair("UNKNOWN", message));
 	return (tokens);
 }
 
@@ -105,8 +109,8 @@ void	Server::welcomeServer( void )
 	std::cout << " ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠⠖⠚⠉⠉⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀" << std::endl;
 	std::cout << " ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣶⠟⠋⠒⢦⡀⠀⠻⣄⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀" << std::endl;
 	std::cout << " ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡼⢻⠃⠀"RED"⣶⠆"END"⠀⣷⠖⠒⠢⣌⠉⠉⠒⠒⠂⢤⣄⠀⠀⠀⠀⠀⠀⠀" << std::endl;
-	std::cout << " ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡾⠁⠈⢧⠀⠀⠀⢸⢁"RED"⣤⡀"END"⠀⠀⢳⡀⡀⠀⢀⡼⠃⠀⠀⠀⠀⠀⠀⠀" << std::endl;
-	std::cout << " ⠀⠀⠀⠀⢠⡶⣦⠀⠀⠀⠀⠀⠀⢸⠁⠀⠀⠀⠙⠒⣶⣾⡄"RED"⠉⠁"END"⠀⠀⢨⡇⣷⣴⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀" << std::endl;
+	std::cout << " ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡾⠁⠈⢧⠀⠀⠀⢸ "RED"⣶⡄"END"⠀⠀⢳⡀⡀⠀⢀⡼⠃⠀⠀⠀⠀⠀⠀⠀" << std::endl;
+	std::cout << " ⠀⠀⠀⠀⢠⡶⣦⠀⠀⠀⠀⠀⠀⢸⠁⠀⠀⠀⠙⠒⣶⣾⡄  ⠀⠀⢨⡇⣷⣴⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀" << std::endl;
 	std::cout << " ⠀⣴⢻⣻⠿⠗⠛⠛⠉⠉⠉⠓⠒⠦⢤⣀⠀⠀⠠⠴⢿⡄⠙⠦⣤⣤⠤⠊⠐⠁⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀" << std::endl;
 	std::cout << " ⣼⣿⣿⡹⡄⣀⡤⠤⠤⠤⠤⢤⣀⡀⠀⠈⣿⣦⡀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀" << std::endl;
 	std::cout << " ⠹⣿⠈⠻⣏⠀⠀⠀⠀⠀⠀⠀⠀⠉⠓⢤⣿⢙⣷⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀" << std::endl;

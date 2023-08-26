@@ -4,8 +4,6 @@
 # include <vector>
 # include <string>
 # include <iostream>
-# include "utils.hpp"
-
 
 class Client
 {
@@ -16,7 +14,8 @@ class Client
 		std::string		_nickname;
 		std::string		_username;
 		std::string		_realname;
-		bool			_firstContact;
+		std::string		_servername;
+		bool			_isRegistered;
 
 	public:
 		Client( int fd, int port, const std::string &hostname );
@@ -28,13 +27,15 @@ class Client
 		std::string		getNickname( void ) { return (this->_nickname); }
 		std::string		getUsername( void ) { return (this->_username); }
 		std::string		getRealname( void ) { return (this->_realname); }
-		bool			getFirstContact( void ) { return (this->_firstContact); }
+		std::string		getServername( void ) { return (this->_servername); }
+		bool			getRegistered( void ) { return (this->_isRegistered); }
 
 		void	setHostname( std::string name ) { this->_hostname = name; }
 		void	setNickname( std::string name ) { this->_nickname = name; }
 		void	setUsername( std::string name ) { this->_username = name; }
 		void	setRealname( std::string name ) { this->_realname = name; }
-		void	setFirstContact( void ) { this->_firstContact = true; }
+		void	setServername( std::string name ) { this->_servername = name; }
+		void	setRegistered( void ) { this->_isRegistered = true; }
 };
 
 #endif

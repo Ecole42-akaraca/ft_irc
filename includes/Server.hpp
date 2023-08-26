@@ -16,10 +16,10 @@
 # include <vector>
 # include <sys/poll.h>
 # include <netdb.h>
-# include <error.h>
 # include "Colors.hpp"
 # include "Client.hpp"
 # include "Channel.hpp"
+# include "utils.hpp"
 
 # define MAX_CONNECTIONS 10
 # define MAX_BUFFER 1024
@@ -60,8 +60,17 @@ class Server
 		void	acceptClients( void );
 		void	commandHandler( itPoll &itClient );
 /* -------------------------------------------------------------------------- */
-/* _________________________ UTILS __________________________________________ */
+/* _________________________ COMMANDS __________________________________________ */
 	private:
+		typedef void (Server::*CommandFunction)( Client*, std::string );
+		std::map<std::string, CommandFunction> t_cmdFunc;
+		void cap( Client*, std::string message );
+		void join( Client*, std::string message );
+		void nick( Client*, std::string message );
+		void privmsg( Client*, std::string message );
+		void user( Client*, std::string message );
+/* -------------------------------------------------------------------------- */
+/* _________________________ UTILS __________________________________________ */
 		bool			check( int argc );
 		unsigned short	port( std::string argv );
 		std::string		password( std::string argv );
