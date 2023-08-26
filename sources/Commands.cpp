@@ -48,30 +48,36 @@ void	Server::join( Client* it , std::string message )
 		if (message.find("#")) // #asdf
 			message.erase(0, 1); // asdf -> #'i kaldiriyoruz.
 		itChannels itCnl = _channels.find(message); // Server'daki kanallarin icinde bu kanal var mi bakiyor.
-		if (itCnl != _channels.end()) // eger channel yoksa olustur.
+		if (itCnl == _channels.end()) // eger channel yoksa olustur.
 		{
 			Channel	*channel = new Channel(message, "", it);
 			_channels.insert(std::make_pair(message, channel));
-		std::cout << "Channel created: "\
-			<< this->_channels.find(message)->second->getName() << std::endl;
+		// std::cout << "Channel created: "\
+		// 	<< this->_channels.find(message)->second->getName() << std::endl;
 		}// kanal olusturuldu.
-		for (size_t i = 0; i < itCnl->second->_channelClients.size(); i++) // Kanalin icinde kullanici var mi diye tariyor.
+		else 
 		{
-			if (itCnl->second->_channelClients[i]->getNickname() == it->getNickname())
+			for (size_t i = 0; i < itCnl->second->_channelClients.size(); i++) // Kanalin icinde kullanici var mi diye tariyor.
 			{
-				std::cout << message << ": You're already on this channel!" << std::endl;
-				break;
+				std::cout << __LINE__ << std::endl;
+				std::cout << itCnl->second->_channelClients[i]->getNickname() << std::endl;
+				if (itCnl->second->_channelClients[i]->getNickname() == it->getNickname())
+				{
+					std::cout << message << ": You're already on this channel!" << std::endl << std::flush;
+					break;
+				}
+				else
+				{
+					itCnl->second->addClient(*it);
+					std::cout << "Added new user add to " + message << std::endl;
+					break;
+				}
 			}
-			else
-			{
-				itCnl->second->addClient(*it);
-				std::cout << "Added new user add to " + message << std::endl;
-				break;
-			}
+			std::string response = ":" + it->getUsername() + " JOIN :" + message + "\r\n";
+			std::cout << YELLOW << "Response:>" + response << "<" << std::endl;
+			send(it->getFd(), response.c_str(), response.size(), 0);
 		}
-		std::string response = ":" + it->getUsername() + " JOIN :" + message + "\r\n";
-		std::cout << YELLOW << "Response:>" + response << "<" << std::endl;
-		send(it->getFd(), response.c_str(), response.size(), 0);
+
 	}
 	////size_t channelStart = message.find(":");
 	////std::string channelName = message.substr(channelStart);
