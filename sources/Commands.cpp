@@ -19,14 +19,15 @@ void	Server::cap( Client* it, std::string message )
 	}
 	if (message.length() == 3 && message.compare("END") == 0)
 	{
-		//it->setFirstContact();
-		//std::string response = "001 " + it->getNickname() + " :Welcome to the HELL " + it->getNickname();
-		//response += "\r\n";
-		//std::string a = "x";
-		//std::string response = RPL_WELCOME(it->getNickname());
-		//std::cout << YELLOW << "Response:>" + response << "<" << std::endl;
-		//send(it->getFd(), response.c_str(), response.size(), 0);
-		std::cout << "BOŞ" << std::endl;
+		if (!it->getNickname().empty())
+		{
+			it->setRegistered();
+			//std::string response = "001 " + it->getNickname() + " :Welcome to the HELL " + it->getNickname();
+			//response += "\r\n";
+			std::string response = RPL_WELCOME(it->getNickname());
+			std::cout << YELLOW << "Response:>" + response << "<" << std::endl;
+			send(it->getFd(), response.c_str(), response.size(), 0);
+		}
 	}
 }
 
@@ -61,9 +62,6 @@ void	Server::nick( Client* it, std::string message )
 	if (it->getRegistered() == false)
 	{
 		it->setNickname(message);
-		std::string response = RPL_WELCOME(it->getNickname());
-		std::cout << YELLOW << "Response:>" + response << "<" << std::endl;
-		send(it->getFd(), response.c_str(), response.size(), 0);
 	}
 	else
 	{
@@ -132,5 +130,6 @@ void	Server::user( Client* it, std::string message )
 		response += "\r\n";
 		std::cout << YELLOW << "Response:>" + response << "<" << std::endl;
 		send(it->getFd(), response.c_str(), response.size(), 0);
+		Server::cap(it, "END");
 	}
 }
