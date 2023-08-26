@@ -1,6 +1,8 @@
 #ifndef FT_IRC_HPP
 # define FT_IRC_HPP
 
+# include "Colors.hpp"
+
 #define ERR_UNKNOWNCOMMAND(source, command)				"421 " + source + " " + command + " :Unknown command"
 #define ERR_NEEDMOREPARAMS(source, command)				"461 " + source + " " + command + " :Not enough parameters"
 #define ERR_NOTREGISTERED(source)						"451 " + source + " :You have not registered"
@@ -19,7 +21,7 @@
 #define ERR_CANNOTSENDTOCHAN(source, channel)			"404 " + source + " " + channel + " :Cannot send to channel"
 
 // NUMERIC REPLIES
-#define RPL_WELCOME(source)						"001 " + source + " :Welcome " + source + " to the ft_irc network" + "\r\n"
+#define RPL_WELCOME(source)						"001 " + source + " :" + B_GREEN + "Welcome " + source + " to the ft_irc server!" + END + "\r\n"
 #define RPL_NAMREPLY(source, channel, users)	"353 " + source + " = " + channel + " :" + users
 #define RPL_ENDOFNAMES(source, channel)			"366 " + source + " " + channel + " :End of /NAMES list."
 

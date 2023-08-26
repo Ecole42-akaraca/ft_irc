@@ -16,7 +16,6 @@
 # include <vector>
 # include <sys/poll.h>
 # include <netdb.h>
-# include "Colors.hpp"
 # include "Client.hpp"
 # include "Channel.hpp"
 # include "utils.hpp"
@@ -30,7 +29,7 @@ class Channel;
 
 typedef std::vector<pollfd>::iterator itPoll;
 typedef std::map<int, Client *>::iterator itClients;
-typedef std::vector<Channel *>::iterator itChannels;
+typedef std::map<std::string, Channel *>::iterator itChannels;
 
 class Server
 {
@@ -43,14 +42,14 @@ class Server
 		int						_serverFd; // server's fd number.
 		std::vector<pollfd>		_pollfds;
 		std::map<int, Client*>	_clients; // client's with fd numbers.
-		std::vector<Channel*>	_channels; // channel's vector.
+		std::map<std::string, Channel *>	_channels; // channel's vector.
 
 		Server( void ); // Default Constructor.
 		void			openSocket( void );
 		void			setSocketOptions( void );
 		void			createSocketAddress( void );
 		void			startListening( void );
-		void			welcomeServer( void );
+		std::string		welcomeServer( void );
 
 	public:
 		Server( int argc, char **argv );

@@ -4,6 +4,7 @@
 # include <vector>
 # include <string>
 # include <iostream>
+# include <map>
 
 class Client
 {
@@ -19,6 +20,7 @@ class Client
 
 	public:
 		Client( int fd, int port, const std::string &hostname );
+		Client	&operator=( Client &rhs );
 		~Client();
 
 		int				getFd( void ) { return (this->_fd); }

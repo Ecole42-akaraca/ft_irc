@@ -13,7 +13,7 @@ Server::Server( int argc, char **argv )
 	createSocketAddress();
 	startListening();
 	initCommands();
-	welcomeServer();
+	std::cout << welcomeServer() << std::endl;
 	std::cout << GREEN "Socket succesfully configured." END << std::endl;
 }
 
