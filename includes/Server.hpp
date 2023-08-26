@@ -16,6 +16,7 @@
 # include <vector>
 # include <sys/poll.h>
 # include <netdb.h>
+# include <sstream> 
 # include "Client.hpp"
 # include "Channel.hpp"
 # include "utils.hpp"

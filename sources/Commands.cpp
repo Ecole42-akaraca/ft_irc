@@ -36,56 +36,16 @@ void	Server::cap( Client* it, std::string message )
 void	Server::join( Client* it , std::string message )
 {
 	std::cout << YELLOW << "JOIN" << END << std::endl;
-	if (it->getRegistered() == false) // ilk temasta false init edildi.
-	{
-		std::cout << "BOŞ" << std::endl;
-		//std::string response = ":" + it->getUsername() + " JOIN :" + "HELL" + "\r\n";
-		//std::cout << YELLOW << "Response:>" + response << "<" << std::endl;
-		//send(it->getFd(), response.c_str(), response.size(), 0);
-	}
-	else
+	if (it->getRegistered() == true)
 	{
 		if (message.find("#")) // #asdf
 			message.erase(0, 1); // asdf -> #'i kaldiriyoruz.
-		itChannels itCnl = _channels.find(message); // Server'daki kanallarin icinde bu kanal var mi bakiyor.
-		if (itCnl == _channels.end()) // eger channel yoksa olustur.
-		{
-			Channel	*channel = new Channel(message, "", it);
-			_channels.insert(std::make_pair(message, channel));
-		// std::cout << "Channel created: "\
-		// 	<< this->_channels.find(message)->second->getName() << std::endl;
-		}// kanal olusturuldu.
-		else 
-		{
-			for (size_t i = 0; i < itCnl->second->_channelClients.size(); i++) // Kanalin icinde kullanici var mi diye tariyor.
-			{
-				std::cout << __LINE__ << std::endl;
-				std::cout << itCnl->second->_channelClients[i]->getNickname() << std::endl;
-				if (itCnl->second->_channelClients[i]->getNickname() == it->getNickname())
-				{
-					std::cout << message << ": You're already on this channel!" << std::endl << std::flush;
-					break;
-				}
-				else
-				{
-					itCnl->second->addClient(*it);
-					std::cout << "Added new user add to " + message << std::endl;
-					break;
-				}
-			}
-			std::string response = ":" + it->getUsername() + " JOIN :" + message + "\r\n";
-			std::cout << YELLOW << "Response:>" + response << "<" << std::endl;
-			send(it->getFd(), response.c_str(), response.size(), 0);
-		}
-
+		Channel	*channel = new Channel(message, "", it);
+		_channels.insert(std::make_pair(message, channel));
+		std::string response = ":" + it->getUsername() + " JOIN :" + message + "\r\n";
+		std::cout << YELLOW << "Response:>" + response << "<" << std::endl;
+		send(it->getFd(), response.c_str(), response.size(), 0);
 	}
-	////size_t channelStart = message.find(":");
-	////std::string channelName = message.substr(channelStart);
-	////handleJoinMessage(it->getFd(), channelName);
-	//std::string response = ":akaraca JOIN :" + message;
-	//response += "\r\n";
-	//send(it->getFd(), response.c_str(), response.size(), 0);
-	////handleJoinMessage(it->getFd(), asdf);
 }
 
 void	Server::nick( Client* it, std::string message )
@@ -122,45 +82,74 @@ void	Server::privmsg( Client* it, std::string message )
 //Ana Bilgisayar Adı (Hostname): "akaraca"
 //Sunucu Adı (Servername): "localhost" (genellikle boş bırakılır)
 //Gerçek İsim (Realname): "Ahmet Karaca"
-void	Server::user( Client* it, std::string message )
-{
+// void	Server::user( Client* it, std::string message )
+// {
+// 	std::cout << YELLOW << "USER" << END << std::endl;
+// 	if (it->getRegistered() == false)
+// 	{
+// 		size_t pos = 0;
+// 		int i = 0;
+// 		while ((pos = message.find(' ')) != std::string::npos)
+// 		{
+// 			if (i == 0)
+// 			{
+// 				it->setUsername(message.substr(0, pos));
+// 				std::cout << "Username:>" << it->getUsername() << std::endl;
+// 				message.erase(0, pos + 1);
+// 			}
+// 			if (i == 1)
+// 			{
+// 				it->setHostname(message.substr(0, pos));
+// 				std::cout << "Hostname:>" << it->getHostname() << std::endl;
+// 				message.erase(0, pos + 1);
+// 			}
+// 			if (i == 2)
+// 			{
+// 				it->setServername(message.substr(0, pos));
+// 				std::cout << "Servername:>" << it->getServername() << std::endl;
+// 				message.erase(0, pos + 1);
+// 			}
+// 			i++;
+// 			if (i == 3)
+// 			{
+// 				it->setRealname(message.substr(1, message.length() - 1));
+// 				std::cout << "Realname:>" << it->getRealname() << std::endl;
+// 				break;
+// 			}
+// 		}
+// 		// std::string response = "Welcome to the server!";
+// 		// response += "\r\n";
+// 		// std::cout << YELLOW << "Response:>" + response << "<" << std::endl;
+// 		// send(it->getFd(), response.c_str(), response.size(), 0);
+// 		Server::cap(it, "END");
+// 	}
+// }
+
+void Server::user(Client* it, std::string message) {
 	std::cout << YELLOW << "USER" << END << std::endl;
-	if (it->getRegistered() == false)
-	{
-		size_t pos = 0;
+	if (!it->getRegistered()) {
+		std::istringstream iss(message);
+		std::string token;
 		int i = 0;
-		while ((pos = message.find(' ')) != std::string::npos)
-		{
-			if (i == 0)
-			{
-				it->setUsername(message.substr(0, pos));
+		while (std::getline(iss, token, ' ')) {
+			if (i == 0) {
+				it->setUsername(token);
 				std::cout << "Username:>" << it->getUsername() << std::endl;
-				message.erase(0, pos + 1);
-			}
-			if (i == 1)
-			{
-				it->setHostname(message.substr(0, pos));
+			} else if (i == 1) {
+				it->setHostname(token);
 				std::cout << "Hostname:>" << it->getHostname() << std::endl;
-				message.erase(0, pos + 1);
-			}
-			if (i == 2)
-			{
-				it->setServername(message.substr(0, pos));
+			} else if (i == 2) {
+				it->setServername(token);
 				std::cout << "Servername:>" << it->getServername() << std::endl;
-				message.erase(0, pos + 1);
-			}
-			i++;
-			if (i == 3)
-			{
-				it->setRealname(message.substr(1, message.length() - 1));
+			} else if (i == 3) {
+				std::string realname;
+				std::getline(iss, realname);
+				it->setRealname(token + " " + realname);
 				std::cout << "Realname:>" << it->getRealname() << std::endl;
 				break;
 			}
+			i++;
 		}
-		// std::string response = "Welcome to the server!";
-		// response += "\r\n";
-		// std::cout << YELLOW << "Response:>" + response << "<" << std::endl;
-		// send(it->getFd(), response.c_str(), response.size(), 0);
 		Server::cap(it, "END");
 	}
 }
