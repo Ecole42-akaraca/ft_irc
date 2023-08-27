@@ -1,4 +1,22 @@
+/**
+ * @file Commands.cpp
+ * @author Görkem SEVER (gsever), Ahmet KARACA (akaraca)
+ * @brief 
+ * @version 0.1
+ * @date 2023-08-27
+ * 
+ * @note: How messaging 2 client each other?
+ * @link http://chi.cs.uchicago.edu/chirc/irc_examples.html
+ * 
+ * @note: All IRC commands.
+ * @link http://www.ae.metu.edu.tr/~evren/history/documents/commands.htm
+ * @link http://www.csun.edu/~webteach/mirc/commands.html
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
 #include "../includes/Server.hpp"
+
 
 void	Server::cap( Client* it, std::string message )
 {
@@ -152,4 +170,32 @@ void Server::user(Client* it, std::string message) {
 		}
 		Server::cap(it, "END");
 	}
+}
+
+/**
+ * @brief 
+ * 
+ * @link https://www.antionline.com/showthread.php?136933-IRC-flags
+ * @link https://datatracker.ietf.org/doc/html/rfc2812#section-3.1.5
+ * @link https://irssi.org/documentation/help/mode/
+ * 
+ * @param message 
+ */
+void Server::mode( Client* it, std::string message )
+{
+	std::cout << YELLOW << "MODE" << END << std::endl;
+	(void)it;
+	(void)message;
+// #define RPL_MODE(source, channel, modes, args)		":" + source + " MODE " + channel + " " + modes + " " + args
+	// std::string response = ": MODE " + it->getNickname() + message + "\r\n";
+	// std::cout << YELLOW << "Response:>" + response << "<" << std::endl;
+	// send(it->getFd(), response.c_str(), response.size(), 0);
+	// it->sendMessageFd(RPL_MODE(it->getPrefix(), ));
+}
+
+void	Server::ping( Client* it, std::string message ) // OK
+{
+	if (!message.compare(it->getNickname()) || !message.compare(this->_host))
+		it->sendMessageFd(ERR_NEEDMOREPARAMS(it->getNickname(), "PING"));
+	it->sendMessageFd(RPL_PING(it->getNickname(), message));
 }

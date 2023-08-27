@@ -1,10 +1,13 @@
 #ifndef	CLIENT_HPP
 # define CLIENT_HPP
 
-# include <vector>
+// # include <vector>
 # include <string>
 # include <iostream>
-# include <map>
+# include <sys/socket.h> // send();
+# include <errno.h> // errno.
+# include "Colors.hpp"
+// # include <map>
 
 class Client
 {
@@ -23,6 +26,7 @@ class Client
 		Client	&operator=( Client &rhs );
 		~Client();
 
+		std::string		getPrefix() const;
 		int				getFd( void ) { return (this->_fd); }
 		unsigned short	getPort( void ) { return (this->_port); }
 		std::string		getHostname( void ) { return (this->_hostname); }
@@ -38,6 +42,8 @@ class Client
 		void	setRealname( std::string name ) { this->_realname = name; }
 		void	setServername( std::string name ) { this->_servername = name; }
 		void	setRegistered( void ) { this->_isRegistered = true; }
+
+		void	sendMessageFd( std::string message );
 };
 
 #endif

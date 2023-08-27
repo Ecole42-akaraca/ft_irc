@@ -20,6 +20,7 @@
 # include "Client.hpp"
 # include "Channel.hpp"
 # include "utils.hpp"
+# include "Colors.hpp"
 
 # define MAX_CONNECTIONS 10
 # define MAX_BUFFER 1024
@@ -69,6 +70,8 @@ class Server
 		void nick( Client*, std::string message );
 		void privmsg( Client*, std::string message );
 		void user( Client*, std::string message );
+		void mode( Client*, std::string message );
+		void ping( Client*, std::string message );
 /* -------------------------------------------------------------------------- */
 /* _________________________ UTILS __________________________________________ */
 		bool			check( int argc );

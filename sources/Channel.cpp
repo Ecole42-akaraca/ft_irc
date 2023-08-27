@@ -9,7 +9,7 @@ Channel::Channel( std::string name, std::string password, Client *admin )
 Channel::~Channel( void )
 {
 	std::cout << "Channel Deleting: Name: " << this->getName() << std::endl;
-	delete (this);
+	delete [] (this);
 }
 
 void	Channel::addClient( Client client )

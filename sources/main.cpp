@@ -20,6 +20,10 @@
  * 
  * 			https://beej.us/guide/bgnet/html/split/
  * 
+ * TODO: client'ten gelen mesaji std::vector<std::string> olarak parse'le.
+ * TODO: MODE; komutundaki parse'lenen inputa gore ayarla.
+ * TODO: message ile baglantili komutlari std::vector'e gore cevir.
+ * 
  * @param argc: Server port number.
  * @param argv: Server password.
  * @return int 
