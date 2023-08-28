@@ -26,12 +26,17 @@
 # define MAX_BUFFER 1024
 
 class Client;
-
 class Channel;
+class Server;
 
-typedef std::vector<pollfd>::iterator itPoll;
-typedef std::map<int, Client *>::iterator itClients;
-typedef std::map<std::string, Channel *>::iterator itChannels;
+typedef std::vector<pollfd>::iterator				itPoll;
+typedef std::map<int, Client *>::iterator			itClients;
+typedef std::map<std::string, Channel *>::iterator	itChannels;
+typedef std::vector<std::string>::iterator			itToken;
+
+// Commands
+typedef void (Server::*CommandFunction)( Client*, std::string );
+typedef std::map<std::string, CommandFunction>::iterator	itCommandFunction;
 
 class Server
 {
@@ -45,6 +50,7 @@ class Server
 		std::vector<pollfd>		_pollfds;
 		std::map<int, Client*>	_clients; // client's with fd numbers.
 		std::map<std::string, Channel *>	_channels; // channel's vector.
+		std::vector<std::string>			_inputToken; // client'ten gelen mesajin tokenlerine ayrilmis hali.
 
 		Server( void ); // Default Constructor.
 		void			openSocket( void );
@@ -63,15 +69,14 @@ class Server
 /* -------------------------------------------------------------------------- */
 /* _________________________ COMMANDS __________________________________________ */
 	private:
-		typedef void (Server::*CommandFunction)( Client*, std::string );
 		std::map<std::string, CommandFunction> t_cmdFunc;
-		void cap( Client*, std::string message );
-		void join( Client*, std::string message );
-		void nick( Client*, std::string message );
-		void privmsg( Client*, std::string message );
-		void user( Client*, std::string message );
-		void mode( Client*, std::string message );
-		void ping( Client*, std::string message );
+		void cap( Client* );
+		void join( Client* );
+		void nick( Client* );
+		void privmsg( Client* );
+		void user( Client* );
+		void mode( Client* );
+		void ping( Client* );
 /* -------------------------------------------------------------------------- */
 /* _________________________ UTILS __________________________________________ */
 		bool			check( int argc );
@@ -79,7 +84,7 @@ class Server
 		std::string		password( std::string argv );
 		void			addToPollfds( int fd,  short events, short revents );
 		void			initCommands( void );
-		std::map<std::string, std::string> splitMessage( std::string message );
+		void			splitMessage( std::string message );
 		std::string		trim(const std::string& str);
 /* -------------------------------------------------------------------------- */
 };

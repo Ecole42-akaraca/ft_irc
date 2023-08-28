@@ -66,29 +66,49 @@ void	Server::initCommands( void )
 	t_cmdFunc["USER"] = &Server::user;
 	t_cmdFunc["MODE"] = &Server::mode;
 	t_cmdFunc["PING"] = &Server::ping;
+
+	// t_cmdFunc["QUIT"] = &Server::quit;
+	// t_cmdFunc["PASS"] = &Server::pass;
+	// t_cmdFunc["KICK"] = &Server::kick;
+	// t_cmdFunc["PART"] = &Server::part;
+	// t_cmdFunc["WHO"] = &Server::who;
 }
 
-std::map<std::string, std::string> Server::splitMessage( std::string message )
+void	Server::splitMessage( std::string message )
 {
-	std::string delimeter = "\r\n";
-	std::map<std::string, std::string> tokens;
-	size_t pos = 0;
+	std::stringstream	ss(message);
+	std::string			token;
 
-	// CAP LS\r\nNICK gsever\r\nUSER A B C D E F G asdf\r\n
-	while ((pos = message.find(delimeter)) != std::string::npos)
-	{
-		int posFirst = message.find(' ');
-		// 1. Kısım: USER 2. Kısım: A B C D E F G asdf
-		//posFirst + 1; CAP'ten sonra gelene boşluğun indexi
-		//pos - posFirst - 1; "CAP LS\r\n" yapısında LS'i almak için LS'in uzunluğuna bulmaya ihtiyaç var, -1 ise \r'ı almak istemiyoruz.
-		tokens.insert(std::make_pair(message.substr(0, posFirst), message.substr(posFirst + 1, pos - posFirst - 1)));
-		message.erase(0, pos + delimeter.length());
-	}
-	// mesaj boş olarak geliyor. Kontrol için yapılandırılabilir.
-	if (!message.empty())
-		tokens.insert(std::make_pair("UNKNOWN", message));
-	return (tokens);
+	while (ss >> token)
+		this->_inputToken.push_back(token);
+
+	// Print tokens.
+	std::cout << "Tokens:>";
+	for (size_t i = 0; i < this->_inputToken.size(); i++)
+		std::cout << "`" << this->_inputToken[i] << "`";
+	std::cout << "<" << std::endl;
 }
+
+// std::map<std::string, std::string> Server::splitMessage( std::string message )
+// {
+// 	std::string delimeter = "\r\n";
+// 	std::map<std::string, std::string> tokens;
+// 	size_t pos = 0;
+// 	// CAP LS\r\nNICK gsever\r\nUSER A B C D E F G asdf\r\n
+// 	while ((pos = message.find(delimeter)) != std::string::npos)
+// 	{
+// 		int posFirst = message.find(' ');
+// 		// 1. Kısım: USER 2. Kısım: A B C D E F G asdf
+// 		//posFirst + 1; CAP'ten sonra gelene boşluğun indexi
+// 		//pos - posFirst - 1; "CAP LS\r\n" yapısında LS'i almak için LS'in uzunluğuna bulmaya ihtiyaç var, -1 ise \r'ı almak istemiyoruz.
+// 		tokens.insert(std::make_pair(message.substr(0, posFirst), message.substr(posFirst + 1, pos - posFirst - 1)));
+// 		message.erase(0, pos + delimeter.length());
+// 	}
+// 	// mesaj boş olarak geliyor. Kontrol için yapılandırılabilir.
+// 	if (!message.empty())
+// 		tokens.insert(std::make_pair("UNKNOWN", message));
+// 	return (tokens);
+// }
 
 std::string Server::trim(const std::string& str)
 {

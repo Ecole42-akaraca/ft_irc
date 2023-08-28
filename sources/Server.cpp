@@ -67,7 +67,7 @@ void	Server::start( void )
 	}
 }
 
-// std::vector<std::string> tokens = splitMessage(buffer);
+// std::vector<std::string> this->_inputToken = splitMessage(buffer);
 // token.begin() ==> CAP LS 302
 // token.next() ==> NICK gsever
 // token.end() ==> USER gsever4 gsever3 gseverx localhost: Görkem Sever
@@ -78,20 +78,28 @@ void	Server::commandHandler( itPoll &itClient )
 	if (bytesRead > 0)
 	{
 		buffer[bytesRead] = '\0';
-		std::map<std::string, std::string> tokens = splitMessage(buffer);
+		// this->_inputToken = splitMessage(buffer);
+		splitMessage(buffer);
 		//if (this->_clients.find(itClient->fd)->second->getFirstContact() == true)
-		for(std::map<std::string, std::string>::iterator itToken = tokens.begin(); itToken != tokens.end(); ++itToken)
+		// for(itToken itTok = this->_inputToken.begin(); itTok != this->_inputToken.end(); ++itTok)
+		itCommandFunction	itCmd;
+		for (size_t i = 0; i < this->_inputToken.size(); i++)
 		{
-			std::cout << BLUE << "Message:>" << itToken->first << "-" << itToken->second << "<" << END << std::endl;
-			std::map<std::string, CommandFunction>::iterator itFunc;
-			for (itFunc = t_cmdFunc.begin(); itFunc != t_cmdFunc.end(); ++itFunc) {
-				if (itToken->first.compare(itFunc->first) == 0)
-				{
-					(this->*(itFunc->second))( _clients.at(itClient->fd), itToken->second );
-					break;
-				}
-			}
+			this->t_cmdFunc.find(this->_inputToken[i])->second(itClient->fd);
 		}
+		
+			// std::cout << BLUE << "Message:>" << itTok->first << "-" << itTok->second << "<" << END << std::endl;
+			// itCommandFunction	itCmd;
+			// if (itCmd[itTok])
+
+			// for (itFunc = t_cmdFunc.begin(); itFunc != t_cmdFunc.end(); ++itFunc) {
+			// 	// if (itTok->first.compare(itFunc->first) == 0)
+			// 	if (itTok[])
+			// 	{
+			// 		(this->*(itFunc->second))( _clients.at(itClient->fd), itTok->second );
+			// 		break;
+			// 	}
+			// }
 	}
 }
 

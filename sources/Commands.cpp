@@ -18,7 +18,7 @@
 #include "../includes/Server.hpp"
 
 
-void	Server::cap( Client* it, std::string message )
+void	Server::cap( Client* it ) // OK
 {
 	std::cout << YELLOW << "CAP" << END << std::endl;
 	if (message.length() == 6 && message.compare("LS 302") == 0)
@@ -51,7 +51,7 @@ void	Server::cap( Client* it, std::string message )
 	}
 }
 
-void	Server::join( Client* it , std::string message )
+void	Server::join( Client* it )
 {
 	std::cout << YELLOW << "JOIN" << END << std::endl;
 	if (it->getRegistered() == true)
@@ -66,7 +66,7 @@ void	Server::join( Client* it , std::string message )
 	}
 }
 
-void	Server::nick( Client* it, std::string message )
+void	Server::nick( Client* it )
 {
 	std::cout << YELLOW << "NICK" << END << std::endl;
 	if (it->getRegistered() == false)
@@ -83,7 +83,7 @@ void	Server::nick( Client* it, std::string message )
 	}
 }
 
-void	Server::privmsg( Client* it, std::string message )
+void	Server::privmsg( Client* it )
 {
 	std::cout << YELLOW << "PRIVMSG" << END << std::endl;
 	(void)it;
@@ -100,7 +100,7 @@ void	Server::privmsg( Client* it, std::string message )
 //Ana Bilgisayar Adı (Hostname): "akaraca"
 //Sunucu Adı (Servername): "localhost" (genellikle boş bırakılır)
 //Gerçek İsim (Realname): "Ahmet Karaca"
-// void	Server::user( Client* it, std::string message )
+// void	Server::user( Client* it )
 // {
 // 	std::cout << YELLOW << "USER" << END << std::endl;
 // 	if (it->getRegistered() == false)
@@ -143,7 +143,7 @@ void	Server::privmsg( Client* it, std::string message )
 // 	}
 // }
 
-void Server::user(Client* it, std::string message) {
+void Server::user(Client* it) {
 	std::cout << YELLOW << "USER" << END << std::endl;
 	if (!it->getRegistered()) {
 		std::istringstream iss(message);
@@ -181,7 +181,7 @@ void Server::user(Client* it, std::string message) {
  * 
  * @param message 
  */
-void Server::mode( Client* it, std::string message )
+void Server::mode( Client* it )
 {
 	std::cout << YELLOW << "MODE" << END << std::endl;
 	(void)it;
@@ -193,7 +193,7 @@ void Server::mode( Client* it, std::string message )
 	// it->sendMessageFd(RPL_MODE(it->getPrefix(), ));
 }
 
-void	Server::ping( Client* it, std::string message ) // OK
+void	Server::ping( Client* it ) // OK
 {
 	if (!message.compare(it->getNickname()) || !message.compare(this->_host))
 		it->sendMessageFd(ERR_NEEDMOREPARAMS(it->getNickname(), "PING"));
