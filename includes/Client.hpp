@@ -20,6 +20,7 @@ class Client
 		std::string		_realname;
 		std::string		_servername;
 		bool			_isRegistered;
+		bool			_isPasswordOK;
 
 	public:
 		Client( int fd, int port, const std::string &hostname );
@@ -35,6 +36,7 @@ class Client
 		std::string		getRealname( void ) { return (this->_realname); }
 		std::string		getServername( void ) { return (this->_servername); }
 		bool			getRegistered( void ) { return (this->_isRegistered); }
+		bool			getPasswordStatus( void ) { return (this->_isPasswordOK); }
 
 		void	setHostname( std::string name ) { this->_hostname = name; }
 		void	setNickname( std::string name ) { this->_nickname = name; }
@@ -42,7 +44,7 @@ class Client
 		void	setRealname( std::string name ) { this->_realname = name; }
 		void	setServername( std::string name ) { this->_servername = name; }
 		void	setRegistered( void ) { this->_isRegistered = true; }
-
+		void	setPasswordStatus( void ) { this->_isPasswordOK = true; }
 		void	sendMessageFd( std::string message );
 };
 

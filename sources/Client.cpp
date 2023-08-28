@@ -4,7 +4,8 @@ Client::Client( int fd, int port, const std::string &hostname )
 		: _fd(fd),
 		_port(port),
 		_hostname(hostname),
-		_isRegistered(false)
+		_isRegistered(false),
+		_isPasswordOK(false)
 {
 	this->_nickname = "";
 	this->_username = "";

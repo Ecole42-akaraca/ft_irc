@@ -19,20 +19,20 @@ Server::Server( int argc, char **argv )
 
 Server::~Server( void )
 {
-	// t_cmdFunc.clear();
-	// for (size_t i = 0; i < _pollfds.size(); ++i) {
-	// 	close(_pollfds[i].fd); // Kapatılan dosyaları serbest bırakmak (isteğe bağlı)
-	// }
-	// _pollfds.clear();
+	t_cmdFunc.clear();
+	for (size_t i = 0; i < _pollfds.size(); ++i) {
+		close(_pollfds[i].fd); // Kapatılan dosyaları serbest bırakmak (isteğe bağlı)
+	}
+	_pollfds.clear();
 
-	// // _clients'ı silme
-	// for (itClients it = _clients.begin(); it != _clients.end(); ++it)
-	// 	delete it->second;
-	// _clients.clear(); // Map'i temizle
-	// // _channels'ı silme
-	// for (itChannels it = _channels.begin(); it != _channels.end(); ++it)
-	// 	delete it->second;
-	// _channels.clear();
+	// _clients'ı silme
+	for (itClients it = _clients.begin(); it != _clients.end(); ++it)
+		delete it->second;
+	_clients.clear(); // Map'i temizle
+	// _channels'ı silme
+	for (itChannels it = _channels.begin(); it != _channels.end(); ++it)
+		delete it->second;
+	_channels.clear();
 	close(this->_serverFd); // Closing the server.
 	std::cout << "Server succesfully closed!" << std::endl;
 	exit(0);
@@ -90,11 +90,18 @@ void	Server::commandHandler( itPoll &itClient )
 			std::map<std::string, CommandFunction>::iterator itFunc;
 			for (itFunc = t_cmdFunc.begin(); itFunc != t_cmdFunc.end(); ++itFunc) {
 				if (itToken->first.compare(itFunc->first) == 0)
-				{
+				{					
 					std::vector<std::string> cmd = cmdMessage(itToken->second);
 					cmd.insert(cmd.begin(), itToken->first);
+
+	std::cout << B_BLUE << "Tokens:>";
+	for (size_t i = 0; i < cmd.size(); i++)
+		std::cout << "`" << cmd[i] << "`";
+	std::cout << "<" << END << std::endl;
+
+
 					(this->*(itFunc->second))( _clients.at(itClient->fd), cmd);
-					cmd.clear();
+					// cmd.clear();
 					break;
 				}
 			}

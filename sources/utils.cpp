@@ -66,7 +66,7 @@ void	Server::initCommands( void )
 	t_cmdFunc["QUIT"] = &Server::quit;
 
 	// t_cmdFunc["PRIVMSG"] = &Server::privmsg;
-	// t_cmdFunc["USER"] = &Server::user;
+	t_cmdFunc["USER"] = &Server::user;
 	// t_cmdFunc["MODE"] = &Server::mode;
 	// t_cmdFunc["PING"] = &Server::ping;
 
