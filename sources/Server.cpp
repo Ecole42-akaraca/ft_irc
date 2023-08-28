@@ -19,8 +19,23 @@ Server::Server( int argc, char **argv )
 
 Server::~Server( void )
 {
+	// t_cmdFunc.clear();
+	// for (size_t i = 0; i < _pollfds.size(); ++i) {
+	// 	close(_pollfds[i].fd); // Kapatılan dosyaları serbest bırakmak (isteğe bağlı)
+	// }
+	// _pollfds.clear();
+
+	// // _clients'ı silme
+	// for (itClients it = _clients.begin(); it != _clients.end(); ++it)
+	// 	delete it->second;
+	// _clients.clear(); // Map'i temizle
+	// // _channels'ı silme
+	// for (itChannels it = _channels.begin(); it != _channels.end(); ++it)
+	// 	delete it->second;
+	// _channels.clear();
 	close(this->_serverFd); // Closing the server.
 	std::cout << "Server succesfully closed!" << std::endl;
+	exit(0);
 }
 
 /* _________________________ MAIN FUCTION ___________________________________ */
@@ -68,16 +83,22 @@ void	Server::commandHandler( itPoll &itClient )
 	if (bytesRead > 0)
 	{
 		buffer[bytesRead] = '\0';
-		tokenArr = splitMessage(buffer);
-		itCommandFunction	itCmd;
-		for (itCmd = t_cmdFunc.begin(); itCmd != t_cmdFunc.end(); itCmd++)
+		std::map<std::string, std::string> tokens = splitMessage(buffer);
+		for(std::map<std::string, std::string>::iterator itToken = tokens.begin(); itToken != tokens.end(); ++itToken)
 		{
-			if (tokenArr[0].compare(itCmd->first) == 0)
-			{
-				(this->*(itCmd->second))(_clients.at(itClient->fd), tokenArr);
-				break;
+			std::cout << BLUE << "Message:>" << itToken->first << "-" << itToken->second << "<" << END << std::endl;
+			std::map<std::string, CommandFunction>::iterator itFunc;
+			for (itFunc = t_cmdFunc.begin(); itFunc != t_cmdFunc.end(); ++itFunc) {
+				if (itToken->first.compare(itFunc->first) == 0)
+				{
+					std::vector<std::string> cmd = cmdMessage(itToken->second);
+					cmd.insert(cmd.begin(), itToken->first);
+					(this->*(itFunc->second))( _clients.at(itClient->fd), cmd);
+					break;
+				}
 			}
 		}
+		tokens.clear();
 	}
 }
 
@@ -102,7 +123,7 @@ void	Server::acceptClients( void )
 	{
 		Server::addToPollfds(clientFd, POLLIN, 0);
 		host = inet_ntoa(clientAddress.sin_addr);
-		hostent	*hostInfo = gethostbyname(host.c_str());
+		struct hostent	*hostInfo = gethostbyname(host.c_str());
 		Client	*client= new Client(clientFd, ntohs(clientAddress.sin_port), hostInfo->h_name);
 		this->_clients.insert(std::make_pair(clientFd, client));
 		std::cout << "New Client connected." << std::endl;

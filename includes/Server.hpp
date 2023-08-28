@@ -32,7 +32,7 @@ class Server;
 typedef std::vector<pollfd>::iterator				itPoll;
 typedef std::map<int, Client *>::iterator			itClients;
 typedef std::map<std::string, Channel *>::iterator	itChannels;
-typedef std::vector<std::string>::iterator			itToken;
+typedef std::vector<std::string>::iterator			itCmd;
 
 // Commands
 // typedef void (Server::*CommandFunction)( Client*, std::string );
@@ -89,7 +89,8 @@ class Server
 		std::string		password( std::string argv );
 		void			addToPollfds( int fd,  short events, short revents );
 		void			initCommands( void );
-		std::vector<std::string>	splitMessage( std::string message );
+		std::map<std::string, std::string> splitMessage( std::string message );
+		std::vector<std::string>	cmdMessage( std::string message );
 		std::string		trim(const std::string& str);
 		int				findClientName( std::string name );
 /* -------------------------------------------------------------------------- */

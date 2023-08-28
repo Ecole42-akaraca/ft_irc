@@ -75,7 +75,29 @@ void	Server::initCommands( void )
 	// t_cmdFunc["WHO"] = &Server::who;
 }
 
-std::vector<std::string>	Server::splitMessage( std::string message )
+std::map<std::string, std::string> Server::splitMessage( std::string message )
+{
+	std::string delimeter = "\r\n";
+	std::map<std::string, std::string> tokens;
+	size_t pos = 0;
+
+	// CAP LS\r\nNICK gsever\r\nUSER A B C D E F G asdf\r\n
+	while ((pos = message.find(delimeter)) != std::string::npos)
+	{
+		int posFirst = message.find(' ');
+		// 1. Kısım: USER 2. Kısım: A B C D E F G asdf
+		//posFirst + 1; CAP'ten sonra gelene boşluğun indexi
+		//pos - posFirst - 1; "CAP LS\r\n" yapısında LS'i almak için LS'in uzunluğuna bulmaya ihtiyaç var, -1 ise \r'ı almak istemiyoruz.
+		tokens.insert(std::make_pair(message.substr(0, posFirst), message.substr(posFirst + 1, pos - posFirst - 1)));
+		message.erase(0, pos + delimeter.length());
+	}
+	// mesaj boş olarak geliyor. Kontrol için yapılandırılabilir.
+	if (!message.empty())
+		tokens.insert(std::make_pair("UNKNOWN", message));
+	return (tokens);
+}
+
+std::vector<std::string>	Server::cmdMessage( std::string message )
 {
 	std::stringstream			ss(message);
 	std::string					token;
@@ -134,7 +156,7 @@ int	Server::findClientName( std::string name )
 {
 	for (itClients it = this->_clients.begin(); it != _clients.end(); it++)
 	{
-		if (!it->second->getNickname().compare(name))
+		if (it->second->getNickname().compare(name) == 0)
 			return (it->second->getFd());
 		else
 			return (-1);
@@ -149,16 +171,8 @@ std::string	Server::welcomeServer( void )
 	msg += " ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n";
 	msg += " ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠⠖⠚⠉⠉⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n";
 	msg += " ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣶⠟⠋⠒⢦⡀⠀⠻⣄⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n";
-	msg += " ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡼⢻⠃⠀";
-	msg += RED;
-	msg += "⣶⠆";
-	msg += END;
-	msg += "⠀⣷⠖⠒⠢⣌⠉⠉⠒⠒⠂⢤⣄⠀⠀⠀⠀⠀⠀⠀\n";
-	msg += " ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡾⠁⠈⢧⠀⠀⠀⢸ ";
-	msg += RED;
-	msg += "⣶⡄";
-	msg += END;
-	msg += "⠀⠀⢳⡀⡀⠀⢀⡼⠃⠀⠀⠀⠀⠀⠀⠀\n";
+	msg += " ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡼⢻⠃⠀\033[0;31m⣶⠆\033[m ⣷⠖⠒⠢⣌⠉⠉⠒⠒⠂⢤⣄⠀⠀⠀⠀⠀⠀⠀\n";
+	msg += " ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡾⠁⠈⢧⠀⠀⠀⢸ \033[0;31m⣶⡄\033[m ⠀⢳⡀⡀⠀⢀⡼⠃⠀⠀⠀⠀⠀⠀⠀\n";
 	msg += " ⠀⠀⠀⠀⢠⡶⣦⠀⠀⠀⠀⠀⠀⢸⠁⠀⠀⠀⠙⠒⣶⣾⡄  ⠀⠀⢨⡇⣷⣴⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀\n";
 	msg += " ⠀⣴⢻⣻⠿⠗⠛⠛⠉⠉⠉⠓⠒⠦⢤⣀⠀⠀⠠⠴⢿⡄⠙⠦⣤⣤⠤⠊⠐⠁⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n";
 	msg += " ⣼⣿⣿⡹⡄⣀⡤⠤⠤⠤⠤⢤⣀⡀⠀⠈⣿⣦⡀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n";
@@ -177,7 +191,7 @@ std::string	Server::welcomeServer( void )
 	msg += " ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠑⢦⡉⠻⠟⠳⡾⠛⠛⠿⣤⣇⣀⣀⣀⣤⠴⠞⠋⣁⣤⠞⠁⠀⠀⢀⣿⠀\n";
 	msg += " ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣇⠀⠀⠀⠀⠉⠛⠛⠛⠛⠛⠛⠋⠉⠀⠀⠀⠀⠀⣼⠏⠀\n";
 	msg += " ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⡾⠋⠀⠀\n";
-	msg += " ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠓⠦⣤⣄⣀⣀⣀⣀⣀⣤⣤⣤⡶⠾⠛⠉⠀⠀⠀⠀\n";
+	msg += " ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠓⠦⣤⣄⣀⣀⣀⣀⣀⣤⣤⣤⡶⠾⠛⠉⠀⠀⠀⠀\n";
 	msg += " ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n";
 	return (msg);
 }

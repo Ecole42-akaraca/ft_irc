@@ -1,7 +1,7 @@
 #ifndef	CLIENT_HPP
 # define CLIENT_HPP
 
-// # include <vector>
+# include <vector>
 # include <string>
 # include <iostream>
 # include <sys/socket.h> // send();

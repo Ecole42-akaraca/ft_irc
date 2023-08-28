@@ -37,20 +37,32 @@ void	Server::cap( Client* it, std::vector<std::string> tokenArr ) // OK
 	if (!tokenArr[0].compare("CAP")
 			&& !tokenArr[1].compare("END"))
 	{
-		std::cout << "ende geldik abe de " << std::endl;
-		int fd = it->getFd();
-		tokenArr.erase(tokenArr.begin(), tokenArr.begin() + 2);
-		Server::pass(it, tokenArr);
-		if (_clients.find(fd) != _clients.end())
+		if (!it->getNickname().empty())
 		{
-			tokenArr.erase(tokenArr.begin(), tokenArr.begin() + 2);
-			Server::nick(it, tokenArr);
-			// if (it->getNickname().empty())
-			// {
-				
-			// 	it->setRegistered();
-			// 	it->sendMessageFd(Server::welcomeServer() + RPL_WELCOME(it->getNickname()));
-			// }
+			int fd = it->getFd();
+			std::cout << __LINE__ << std::endl;
+			if (tokenArr.size() != 0)
+			{
+				tokenArr.erase(tokenArr.begin(), tokenArr.begin() + 2);
+				Server::pass(it, tokenArr);
+			}
+			std::cout << __LINE__ << std::endl;
+			if (_clients.find(fd) != _clients.end())
+			{
+				std::cout << __LINE__ << std::endl;
+				if (tokenArr.size() != 0)
+				{
+					tokenArr.erase(tokenArr.begin(), tokenArr.begin() + 2);
+					Server::nick(it, tokenArr);
+				}
+				std::cout << __LINE__ << std::endl;
+				// if (it->getNickname().empty())
+				// {
+					
+				// 	it->setRegistered();
+				// 	it->sendMessageFd(Server::welcomeServer() + RPL_WELCOME(it->getNickname()));
+				// }
+			}
 		}
 	}
 }
@@ -76,8 +88,11 @@ void	Server::nick( Client* it, std::vector<std::string> tokenArr )
 	{
 		it->sendMessageFd(ERR_NONICKNAMEGIVEN(it->getNickname()));
 	}
-	else if (Server::findClientName(tokenArr[1]))
+	else if (it->getFd() != Server::findClientName(tokenArr[1]))
+	{
+		std::cout << it->getFd() << "-----" << Server::findClientName(tokenArr[1]) << std::endl;
 		it->sendMessageFd(ERR_NICKNAMEINUSE(it->getNickname()));
+	}
 	else
 	{
 		it->setNickname(tokenArr[1]);
@@ -91,9 +106,13 @@ void	Server::pass( Client* it, std::vector<std::string> tokenArr ) // OK
 	std::cout << YELLOW << "PASS" << END << std::endl;
 	if (!tokenArr[0].compare("PASS"))
 		if (!tokenArr[1].compare(this->_password))
-			it->setRegistered();
+		{
+			return ;
+			// it->setRegistered();
+		}
 		else
 		{
+			std::cout << "......" << std::endl;
 			tokenArr.clear();
 			tokenArr.push_back("Password is wrong.");
 			Server::quit(it, tokenArr);
