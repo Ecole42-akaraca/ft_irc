@@ -35,7 +35,8 @@ typedef std::map<std::string, Channel *>::iterator	itChannels;
 typedef std::vector<std::string>::iterator			itToken;
 
 // Commands
-typedef void (Server::*CommandFunction)( Client*, std::string );
+// typedef void (Server::*CommandFunction)( Client*, std::string );
+typedef void (Server::*CommandFunction)( Client*, std::vector<std::string> );
 typedef std::map<std::string, CommandFunction>::iterator	itCommandFunction;
 
 class Server
@@ -50,7 +51,7 @@ class Server
 		std::vector<pollfd>		_pollfds;
 		std::map<int, Client*>	_clients; // client's with fd numbers.
 		std::map<std::string, Channel *>	_channels; // channel's vector.
-		std::vector<std::string>			_inputToken; // client'ten gelen mesajin tokenlerine ayrilmis hali.
+		// std::vector<std::string>			_inputToken; // client'ten gelen mesajin tokenlerine ayrilmis hali.
 
 		Server( void ); // Default Constructor.
 		void			openSocket( void );
@@ -70,13 +71,17 @@ class Server
 /* _________________________ COMMANDS __________________________________________ */
 	private:
 		std::map<std::string, CommandFunction> t_cmdFunc;
-		void cap( Client* );
-		void join( Client* );
-		void nick( Client* );
-		void privmsg( Client* );
-		void user( Client* );
-		void mode( Client* );
-		void ping( Client* );
+		void cap( Client*, std::vector<std::string> );
+		void join( Client*, std::vector<std::string> );
+		void nick( Client*, std::vector<std::string> );
+		void pass( Client*, std::vector<std::string> );
+		void quit( Client*, std::vector<std::string> );
+		// void privmsg( Client*, std::vector<std::string> );
+		// void user( Client*, std::vector<std::string> );
+		// void mode( Client*, std::vector<std::string> );
+		// void ping( Client*, std::vector<std::string> );
+		void	info( void );
+		void	removeClient( int clientFd );
 /* -------------------------------------------------------------------------- */
 /* _________________________ UTILS __________________________________________ */
 		bool			check( int argc );
@@ -84,8 +89,9 @@ class Server
 		std::string		password( std::string argv );
 		void			addToPollfds( int fd,  short events, short revents );
 		void			initCommands( void );
-		void			splitMessage( std::string message );
+		std::vector<std::string>	splitMessage( std::string message );
 		std::string		trim(const std::string& str);
+		int				findClientName( std::string name );
 /* -------------------------------------------------------------------------- */
 };
 

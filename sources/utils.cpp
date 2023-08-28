@@ -62,31 +62,36 @@ void	Server::initCommands( void )
 	t_cmdFunc["CAP"] = &Server::cap;
 	t_cmdFunc["JOIN"] = &Server::join;
 	t_cmdFunc["NICK"] = &Server::nick;
-	t_cmdFunc["PRIVMSG"] = &Server::privmsg;
-	t_cmdFunc["USER"] = &Server::user;
-	t_cmdFunc["MODE"] = &Server::mode;
-	t_cmdFunc["PING"] = &Server::ping;
+	t_cmdFunc["PASS"] = &Server::pass;
+	t_cmdFunc["QUIT"] = &Server::quit;
 
-	// t_cmdFunc["QUIT"] = &Server::quit;
-	// t_cmdFunc["PASS"] = &Server::pass;
+	// t_cmdFunc["PRIVMSG"] = &Server::privmsg;
+	// t_cmdFunc["USER"] = &Server::user;
+	// t_cmdFunc["MODE"] = &Server::mode;
+	// t_cmdFunc["PING"] = &Server::ping;
+
 	// t_cmdFunc["KICK"] = &Server::kick;
 	// t_cmdFunc["PART"] = &Server::part;
 	// t_cmdFunc["WHO"] = &Server::who;
 }
 
-void	Server::splitMessage( std::string message )
+std::vector<std::string>	Server::splitMessage( std::string message )
 {
-	std::stringstream	ss(message);
-	std::string			token;
+	std::stringstream			ss(message);
+	std::string					token;
+	std::vector<std::string>	tokenArr;
+
+	std::cout << "Message:>" << message << "<" << std::endl;
 
 	while (ss >> token)
-		this->_inputToken.push_back(token);
+		tokenArr.push_back(token);
 
 	// Print tokens.
-	std::cout << "Tokens:>";
-	for (size_t i = 0; i < this->_inputToken.size(); i++)
-		std::cout << "`" << this->_inputToken[i] << "`";
-	std::cout << "<" << std::endl;
+	std::cout << B_BLUE << "Tokens:>";
+	for (size_t i = 0; i < tokenArr.size(); i++)
+		std::cout << "`" << tokenArr[i] << "`";
+	std::cout << "<" << END << std::endl;
+	return (tokenArr);
 }
 
 // std::map<std::string, std::string> Server::splitMessage( std::string message )
@@ -123,6 +128,18 @@ std::string Server::trim(const std::string& str)
 		end--;
 
 	return (str.substr(start, end));
+}
+
+int	Server::findClientName( std::string name )
+{
+	for (itClients it = this->_clients.begin(); it != _clients.end(); it++)
+	{
+		if (!it->second->getNickname().compare(name))
+			return (it->second->getFd());
+		else
+			return (-1);
+	}
+	return (-1);
 }
 
 std::string	Server::welcomeServer( void )

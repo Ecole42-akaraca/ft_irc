@@ -40,16 +40,6 @@ void	Server::start( void )
 
 			if (it->revents & POLLHUP)
 			{
-				//eklenecek
-				//Client *client = _clients.at(it->fd);
-				//client->leave();
-				_clients.erase(it->fd);
-
-				// Handle client disconnect
-				close(it->fd);
-				_pollfds.erase(it);
-				//delete client;
-
 				std::cout << "Client disconnected." << std::endl;
 				break; // Move to the next socket
 			}
@@ -67,39 +57,27 @@ void	Server::start( void )
 	}
 }
 
-// std::vector<std::string> this->_inputToken = splitMessage(buffer);
-// token.begin() ==> CAP LS 302
-// token.next() ==> NICK gsever
-// token.end() ==> USER gsever4 gsever3 gseverx localhost: Görkem Sever
+// std::vector<std::string> tokenArr = splitMessage(buffer);
+// MODE gsever akaraca gorkem ahmet
 void	Server::commandHandler( itPoll &itClient )
 {
 	char buffer[1024];
+	std::vector<std::string>	tokenArr;
 	ssize_t bytesRead = recv(itClient->fd, buffer, sizeof(buffer) - 1, 0);
+
 	if (bytesRead > 0)
 	{
 		buffer[bytesRead] = '\0';
-		// this->_inputToken = splitMessage(buffer);
-		splitMessage(buffer);
-		//if (this->_clients.find(itClient->fd)->second->getFirstContact() == true)
-		// for(itToken itTok = this->_inputToken.begin(); itTok != this->_inputToken.end(); ++itTok)
+		tokenArr = splitMessage(buffer);
 		itCommandFunction	itCmd;
-		for (size_t i = 0; i < this->_inputToken.size(); i++)
+		for (itCmd = t_cmdFunc.begin(); itCmd != t_cmdFunc.end(); itCmd++)
 		{
-			this->t_cmdFunc.find(this->_inputToken[i])->second(itClient->fd);
+			if (tokenArr[0].compare(itCmd->first) == 0)
+			{
+				(this->*(itCmd->second))(_clients.at(itClient->fd), tokenArr);
+				break;
+			}
 		}
-		
-			// std::cout << BLUE << "Message:>" << itTok->first << "-" << itTok->second << "<" << END << std::endl;
-			// itCommandFunction	itCmd;
-			// if (itCmd[itTok])
-
-			// for (itFunc = t_cmdFunc.begin(); itFunc != t_cmdFunc.end(); ++itFunc) {
-			// 	// if (itTok->first.compare(itFunc->first) == 0)
-			// 	if (itTok[])
-			// 	{
-			// 		(this->*(itFunc->second))( _clients.at(itClient->fd), itTok->second );
-			// 		break;
-			// 	}
-			// }
 	}
 }
 

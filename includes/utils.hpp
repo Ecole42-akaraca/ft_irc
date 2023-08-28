@@ -1,5 +1,5 @@
-#ifndef FT_IRC_HPP
-# define FT_IRC_HPP
+#ifndef UTILS_HPP
+# define UTILS_HPP
 
 # include "Colors.hpp"
 
@@ -8,8 +8,8 @@
 #define ERR_NOTREGISTERED(source)						"451 " + source + " :You have not registered"
 #define ERR_ALREADYREGISTERED(source)					"462 " + source + " :You may not reregister"
 #define ERR_PASSWDMISMATCH(source)						"464 " + source + " :Password incorrect"
-#define ERR_NONICKNAMEGIVEN(source)						"431 " + source + " :Nickname not given"
-#define ERR_NICKNAMEINUSE(source)						"433 " + source + " " + source  + " :Nickname is already in use"
+#define ERR_NONICKNAMEGIVEN(nickname)					"431 " + nickname + " :Nickname not given"
+#define ERR_NICKNAMEINUSE(nickname)						"433 " + nickname + " " + nickname + " :Nickname is already in use"
 #define ERR_TOOMANYCHANNELS(source, channel)			"405 " + source + " " + channel + " :You have joined too many channels"
 #define ERR_NOTONCHANNEL(source, channel)				"442 " + source + " " + channel + " :You're not on that channel"
 #define ERR_NOSUCHCHANNEL(source, channel)				"403 " + source + " " + channel + " :No such channel"
@@ -21,7 +21,7 @@
 #define ERR_CANNOTSENDTOCHAN(source, channel)			"404 " + source + " " + channel + " :Cannot send to channel"
 
 // NUMERIC REPLIES
-#define RPL_WELCOME(source)						"001 " + source + " :" + B_GREEN + "Welcome " + source + " to the ft_irc server!" + END + "\r\n"
+#define RPL_WELCOME(source)						"001 " + source + " :" + B_GREEN + "Welcome " + source + " to the ft_irc server!" + END
 #define RPL_NAMREPLY(source, channel, users)	"353 " + source + " = " + channel + " :" + users
 #define RPL_ENDOFNAMES(source, channel)			"366 " + source + " " + channel + " :End of /NAMES list."
 
@@ -34,5 +34,6 @@
 #define RPL_QUIT(source, message)					":" + source + " QUIT :Quit: " + message
 #define RPL_KICK(source, channel, target, reason)	":" + source + " KICK " + channel + " " + target + " :" + reason
 #define RPL_MODE(source, channel, modes, args)		":" + source + " MODE " + channel + " " + modes + " " + args
+#define RPL_NICK(source, nickname)					":" + source + " NICK " + nickname
 
 #endif
