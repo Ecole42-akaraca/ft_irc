@@ -36,13 +36,9 @@ std::string	Client::getPrefix() const
 
 void	Client::sendMessageFd( std::string message )
 {
-	std::string	fullMessage;
-
-	// fullMessage = message + "\r\n";
-	fullMessage = message;
-	std::cout << YELLOW << "Response:>" + fullMessage << "<" << END << std::endl << std::flush;
-	fullMessage += "\r\n";
-	if (send(this->getFd(), fullMessage.c_str(), fullMessage.size(), 0) == -1)
+	std::cout << YELLOW << "Response:>" + message << "<" << END << std::endl;
+	message += "\r\n";
+	if (send(this->getFd(), message.c_str(), message.size(), 0) == -1)
 		throw (std::runtime_error(\
 "Error: sendMessageFd: Failed to send message."));
 }

@@ -94,6 +94,7 @@ void	Server::commandHandler( itPoll &itClient )
 					std::vector<std::string> cmd = cmdMessage(itToken->second);
 					cmd.insert(cmd.begin(), itToken->first);
 					(this->*(itFunc->second))( _clients.at(itClient->fd), cmd);
+					cmd.clear();
 					break;
 				}
 			}

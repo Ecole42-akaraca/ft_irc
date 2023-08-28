@@ -39,31 +39,33 @@ void	Server::cap( Client* it, std::vector<std::string> tokenArr ) // OK
 	{
 		if (!it->getNickname().empty())
 		{
-			int fd = it->getFd();
-			std::cout << __LINE__ << std::endl;
-			if (tokenArr.size() != 0)
-			{
-				tokenArr.erase(tokenArr.begin(), tokenArr.begin() + 2);
-				Server::pass(it, tokenArr);
-			}
-			std::cout << __LINE__ << std::endl;
-			if (_clients.find(fd) != _clients.end())
-			{
-				std::cout << __LINE__ << std::endl;
-				if (tokenArr.size() != 0)
-				{
-					tokenArr.erase(tokenArr.begin(), tokenArr.begin() + 2);
-					Server::nick(it, tokenArr);
-				}
-				std::cout << __LINE__ << std::endl;
-				// if (it->getNickname().empty())
-				// {
-					
-				// 	it->setRegistered();
-				// 	it->sendMessageFd(Server::welcomeServer() + RPL_WELCOME(it->getNickname()));
-				// }
-			}
+			it->setRegistered();
+			it->sendMessageFd(Server::welcomeServer() + RPL_WELCOME(it->getNickname()));
 		}
+			// int fd = it->getFd();
+			// std::cout << __LINE__ << std::endl;
+			// if (tokenArr.size() != 0)
+			// {
+			// 	tokenArr.erase(tokenArr.begin(), tokenArr.begin() + 2);
+			// 	Server::pass(it, tokenArr);
+			// }
+			// std::cout << __LINE__ << std::endl;
+			// if (_clients.find(fd) != _clients.end())
+			// {
+			// 	std::cout << __LINE__ << std::endl;
+			// 	if (tokenArr.size() != 0)
+			// 	{
+			// 		tokenArr.erase(tokenArr.begin(), tokenArr.begin() + 2);
+			// 		Server::nick(it, tokenArr);
+			// 	}
+			// 	std::cout << __LINE__ << std::endl;
+			// 	// if (it->getNickname().empty())
+			// 	// {
+					
+			// 	// 	it->setRegistered();
+			// 	// 	it->sendMessageFd(Server::welcomeServer() + RPL_WELCOME(it->getNickname()));
+			// 	// }
+			// }
 	}
 }
 
@@ -84,20 +86,38 @@ void	Server::nick( Client* it, std::vector<std::string> tokenArr )
 {
 	// `NICK``yuandre``USER``yuandre``yuandre``localhost``:Görkem``Sever`
 	std::cout << YELLOW << "NICK" << END << std::endl;
-	if (tokenArr[1].empty())
-	{
-		it->sendMessageFd(ERR_NONICKNAMEGIVEN(it->getNickname()));
-	}
-	else if (it->getFd() != Server::findClientName(tokenArr[1]))
-	{
-		std::cout << it->getFd() << "-----" << Server::findClientName(tokenArr[1]) << std::endl;
-		it->sendMessageFd(ERR_NICKNAMEINUSE(it->getNickname()));
-	}
-	else
-	{
-		it->setNickname(tokenArr[1]);
-		it->sendMessageFd(RPL_NICK(it->getPrefix(), tokenArr[1]));
-	}
+	// if (it->getRegistered() == false)
+	// {
+	// 	if (Server::findClientName(tokenArr[1]) != -1)
+	// 	{
+	// 		it->sendMessageFd(ERR_NICKNAMEINUSE(tokenArr[1]));
+	// 	}
+	// 	else
+	// 	{
+	// 		it->setNickname(tokenArr[1]);
+	// 		std::vector<std::string> cmd;
+	// 		cmd.push_back("CAP");
+	// 		cmd.push_back("END");
+	// 		Server::cap(it, cmd);
+	// 	}
+	// }
+	// else
+	// {
+		if (tokenArr[1].empty())
+		{
+			it->sendMessageFd(ERR_NONICKNAMEGIVEN(tokenArr[1]));
+		}
+		else if (Server::findClientName(tokenArr[1]) != -1)
+		{
+			std::cout << "Fd: " << it->getFd() << " -- Fd: " << Server::findClientName(tokenArr[1]) << std::endl;
+			it->sendMessageFd(ERR_NICKNAMEINUSE(tokenArr[1]));
+		}
+		else
+		{
+			it->setNickname(tokenArr[1]);
+			it->sendMessageFd(RPL_NICK(it->getPrefix(), tokenArr[1]));
+		}
+	// }
 }
 
 void	Server::pass( Client* it, std::vector<std::string> tokenArr ) // OK
@@ -112,7 +132,6 @@ void	Server::pass( Client* it, std::vector<std::string> tokenArr ) // OK
 		}
 		else
 		{
-			std::cout << "......" << std::endl;
 			tokenArr.clear();
 			tokenArr.push_back("Password is wrong.");
 			Server::quit(it, tokenArr);

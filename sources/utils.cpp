@@ -156,10 +156,8 @@ int	Server::findClientName( std::string name )
 {
 	for (itClients it = this->_clients.begin(); it != _clients.end(); it++)
 	{
-		if (it->second->getNickname().compare(name) == 0)
+		if (it->second->getNickname().compare(name) == 0 && it->second->getNickname().size() == name.size())
 			return (it->second->getFd());
-		else
-			return (-1);
 	}
 	return (-1);
 }
