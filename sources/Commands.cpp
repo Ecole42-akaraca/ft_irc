@@ -124,6 +124,13 @@ void	Server::pass( Client* it, std::vector<std::string> tokenArr ) // OK
 {
 	// `PASS``asdf``NICK``yuandre``USER``yuandre``yuandre``localhost``:Görkem``Sever`
 	std::cout << YELLOW << "PASS" << END << std::endl;
+
+
+	std::cout << RED << "Tokens:>";
+	for (size_t i = 0; i < tokenArr.size(); i++)
+		std::cout << "`" << tokenArr[i] << "`";
+	std::cout << "<" << END << std::endl;
+
 	if (!tokenArr.empty() && !tokenArr[0].compare("PASS"))
 		if (!tokenArr[1].compare(this->_password))
 		{
@@ -133,6 +140,7 @@ void	Server::pass( Client* it, std::vector<std::string> tokenArr ) // OK
 		}
 		else
 		{
+			std::cout << __LINE__ << std::endl;
 			tokenArr.clear();
 			tokenArr.push_back("Password is wrong.");
 			Server::quit(it, tokenArr);
@@ -164,6 +172,7 @@ void	Server::quit( Client* it, std::vector<std::string> tokenArr ) // OK
 	{
 		if (it->getFd() == _pollfds[i].fd)
 		{
+			std::cout << RED << _pollfds[i].fd << END << std::endl;
 			std::cout << "getprefix -> " << it->getPrefix() << std::endl;
 			it->sendMessageFd(RPL_QUIT(it->getPrefix(), tokenArr[0]));
 			close(_pollfds[i].fd);
@@ -171,6 +180,7 @@ void	Server::quit( Client* it, std::vector<std::string> tokenArr ) // OK
 			Server::removeClient(fd);
 		}
 	}
+	_clients.erase(fd);
 	Server::info();
 }
 

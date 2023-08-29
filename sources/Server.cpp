@@ -84,6 +84,7 @@ void	Server::commandHandler( itPoll &itClient )
 	{
 		buffer[bytesRead] = '\0';
 		std::map<std::string, std::string> tokens = splitMessage(buffer);
+		Client *at = _clients.at(itClient->fd);
 		for(std::map<std::string, std::string>::iterator itToken = tokens.begin(); itToken != tokens.end(); ++itToken)
 		{
 			std::cout << BLUE << "Message:>" << itToken->first << "-" << itToken->second << "<" << END << std::endl;
@@ -94,14 +95,14 @@ void	Server::commandHandler( itPoll &itClient )
 					std::vector<std::string> cmd = cmdMessage(itToken->second);
 					cmd.insert(cmd.begin(), itToken->first);
 
-	std::cout << B_BLUE << "Tokens:>";
-	for (size_t i = 0; i < cmd.size(); i++)
-		std::cout << "`" << cmd[i] << "`";
-	std::cout << "<" << END << std::endl;
+	// std::cout << B_BLUE << "Tokens:>";
+	// for (size_t i = 0; i < cmd.size(); i++)
+	// 	std::cout << "`" << cmd[i] << "`";
+	// std::cout << "<" << END << std::endl;
 
-
-					(this->*(itFunc->second))( _clients.at(itClient->fd), cmd);
-					// cmd.clear();
+					// std::cout << "......." << at->getFd() << std::endl;
+					(this->*(itFunc->second))( at, cmd);
+					cmd.clear();
 					break;
 				}
 			}
