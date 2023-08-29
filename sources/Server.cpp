@@ -35,7 +35,6 @@ Server::~Server( void )
 	_channels.clear();
 	close(this->_serverFd); // Closing the server.
 	std::cout << "Server succesfully closed!" << std::endl;
-	exit(0);
 }
 
 /* _________________________ MAIN FUCTION ___________________________________ */
@@ -94,14 +93,7 @@ void	Server::commandHandler( itPoll &itClient )
 				{					
 					std::vector<std::string> cmd = cmdMessage(itToken->second);
 					cmd.insert(cmd.begin(), itToken->first);
-
-	// std::cout << B_BLUE << "Tokens:>";
-	// for (size_t i = 0; i < cmd.size(); i++)
-	// 	std::cout << "`" << cmd[i] << "`";
-	// std::cout << "<" << END << std::endl;
-
-					// std::cout << "......." << at->getFd() << std::endl;
-					(this->*(itFunc->second))( at, cmd);
+					(this->*(itFunc->second))(at, cmd);
 					cmd.clear();
 					break;
 				}

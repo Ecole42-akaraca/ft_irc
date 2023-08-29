@@ -42,30 +42,6 @@ void	Server::cap( Client* it, std::vector<std::string> tokenArr ) // OK
 			it->setRegistered();
 			it->sendMessageFd(Server::welcomeServer() + RPL_WELCOME(it->getNickname()));
 		}
-			// int fd = it->getFd();
-			// std::cout << __LINE__ << std::endl;
-			// if (tokenArr.size() != 0)
-			// {
-			// 	tokenArr.erase(tokenArr.begin(), tokenArr.begin() + 2);
-			// 	Server::pass(it, tokenArr);
-			// }
-			// std::cout << __LINE__ << std::endl;
-			// if (_clients.find(fd) != _clients.end())
-			// {
-			// 	std::cout << __LINE__ << std::endl;
-			// 	if (tokenArr.size() != 0)
-			// 	{
-			// 		tokenArr.erase(tokenArr.begin(), tokenArr.begin() + 2);
-			// 		Server::nick(it, tokenArr);
-			// 	}
-			// 	std::cout << __LINE__ << std::endl;
-			// 	// if (it->getNickname().empty())
-			// 	// {
-					
-			// 	// 	it->setRegistered();
-			// 	// 	it->sendMessageFd(Server::welcomeServer() + RPL_WELCOME(it->getNickname()));
-			// 	// }
-			// }
 	}
 }
 
@@ -89,9 +65,7 @@ void	Server::nick( Client* it, std::vector<std::string> tokenArr )
 	if (it->getRegistered() == false) //welcome mesajı için mecburi bu if olmalı, olmasada çalışıyor.
 	{
 		if (Server::findClientName(tokenArr[1]) != -1)
-		{
 			it->sendMessageFd(ERR_NICKNAMEINUSE(tokenArr[1]));
-		}
 		else
 		{
 			it->setNickname(tokenArr[1]);
@@ -104,14 +78,9 @@ void	Server::nick( Client* it, std::vector<std::string> tokenArr )
 	else
 	{
 		if (tokenArr[1].empty())
-		{
 			it->sendMessageFd(ERR_NONICKNAMEGIVEN(tokenArr[1]));
-		}
 		else if (Server::findClientName(tokenArr[1]) != -1)
-		{
-			std::cout << "Fd: " << it->getFd() << " -- Fd: " << Server::findClientName(tokenArr[1]) << std::endl;
 			it->sendMessageFd(ERR_NICKNAMEINUSE(tokenArr[1]));
-		}
 		else
 		{
 			it->sendMessageFd(RPL_NICK(it->getPrefix(), tokenArr[1]));
@@ -124,21 +93,9 @@ void	Server::pass( Client* it, std::vector<std::string> tokenArr ) // OK
 {
 	// `PASS``asdf``NICK``yuandre``USER``yuandre``yuandre``localhost``:Görkem``Sever`
 	std::cout << YELLOW << "PASS" << END << std::endl;
-
-
-	std::cout << "it->getNickname: " << it->getNickname() << std::endl;
-	std::cout << RED << "Tokens:>";
-	for (size_t i = 0; i < tokenArr.size(); i++)
-		std::cout << "`" << tokenArr[i] << "`";
-	std::cout << "<" << END << std::endl;
-
 	if (!tokenArr.empty() && !tokenArr[0].compare("PASS"))
 		if (!tokenArr[1].compare(this->_password))
-		{
 			it->setPasswordStatus();
-			// return ;
-			// it->setRegistered();
-		}
 		else
 		{
 			tokenArr.clear();
@@ -208,35 +165,30 @@ void	Server::removeClient(int clientFd)
 	}
 }
 
+//"USER akaraca akaraca localhost :Ahmet Karaca" komutu aşağıdaki anlamı taşır:
+//Kullanıcı Adı (Username): "akaraca"
+//Nick Adı (Nickname): "akaraca"
+//Host Adı (Hostname): "localhost" (genellikle boş bırakılır)
+//Gerçek İsim (Realname): "Ahmet Karaca"
 void Server::user(Client* it, std::vector<std::string> tokenArr ) {
 	std::cout << YELLOW << "USER" << END << std::endl;
-	// if (!it->getRegistered()) {
-	// 	std::istringstream iss(message);
-	// 	std::string token;
-	// 	int i = 0;
-	// 	while (std::getline(iss, token, ' ')) {
-	// 		if (i == 0) {
-	// 			it->setUsername(token);
-	// 			std::cout << "Username:>" << it->getUsername() << std::endl;
-	// 		} else if (i == 1) {
-	// 			it->setNickname(token);
-	// 			std::cout << "Nickname:>" << it->getNickname() << std::endl;
-	// 		} else if (i == 2) {
-	// 			it->setHostname(token);
-	// 			std::cout << "Hostname:>" << it->getHostname() << std::endl;
-	// 		} else if (i == 3) {
-	// 			std::string realname;
-	// 			std::getline(iss, realname);
-	// 			it->setRealname(token + " " + realname);
-	// 			std::cout << "Realname:>" << it->getRealname() << std::endl;
-	// 			break;
-	// 		}
-	// 		i++;
-	// 	}
-	(void)tokenArr;
+	 if (it->getRegistered() == true) {
+
+		it->setUsername(tokenArr[1]);
+		std::cout << "Username:>" << it->getUsername() << std::endl;
+
+	 	it->setNickname(tokenArr[2]);
+	 	std::cout << "Nickname:>" << it->getNickname() << std::endl;
+
+	 	it->setHostname(tokenArr[3]);
+	 	std::cout << "Hostname:>" << it->getHostname() << std::endl;
+
+	 	it->setRealname(tokenArr[4] + " " + tokenArr[5]);
+	 	std::cout << "Realname:>" << it->getRealname() << std::endl;
+
 		if (it->getPasswordStatus() == false)
 			Server::pass(it, std::vector<std::string>());
-	// }
+	}
 }
 
 // void	Server::privmsg( Client* it, std::vector<std::string> tokenArr )
@@ -249,83 +201,6 @@ void Server::user(Client* it, std::vector<std::string> tokenArr ) {
 // 	//std::string text = message.substr(pos + 1);
 // 	//// Örnek: ":John!john@example.com PRIVMSG #channel :Merhaba, nasılsınız?"
 // 	//handlePrivateMessage(it->getFd(), target, text);
-// }
-
-//"USER akaraca akaraca localhost :Ahmet Karaca" komutu aşağıdaki anlamı taşır:
-//Kullanıcı Adı (Username): "akaraca"
-//Ana Bilgisayar Adı (Hostname): "akaraca"
-//Sunucu Adı (Servername): "localhost" (genellikle boş bırakılır)
-//Gerçek İsim (Realname): "Ahmet Karaca"
-// void	Server::user( Client* it, std::vector<std::string> tokenArr )
-// {
-// 	std::cout << YELLOW << "USER" << END << std::endl;
-// 	if (it->getRegistered() == false)
-// 	{
-// 		size_t pos = 0;
-// 		int i = 0;
-// 		while ((pos = message.find(' ')) != std::string::npos)
-// 		{
-// 			if (i == 0)
-// 			{
-// 				it->setUsername(message.substr(0, pos));
-// 				std::cout << "Username:>" << it->getUsername() << std::endl;
-// 				message.erase(0, pos + 1);
-// 			}
-// 			if (i == 1)
-// 			{
-// 				it->setHostname(message.substr(0, pos));
-// 				std::cout << "Hostname:>" << it->getHostname() << std::endl;
-// 				message.erase(0, pos + 1);
-// 			}
-// 			if (i == 2)
-// 			{
-// 				it->setServername(message.substr(0, pos));
-// 				std::cout << "Servername:>" << it->getServername() << std::endl;
-// 				message.erase(0, pos + 1);
-// 			}
-// 			i++;
-// 			if (i == 3)
-// 			{
-// 				it->setRealname(message.substr(1, message.length() - 1));
-// 				std::cout << "Realname:>" << it->getRealname() << std::endl;
-// 				break;
-// 			}
-// 		}
-// 		// std::string response = "Welcome to the server!";
-// 		// response += "\r\n";
-// 		// std::cout << YELLOW << "Response:>" + response << "<" << std::endl;
-// 		// send(it->getFd(), response.c_str(), response.size(), 0);
-// 		Server::cap(it, "END");
-// 	}
-// }
-
-// void Server::user(Client* it, std::vector<std::string> tokenArr) {
-// 	std::cout << YELLOW << "USER" << END << std::endl;
-// 	if (!it->getRegistered()) {
-// 		std::istringstream iss(message);
-// 		std::string token;
-// 		int i = 0;
-// 		while (std::getline(iss, token, ' ')) {
-// 			if (i == 0) {
-// 				it->setUsername(token);
-// 				std::cout << "Username:>" << it->getUsername() << std::endl;
-// 			} else if (i == 1) {
-// 				it->setHostname(token);
-// 				std::cout << "Hostname:>" << it->getHostname() << std::endl;
-// 			} else if (i == 2) {
-// 				it->setServername(token);
-// 				std::cout << "Servername:>" << it->getServername() << std::endl;
-// 			} else if (i == 3) {
-// 				std::string realname;
-// 				std::getline(iss, realname);
-// 				it->setRealname(token + " " + realname);
-// 				std::cout << "Realname:>" << it->getRealname() << std::endl;
-// 				break;
-// 			}
-// 			i++;
-// 		}
-// 		Server::cap(it, "END");
-// 	}
 // }
 
 /**
