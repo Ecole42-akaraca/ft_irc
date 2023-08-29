@@ -211,8 +211,8 @@ void Server::user(Client* it, std::vector<std::string> tokenArr )
 		std::cout << "Hostname:>" << it->getHostname() << std::endl;
 
 		tokenArr[4].erase(0, 1); 	// token[4] token4'un basindaki : kaldırır
-		if (tokenArr.size() > 5) // linuxta Ahmet Karaca olarak değil akaraca olarak realname geliyor bu yüzden kontrol koymak zorundayım.
-			tokenArr[4].append(" " + tokenArr[5]);
+		for (size_t i = 5; i < tokenArr.size(); i++)
+			tokenArr[4].append(" " + tokenArr[i]); // realname boş olabilir veya birden fazla argümana sahip olabilir deneyin: /set real_name A B C D E F
 		it->setRealname(tokenArr[4]);
 		std::cout << "Realname:>" << it->getRealname() << std::endl;
 		if (it->getPasswordStatus() == false)
