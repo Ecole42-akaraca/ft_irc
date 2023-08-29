@@ -52,9 +52,35 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr )
 		return ;
 	if (tokenArr[1].compare("#")) // #asdf
 		tokenArr[1].erase(0, 1); // asdf -> #'i kaldiriyoruz.
-	Channel	*channel = new Channel(tokenArr[1], tokenArr[2], it); // token[0]=JOIN, token[1]=asdf, token[2]=password
-	_channels.insert(std::make_pair(tokenArr[1], channel));
-	// _channels.find(it.getName());
+	if (tokenArr[1].compare(this->_channels.find(tokenArr[1])->first) == 0) // Eger kanalimiz zaten mevcut mu?
+	{
+		if (!this->_channels.find(tokenArr[1])->second->ifClientJoined(it)) // Eger kanalin icinde client var mi?
+		{
+			std::cout << "yeni biri kanala baglandi abi" << std::endl;
+			this->_channels.find(tokenArr[1])->second->addClient(*it);
+			it->sendMessageFd(B_CYAN + it->getNickname() + END\
+				+ it->getPrefix() + "has joined " + tokenArr[1]);
+		}
+		else
+			it->sendMessageFd(it->getNickname() + "already on this channel!");
+	}
+	else 
+	{	// kanal yok, yeni kanal olusturuluyor.
+		Channel	*channel = new Channel(tokenArr[1], tokenArr[2], it); // token[0]=JOIN, token[1]=asdf, token[2]=password
+		this->_channels.insert(std::make_pair(tokenArr[1], channel)); // Kanal olusturuldu.
+
+		std::cout << "Yeni channel'e admin ataniyor." << std::endl;
+		this->_channels.find(tokenArr[1])->second->addClient(*it);
+		it->sendMessageFd(B_CYAN + it->getNickname() + END\
+			+ " " + it->getPrefix() + " has joined " + tokenArr[1]);
+		this->_channels.find(tokenArr[1])->second->setAdmin(*it); // Kanali olusturdugu icin admin de bu client olmus oluyor.
+		it->sendMessageFd("Since you created the channel, also you are also the admin.");
+		// Gerekirse bu adimlarin hepsini 1 tane functionun icerisine topla; bunu da Server'in icerisine koy.
+		// ornek; bool	Server::createChannel( std::string channelName, Client* adminClient );
+		// Kanali olusturduktan sonra her client eklemek icin yine Server'in icerisine;
+		// bool	Server::addClient( std::map<std::string, Channel *> channelName, Client * clientName );
+		// Seklinde ekleyebilirsin.
+	}
 	it->sendMessageFd(RPL_JOIN(it->getUsername(), tokenArr[1]));
 }
 
@@ -123,14 +149,12 @@ void	Server::quit( Client* it, std::vector<std::string> tokenArr ) // OK
 {
 	// :syrk!kalt@millennium.stealth.net QUIT :Gone to have lunch
 	std::cout << YELLOW << "QUIT" << END << std::endl;
-	Server::info();
+	Server::infoFd();
 	int	fd = it->getFd();
 	for (size_t i = 0; i < _pollfds.size(); i++)
 	{
 		if (it->getFd() == _pollfds[i].fd)
 		{
-			std::cout << RED << _pollfds[i].fd << END << std::endl;
-			std::cout << "getprefix -> " << it->getPrefix() << std::endl;
 			it->sendMessageFd(RPL_QUIT(it->getPrefix(), tokenArr[0]));
 			close(_pollfds[i].fd);
 			_pollfds.erase(_pollfds.begin() + i);
@@ -138,10 +162,10 @@ void	Server::quit( Client* it, std::vector<std::string> tokenArr ) // OK
 		}
 	}
 	_clients.erase(fd);
-	Server::info();
+	Server::infoFd();
 }
 
-void	Server::info( void )
+void	Server::infoFd( void )
 {
 	std::cout << BLUE << "------------POLL.FDS-----------------" << END << std::endl;
 	for (size_t i = 0; i < this->_pollfds.size(); i++)
@@ -172,8 +196,8 @@ void	Server::removeClient(int clientFd)
 //Gerçek İsim (Realname): "Ahmet Karaca"
 void Server::user(Client* it, std::vector<std::string> tokenArr ) {
 	std::cout << YELLOW << "USER" << END << std::endl;
-	 if (it->getRegistered() == true) {
-
+	if (it->getRegistered() == true)
+	{
 		it->setUsername(tokenArr[1]);
 		std::cout << "Username:>" << it->getUsername() << std::endl;
 
@@ -252,9 +276,40 @@ void	Server::part( Client* it, std::vector<std::string> tokenArr )
 	std::cout << YELLOW << "PART" << END << std::endl;
 	(void)it;
 	(void)tokenArr;
+	// Eger part komutu ile channel'den ayrildiginda; channel'de kullanici
+	// 	kalmadiginda channel kapatilir. Bunun kontrolu quit komutu icinde
+	// 	kontrol edilmeli.
 }
 
+void	Server::list( Client* it, std::vector<std::string> tokenArr )
+{
+	(void)tokenArr;
+	// Serverdeki channelleri yazdiriyor.
 
+	if (tokenArr[1].empty())
+	{
+		// Channel Users Name
+		// 16:10 -!- End of /LIST
+	}
+
+	it->sendMessageFd("-------- Server's 'Channel' list; --------");
+	for	(itChannels itChan = this->_channels.begin();\
+			itChan != this->_channels.end(); itChan++)
+	{
+		it->sendMessageFd("LIST :#" + itChan->first);
+	}
+	it->sendMessageFd("------------- LIST END ------------------");
+}
+
+void	Server::info( Client* it, std::vector<std::string> tokenArr )
+{
+	(void)it;
+	(void)tokenArr;
+	// Burada info komutu cagirildiginda Server'le ilgili bilgilerin,
+	// 	server'e bagli olan userlerin -> realname'si yani Gorkem SEVER.
+	// Server ne zaman kuruldu? Ne icin bu server kullanilir gibi bilgiler
+	// 	yazan bir komut.
+}
 
 
 // **************************************

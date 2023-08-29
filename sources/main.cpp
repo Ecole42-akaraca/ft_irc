@@ -24,6 +24,13 @@
  * TODO: 11:53 -!- Irssi: (default) critical nicklist_set_host: assertion 'host != NULL' failed
  * TODO: NP: /nick ile ismimizi degistirdigimizde ana sayfada degil de channel'deyse channel'in icine
  *  ciktisini yazmasi lazim.
+ * TODO: LEAK kontrolu gerekiyor.
+ * TODO: Ilk baglantida ayni isimde nick varsa USER komutunda 
+ * USER
+	Username:>yuandre
+	Nickname:>yuandre
+	Hostname:>localhost
+	Realname:>:Görkem Sever -> buradaki kisma girmiyor orasi duzeltilecek.
  * 
  * @param argc: Server port number.
  * @param argv: Server password.

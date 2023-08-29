@@ -81,7 +81,9 @@ class Server
 		// void mode( Client*, std::vector<std::string> );
 		void	ping( Client*, std::vector<std::string> );
 		void	part( Client*, std::vector<std::string> );
-		void	info( void );
+		void	list( Client*, std::vector<std::string> );
+		void	info( Client*, std::vector<std::string> );
+		void	infoFd( void );
 		void	removeClient( int clientFd );
 /* -------------------------------------------------------------------------- */
 /* _________________________ UTILS __________________________________________ */

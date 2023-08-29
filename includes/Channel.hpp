@@ -34,6 +34,8 @@ class Channel
 		void		setAdmin( Client &client ) { *this->_admin = client; }
 		void		setPassword( std::string password ) {this->_k = password; }
 
+		bool		ifClientJoined( Client* client );
+
 		void		addClient( Client client );
 
 		void		sendMessageBroadcast( std::string message );
