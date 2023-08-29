@@ -114,8 +114,8 @@ void	Server::nick( Client* it, std::vector<std::string> tokenArr )
 		}
 		else
 		{
-			it->setNickname(tokenArr[1]);
 			it->sendMessageFd(RPL_NICK(it->getPrefix(), tokenArr[1]));
+			it->setNickname(tokenArr[1]);
 		}
 	}
 }
@@ -356,7 +356,27 @@ void Server::user(Client* it, std::vector<std::string> tokenArr ) {
 // 	it->sendMessageFd(RPL_PING(it->getNickname(), message));
 // }
 
-
+/**
+ * @brief 
+ * 
+ * Irssi -> IRC Server
+ * Eger part komutu Irssi tarafindan ana dizindeyse;
+ * 	/part 			-> 12:03 -!- Irssi: Not enough parameters given
+ * 	/part asdf		-> Message:>PART-asdf<
+ * Eger part komutunu Channel'in icerisinde yazarsak;
+ * 	/part 			-> Message:>PART-#asdf<
+ * 	/part See ya	-> Message:>PART-#asdf :See ya<
+ * 
+ * @param it 
+ * @param tokenArr 
+ */
+void	Server::part( Client* it, std::vector<std::string> tokenArr )
+{
+	// Message:>PART-#asdf :Lorem ipsum naber ehe.<
+	std::cout << YELLOW << "PART" << END << std::endl;
+	(void)it;
+	(void)tokenArr;
+}
 
 
 

@@ -20,9 +20,10 @@
  * 
  * 			https://beej.us/guide/bgnet/html/split/
  * 
- * TODO: OK: client'ten gelen mesaji std::vector<std::string> olarak parse'le.
- * TODO: message ile baglantili komutlari std::vector'e gore cevir.
  * TODO: MODE; komutundaki parse'lenen inputa gore ayarla.
+ * TODO: 11:53 -!- Irssi: (default) critical nicklist_set_host: assertion 'host != NULL' failed
+ * TODO: NP: /nick ile ismimizi degistirdigimizde ana sayfada degil de channel'deyse channel'in icine
+ *  ciktisini yazmasi lazim.
  * 
  * @param argc: Server port number.
  * @param argv: Server password.

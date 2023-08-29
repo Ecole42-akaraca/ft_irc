@@ -68,7 +68,7 @@ class Server
 		void	acceptClients( void );
 		void	commandHandler( itPoll &itClient );
 /* -------------------------------------------------------------------------- */
-/* _________________________ COMMANDS __________________________________________ */
+/* _________________________ COMMANDS _______________________________________ */
 	private:
 		std::map<std::string, CommandFunction> t_cmdFunc;
 		void cap( Client*, std::vector<std::string> );
@@ -80,6 +80,7 @@ class Server
 		void user( Client*, std::vector<std::string> );
 		// void mode( Client*, std::vector<std::string> );
 		// void ping( Client*, std::vector<std::string> );
+		void	part( Client*, std::vector<std::string> );
 		void	info( void );
 		void	removeClient( int clientFd );
 /* -------------------------------------------------------------------------- */
