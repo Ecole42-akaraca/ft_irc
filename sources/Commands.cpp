@@ -19,7 +19,6 @@
  */
 #include "../includes/Server.hpp"
 
-
 void	Server::cap( Client* it, std::vector<std::string> tokenArr ) // OK
 {
 	std::cout << YELLOW << "CAP" << END << std::endl;
@@ -99,6 +98,7 @@ void	Server::nick( Client* it, std::vector<std::string> tokenArr )
 			cmd.push_back("CAP");
 			cmd.push_back("END");
 			Server::cap(it, cmd);
+			cmd.clear();
 		}
 	}
 	else
@@ -155,6 +155,7 @@ void	Server::quit( Client* it, std::vector<std::string> tokenArr ) // OK
 	{
 		if (it->getFd() == _pollfds[i].fd)
 		{
+			it->setActiveStatus();
 			it->sendMessageFd(RPL_QUIT(it->getPrefix(), tokenArr[0]));
 			close(_pollfds[i].fd);
 			_pollfds.erase(_pollfds.begin() + i);
@@ -194,25 +195,29 @@ void	Server::removeClient(int clientFd)
 //Nick Adı (Nickname): "akaraca"
 //Host Adı (Hostname): "localhost" (genellikle boş bırakılır)
 //Gerçek İsim (Realname): "Ahmet Karaca"
-void Server::user(Client* it, std::vector<std::string> tokenArr ) {
+void Server::user(Client* it, std::vector<std::string> tokenArr )
+{
 	std::cout << YELLOW << "USER" << END << std::endl;
-	if (it->getRegistered() == true)
+	if (it->getActiveStatus() == true) // quit attıktan sonra USER komutunu işlemeye çalışıyor lakin yarıda kesiliyor bu yüzden aktif mi değil mi kontrol etmek zorundayım.
 	{
 		it->setUsername(tokenArr[1]);
 		std::cout << "Username:>" << it->getUsername() << std::endl;
 
-		it->setNickname(tokenArr[2]);
+		if (it->getNickname().empty()) // aynı isimde kullanıcı gelme durumunda, değişmesin istiyoruz, çünkü bu durumda nickname daha önce atanmış oluyor.
+			it->setNickname(tokenArr[2]);
 		std::cout << "Nickname:>" << it->getNickname() << std::endl;
 
 		it->setHostname(tokenArr[3]);
 		std::cout << "Hostname:>" << it->getHostname() << std::endl;
 
-		// token[4] token4'un basindaki : kaldir.
-		it->setRealname(tokenArr[4] + " " + tokenArr[5]);
+		tokenArr[4].erase(0, 1); 	// token[4] token4'un basindaki : kaldırır
+		if (tokenArr.size() > 5) // linuxta Ahmet Karaca olarak değil akaraca olarak realname geliyor bu yüzden kontrol koymak zorundayım.
+			tokenArr[4].append(" " + tokenArr[5]);
+		it->setRealname(tokenArr[4]);
 		std::cout << "Realname:>" << it->getRealname() << std::endl;
-	}
 		if (it->getPasswordStatus() == false)
 			Server::pass(it, std::vector<std::string>());
+	}
 }
 
 // void	Server::privmsg( Client* it, std::vector<std::string> tokenArr )
@@ -299,6 +304,35 @@ void	Server::list( Client* it, std::vector<std::string> tokenArr )
 		it->sendMessageFd("LIST :#" + itChan->first);
 	}
 	it->sendMessageFd("------------- LIST END ------------------");
+}
+
+/*
+
+		311     RPL_WHOISUSER
+						"<nick> <user> <host> * :<real name>"
+		312     RPL_WHOISSERVER
+						"<nick> <server> :<server info>"
+		313     RPL_WHOISOPERATOR
+						"<nick> :is an IRC operator"
+		317     RPL_WHOISIDLE
+						"<nick> <integer> :seconds idle"
+		318     RPL_ENDOFWHOIS
+						"<nick> :End of /WHOIS list"
+
+	BUNLARIN HEPSİ BURADA GÖNDERİLMELİ
+*/
+void	Server::whois( Client* it, std::vector<std::string> tokenArr )
+{
+	std::cout << YELLOW << "WHOIS" << END << std::endl;
+	int fd = Server::findClientName(tokenArr[1]);
+	if (fd != -1)
+	{
+		Client *dest = _clients.at(fd);
+		it->sendMessageFd(RPL_WHOISUSER(it->getNickname(), dest->getNickname(), dest->getUsername(), dest->getHostname(), dest->getRealname()));
+		it->sendMessageFd(RPL_ENDOFWHOIS(it->getNickname(), dest->getNickname()));
+	}
+	else
+		it->sendMessageFd(ERR_NOSUCHNICK(it->getNickname(), tokenArr[1])); // bu hata mesajı sonrasında whowas döndürüyor
 }
 
 void	Server::info( Client* it, std::vector<std::string> tokenArr )

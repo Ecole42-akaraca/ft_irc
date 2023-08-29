@@ -83,6 +83,7 @@ class Server
 		void	part( Client*, std::vector<std::string> );
 		void	list( Client*, std::vector<std::string> );
 		void	info( Client*, std::vector<std::string> );
+		void	whois( Client*, std::vector<std::string> );
 		void	infoFd( void );
 		void	removeClient( int clientFd );
 /* -------------------------------------------------------------------------- */

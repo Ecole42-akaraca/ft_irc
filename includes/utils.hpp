@@ -36,4 +36,7 @@
 #define RPL_MODE(source, channel, modes, args)		":" + source + " MODE " + channel + " " + modes + " " + args
 #define RPL_NICK(source, nickname)					":" + source + " NICK " + nickname
 
+#define RPL_WHOISUSER(source, nickname, username, hostname, realname)	"311 " + source + " " + nickname + " ~" + username + " " + hostname + " * :" + realname
+#define RPL_ENDOFWHOIS(source, nickname)								"318 " + source + " " + nickname + " :End of /WHOIS list"
+
 #endif
