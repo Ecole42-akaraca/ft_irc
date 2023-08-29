@@ -1,9 +1,13 @@
 #ifndef	CHANNEL_HPP
 # define CHANNEL_HPP
 
+# include <map>
 # include "Client.hpp"
+// # include "Server.hpp"
 
 class Client;
+
+typedef	std::vector<Client *>::iterator itChannelClients;
 
 class Channel
 {
@@ -31,6 +35,8 @@ class Channel
 		void		setPassword( std::string password ) {this->_k = password; }
 
 		void		addClient( Client client );
+
+		void		sendMessageBroadcast( std::string message );
 };
 
 #endif

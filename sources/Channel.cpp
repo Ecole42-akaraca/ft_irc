@@ -18,3 +18,12 @@ void	Channel::addClient( Client client )
 	std::cout << this->getName() << ": " << client.getNickname()
 		<< " joined." << std::endl;
 }
+
+void	Channel::sendMessageBroadcast( std::string message )
+{
+	for	(itChannelClients itCli = this->_channelClients.begin();
+			itCli != this->_channelClients.end(); itCli++)
+	{
+		(*itCli)->sendMessageFd(message);
+	}
+}

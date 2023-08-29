@@ -72,14 +72,14 @@ void	Server::cap( Client* it, std::vector<std::string> tokenArr ) // OK
 void	Server::join( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "JOIN" << END << std::endl;
-	if (it->getRegistered() == true)
-	{
-		if (tokenArr[1].compare("#")) // #asdf
-			tokenArr[1].erase(0, 1); // asdf -> #'i kaldiriyoruz.
-		Channel	*channel = new Channel(tokenArr[1], tokenArr[2], it); // token[0]=JOIN, token[1]=asdf, token[2]=password
-		_channels.insert(std::make_pair(tokenArr[1], channel));
-		it->sendMessageFd(RPL_JOIN(it->getUsername(), tokenArr[1]));
-	}
+	if (it->getRegistered() == false)
+		return ;
+	if (tokenArr[1].compare("#")) // #asdf
+		tokenArr[1].erase(0, 1); // asdf -> #'i kaldiriyoruz.
+	Channel	*channel = new Channel(tokenArr[1], tokenArr[2], it); // token[0]=JOIN, token[1]=asdf, token[2]=password
+	_channels.insert(std::make_pair(tokenArr[1], channel));
+	// _channels.find(it.getName());
+	it->sendMessageFd(RPL_JOIN(it->getUsername(), tokenArr[1]));
 }
 
 void	Server::nick( Client* it, std::vector<std::string> tokenArr )
@@ -126,6 +126,7 @@ void	Server::pass( Client* it, std::vector<std::string> tokenArr ) // OK
 	std::cout << YELLOW << "PASS" << END << std::endl;
 
 
+	std::cout << "it->getNickname: " << it->getNickname() << std::endl;
 	std::cout << RED << "Tokens:>";
 	for (size_t i = 0; i < tokenArr.size(); i++)
 		std::cout << "`" << tokenArr[i] << "`";
@@ -140,7 +141,6 @@ void	Server::pass( Client* it, std::vector<std::string> tokenArr ) // OK
 		}
 		else
 		{
-			std::cout << __LINE__ << std::endl;
 			tokenArr.clear();
 			tokenArr.push_back("Password is wrong.");
 			Server::quit(it, tokenArr);
@@ -349,12 +349,13 @@ void Server::user(Client* it, std::vector<std::string> tokenArr ) {
 // 	// it->sendMessageFd(RPL_MODE(it->getPrefix(), ));
 // }
 
-// void	Server::ping( Client* it, std::vector<std::string> tokenArr ) // OK
-// {
-// 	if (!message.compare(it->getNickname()) || !message.compare(this->_host))
-// 		it->sendMessageFd(ERR_NEEDMOREPARAMS(it->getNickname(), "PING"));
-// 	it->sendMessageFd(RPL_PING(it->getNickname(), message));
-// }
+void	Server::ping( Client* it, std::vector<std::string> tokenArr ) // OK
+{
+	if (!tokenArr[1].compare(it->getNickname())
+			|| !tokenArr[1].compare(this->_host))
+		it->sendMessageFd(ERR_NEEDMOREPARAMS(it->getNickname(), "PING"));
+	it->sendMessageFd(RPL_PING(it->getNickname(), tokenArr[1]));
+}
 
 /**
  * @brief 

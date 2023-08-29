@@ -71,15 +71,15 @@ class Server
 /* _________________________ COMMANDS _______________________________________ */
 	private:
 		std::map<std::string, CommandFunction> t_cmdFunc;
-		void cap( Client*, std::vector<std::string> );
-		void join( Client*, std::vector<std::string> );
-		void nick( Client*, std::vector<std::string> );
-		void pass( Client*, std::vector<std::string> );
-		void quit( Client*, std::vector<std::string> );
+		void	cap( Client*, std::vector<std::string> );
+		void	join( Client*, std::vector<std::string> );
+		void	nick( Client*, std::vector<std::string> );
+		void	pass( Client*, std::vector<std::string> );
+		void	quit( Client*, std::vector<std::string> );
 		// void privmsg( Client*, std::vector<std::string> );
-		void user( Client*, std::vector<std::string> );
+		void	user( Client*, std::vector<std::string> );
 		// void mode( Client*, std::vector<std::string> );
-		// void ping( Client*, std::vector<std::string> );
+		void	ping( Client*, std::vector<std::string> );
 		void	part( Client*, std::vector<std::string> );
 		void	info( void );
 		void	removeClient( int clientFd );

@@ -68,14 +68,14 @@ void	Server::initCommands( void )
 	// t_cmdFunc["PRIVMSG"] = &Server::privmsg;
 	t_cmdFunc["USER"] = &Server::user;
 	// t_cmdFunc["MODE"] = &Server::mode;
-	// t_cmdFunc["PING"] = &Server::ping;
+	t_cmdFunc["PING"] = &Server::ping;
 
 	// t_cmdFunc["KICK"] = &Server::kick;
 	// t_cmdFunc["PART"] = &Server::part;
 	// t_cmdFunc["WHO"] = &Server::who;
 }
 
-std::map<std::string, std::string> Server::splitMessage( std::string message )
+std::map<std::string, std::string>	Server::splitMessage( std::string message )
 {
 	std::string delimeter = "\r\n";
 	std::map<std::string, std::string> tokens;
