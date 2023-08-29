@@ -177,18 +177,18 @@ void Server::user(Client* it, std::vector<std::string> tokenArr ) {
 		it->setUsername(tokenArr[1]);
 		std::cout << "Username:>" << it->getUsername() << std::endl;
 
-	 	it->setNickname(tokenArr[2]);
-	 	std::cout << "Nickname:>" << it->getNickname() << std::endl;
+		it->setNickname(tokenArr[2]);
+		std::cout << "Nickname:>" << it->getNickname() << std::endl;
 
-	 	it->setHostname(tokenArr[3]);
-	 	std::cout << "Hostname:>" << it->getHostname() << std::endl;
+		it->setHostname(tokenArr[3]);
+		std::cout << "Hostname:>" << it->getHostname() << std::endl;
 
-	 	it->setRealname(tokenArr[4] + " " + tokenArr[5]);
-	 	std::cout << "Realname:>" << it->getRealname() << std::endl;
-
+		// token[4] token4'un basindaki : kaldir.
+		it->setRealname(tokenArr[4] + " " + tokenArr[5]);
+		std::cout << "Realname:>" << it->getRealname() << std::endl;
+	}
 		if (it->getPasswordStatus() == false)
 			Server::pass(it, std::vector<std::string>());
-	}
 }
 
 // void	Server::privmsg( Client* it, std::vector<std::string> tokenArr )
