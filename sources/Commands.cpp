@@ -75,7 +75,7 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr ) // kullanici 
 		//channel->setAdmin(it); // channel'e admin ekle.
 		channel->addClient(it); // Admini channel'in _channelClient'ına ekliyor.
 		this->_channels.insert(std::make_pair(tokenArr[1], channel)); // Server'a channel'ı ekle.
-		it->sendMessageFd(RPL_MODE(it->getNickname(), "#" + tokenArr[1], "+nto", it->getNickname())); // Kimlik doğrulaması ve admini belirt.
+		it->sendMessageFd(RPL_MODE(it->getNickname(), tokenArr[1], "+nto", it->getNickname())); // Kimlik doğrulaması ve admini belirt.
 		messageTopic = "New Channel Created.";
 		it->sendMessageFd(RPL_TOPIC(it->getPrefix(), tokenArr[1], messageTopic)); // Kullanıcı kanala katıldığı zaman bilgi paylaşıyor.
 	}
