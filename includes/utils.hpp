@@ -29,7 +29,7 @@
 #define RPL_JOIN(source, channel)					":" + source + " JOIN :" + channel
 #define RPL_PART(source, channel)					":" + source + " PART :" + channel
 #define RPL_PING(source, token)						":" + source + " PONG :" + token
-#define RPL_PRIVMSG(source, target, message)		":" + source + " PRIVMSG " + target + " :" + message
+#define RPL_PRIVMSG(source, target, message)		":" + source + " PRIVMSG " + target + " : " + message
 #define RPL_NOTICE(source, target, message)			":" + source + " NOTICE " + target + " :" + message
 #define RPL_QUIT(source, message)					":" + source + " QUIT :Quit: " + message
 #define RPL_KICK(source, channel, target, reason)	":" + source + " KICK " + channel + " " + target + " :" + reason
@@ -38,5 +38,7 @@
 
 #define RPL_WHOISUSER(source, nickname, username, hostname, realname)	"311 " + source + " " + nickname + " ~" + username + " " + hostname + " * :" + realname
 #define RPL_ENDOFWHOIS(source, nickname)								"318 " + source + " " + nickname + " :End of /WHOIS list"
+
+#define RPL_TOPIC(source, channel, topic)   "332 " + source + " " + channel + " :" + topic
 
 #endif

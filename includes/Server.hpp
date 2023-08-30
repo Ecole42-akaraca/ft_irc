@@ -33,6 +33,7 @@ typedef std::vector<pollfd>::iterator				itPoll;
 typedef std::map<int, Client *>::iterator			itClients;
 typedef std::map<std::string, Channel *>::iterator	itChannels;
 typedef std::vector<std::string>::iterator			itCmd;
+typedef std::vector<std::string>::iterator			itMessage;
 
 // Commands
 // typedef void (Server::*CommandFunction)( Client*, std::string );
@@ -76,7 +77,7 @@ class Server
 		void	nick( Client*, std::vector<std::string> );
 		void	pass( Client*, std::vector<std::string> );
 		void	quit( Client*, std::vector<std::string> );
-		// void privmsg( Client*, std::vector<std::string> );
+		void	privmsg( Client*, std::vector<std::string> );
 		void	user( Client*, std::vector<std::string> );
 		// void mode( Client*, std::vector<std::string> );
 		void	ping( Client*, std::vector<std::string> );

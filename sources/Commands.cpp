@@ -44,6 +44,7 @@ void	Server::cap( Client* it, std::vector<std::string> tokenArr ) // OK
 	}
 }
 
+// https://dd.ircdocs.horse/refs/commands/join
 void	Server::join( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "JOIN" << END << std::endl;
@@ -51,36 +52,64 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr )
 		return ;
 	if (tokenArr[1].compare("#")) // #asdf
 		tokenArr[1].erase(0, 1); // asdf -> #'i kaldiriyoruz.
-	if (tokenArr[1].compare(this->_channels.find(tokenArr[1])->first) == 0) // Eger kanalimiz zaten mevcut mu?
+	std::string messageTopic;
+	itChannels find = _channels.find(tokenArr[1]); // aynı isimde kanal var mı?
+	it->sendMessageFd(RPL_JOIN(it->getPrefix(), tokenArr[1])); // kanal olsada olmasada katılması gerekiyor.
+	if (find != _channels.end()) // Channel mevcut mu?
 	{
-		if (!this->_channels.find(tokenArr[1])->second->ifClientJoined(it)) // Eger kanalin icinde client var mi?
+		std::cout << __LINE__ << std::endl;
+		messageTopic = "New User Login Channel!";
+		it->sendMessageFd(RPL_TOPIC(it->getPrefix(), tokenArr[1], messageTopic)); // Kullanıcı kanala katıldığı zaman bilgi paylaşıyor.
+		find->second->addClient(it); // var olan channel'a yeni kullanıcıyı ekle.
+		for (size_t i = 0; i < find->second->_channelClients.size(); i++) // kullanıcı var olan bir kanala girdiği zaman, kanaldaki kullancıları listele.
 		{
-			std::cout << "yeni biri kanala baglandi abi" << std::endl;
-			this->_channels.find(tokenArr[1])->second->addClient(*it);
-			it->sendMessageFd(B_CYAN + it->getNickname() + END\
-				+ it->getPrefix() + "has joined " + tokenArr[1]);
+			std::string pref = "";
+			if (find->second->_channelClients[i]->getNickname().compare(find->second->getAdmin()->getNickname()) == 0)
+				pref = "@";
+			it->sendMessageFd(RPL_NAMREPLY(it->getNickname(), tokenArr[1], pref + find->second->_channelClients[i]->getNickname()));
 		}
-		else
-			it->sendMessageFd(it->getNickname() + "already on this channel!");
+		it->sendMessageFd(RPL_ENDOFNAMES(it->getPrefix(), tokenArr[1]));
 	}
-	else 
-	{	// kanal yok, yeni kanal olusturuluyor.
-		Channel	*channel = new Channel(tokenArr[1], tokenArr[2], it); // token[0]=JOIN, token[1]=asdf, token[2]=password
-		this->_channels.insert(std::make_pair(tokenArr[1], channel)); // Kanal olusturuldu.
-
-		std::cout << "Yeni channel'e admin ataniyor." << std::endl;
-		this->_channels.find(tokenArr[1])->second->addClient(*it);
-		it->sendMessageFd(B_CYAN + it->getNickname() + END\
-			+ " " + it->getPrefix() + " has joined " + tokenArr[1]);
-		this->_channels.find(tokenArr[1])->second->setAdmin(*it); // Kanali olusturdugu icin admin de bu client olmus oluyor.
-		it->sendMessageFd("Since you created the channel, also you are also the admin.");
-		// Gerekirse bu adimlarin hepsini 1 tane functionun icerisine topla; bunu da Server'in icerisine koy.
-		// ornek; bool	Server::createChannel( std::string channelName, Client* adminClient );
-		// Kanali olusturduktan sonra her client eklemek icin yine Server'in icerisine;
-		// bool	Server::addClient( std::map<std::string, Channel *> channelName, Client * clientName );
-		// Seklinde ekleyebilirsin.
+	else // Channel mevcut değilse, yeni channel için ayarlama yap.
+	{
+		std::cout << __LINE__ << std::endl;
+		Channel *channel = new Channel(tokenArr[1], "NULL", it); // channel oluştur. // channel'e admin ekle.
+		//channel->setAdmin(it); // channel'e admin ekle.
+		channel->addClient(it); // Admini channel'in _channelClient'ına ekliyor.
+		this->_channels.insert(std::make_pair(tokenArr[1], channel)); // Server'a channel'ı ekle.
+		it->sendMessageFd(RPL_MODE(it->getNickname(), "#" + tokenArr[1], "+nto", it->getNickname())); // Kimlik doğrulaması ve admini belirt.
+		messageTopic = "New Channel Created.";
+		it->sendMessageFd(RPL_TOPIC(it->getPrefix(), tokenArr[1], messageTopic)); // Kullanıcı kanala katıldığı zaman bilgi paylaşıyor.
 	}
-	it->sendMessageFd(RPL_JOIN(it->getUsername(), tokenArr[1]));
+	//if (tokenArr[1].compare(this->_channels.find(tokenArr[1])->first) == 0) // Kanal mevcut mu?
+	//{
+	//  if (!this->_channels.find(tokenArr[1])->second->ifClientJoined(it)) // Eger kanalin icinde client var mi?
+	//  {
+	//      std::cout << "yeni biri kanala baglandi abi" << std::endl;
+	//      this->_channels.find(tokenArr[1])->second->addClient(*it);
+	//      it->sendMessageFd(B_CYAN + it->getNickname() + END\
+	//          + it->getPrefix() + "has joined " + tokenArr[1]);
+	//  }
+	//  else
+	//      it->sendMessageFd(it->getNickname() + "already on this channel!");
+	//}
+	//else
+	//{ // kanal yok, yeni kanal olusturuluyor.
+	//  Channel *channel = new Channel(tokenArr[1], tokenArr[2], it); // token[0]=JOIN, token[1]=asdf, token[2]=password
+	//  this->_channels.insert(std::make_pair(tokenArr[1], channel)); // Kanal olusturuldu.
+	//  std::cout << "Yeni channel'e admin ataniyor." << std::endl;
+	//  this->_channels.find(tokenArr[1])->second->addClient(*it);
+	//  it->sendMessageFd(B_CYAN + it->getNickname() + END\
+	//      + " " + it->getPrefix() + " has joined " + tokenArr[1]);
+	//  this->_channels.find(tokenArr[1])->second->setAdmin(*it); // Kanali olusturdugu icin admin de bu client olmus oluyor.
+	//  it->sendMessageFd("Since you created the channel, also you are also the admin.");
+	//  // Gerekirse bu adimlarin hepsini 1 tane functionun icerisine topla; bunu da Server'in icerisine koy.
+	//  // ornek; bool  Server::createChannel( std::string channelName, Client* adminClient );
+	//  // Kanali olusturduktan sonra her client eklemek icin yine Server'in icerisine;
+	//  // bool Server::addClient( std::map<std::string, Channel *> channelName, Client * clientName );
+	//  // Seklinde ekleyebilirsin.
+	//}
+	//it->sendMessageFd(RPL_JOIN(it->getUsername(), tokenArr[1]));
 }
 
 void	Server::nick( Client* it, std::vector<std::string> tokenArr )
@@ -160,6 +189,7 @@ void	Server::quit( Client* it, std::vector<std::string> tokenArr ) // OK
 			close(_pollfds[i].fd);
 			_pollfds.erase(_pollfds.begin() + i);
 			Server::removeClient(fd);
+			return ;
 		}
 	}
 	_clients.erase(fd);
@@ -220,17 +250,29 @@ void Server::user(Client* it, std::vector<std::string> tokenArr )
 	}
 }
 
-// void	Server::privmsg( Client* it, std::vector<std::string> tokenArr )
-// {
-// 	std::cout << YELLOW << "PRIVMSG" << END << std::endl;
-// 	(void)it;
-// 	std::cout << YELLOW "PRIVMSG: " + message << END << std::endl;
-// 	//size_t pos = message.find(' ');
-// 	//std::string target = message.substr(0, pos);
-// 	//std::string text = message.substr(pos + 1);
-// 	//// Örnek: ":John!john@example.com PRIVMSG #channel :Merhaba, nasılsınız?"
-// 	//handlePrivateMessage(it->getFd(), target, text);
-// }
+void	Server::privmsg( Client* it, std::vector<std::string> tokenArr )
+{
+	std::cout << YELLOW << "PRIVMSG" << END << std::endl;
+	std::string	msg;
+	// Örnek: ":John!john@example.com PRIVMSG #channel :Merhaba, nasılsınız?"
+	// #define RPL_PRIVMSG(source, target, message)	":" + source + " PRIVMSG " + target + " :" + message
+	// it->sendMessageBroadcast(RPL_PRIVMSG(it->getPrefix(), ))
+	for (itMessage itMsg = tokenArr.begin() + 1; itMsg != tokenArr.end(); itMsg++)
+	{
+		msg.append(*itMsg + " ");
+	}
+
+	msg = msg.at(0) == ':' ? msg.substr(1) : msg;
+	
+	msg = tokenArr[2];
+	std::cout << "msg: " << msg << std::endl;
+	std::cout << tokenArr[0] << std::endl;
+	std::cout << tokenArr[1] << std::endl;
+	std::cout << tokenArr[2] << std::endl;
+	this->_channels[tokenArr[1]]->sendMessageBroadcast(\
+		it, RPL_PRIVMSG(it->getPrefix(), tokenArr[1], msg));
+	
+}
 
 /**
  * @brief 
