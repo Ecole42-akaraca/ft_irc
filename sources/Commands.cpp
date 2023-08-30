@@ -50,8 +50,8 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr ) // kullanici 
 	std::cout << YELLOW << "JOIN" << END << std::endl;
 	if (it->getRegistered() == false)
 		return ;
-	if (tokenArr[1].compare("#")) // #asdf
-		tokenArr[1].erase(0, 1); // asdf -> #'i kaldiriyoruz.
+	if (!tokenArr[1].compare("#")) // asdf
+		tokenArr[1] = "#" + tokenArr[1]; // #asdf -> #'i ekliyoruz.
 	std::string messageTopic;
 	itChannels find = _channels.find(tokenArr[1]); // aynı isimde kanal var mı?
 	it->sendMessageFd(RPL_JOIN(it->getPrefix(), tokenArr[1])); // kanal olsada olmasada katılması gerekiyor.
@@ -260,6 +260,7 @@ void	Server::privmsg( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "PRIVMSG" << END << std::endl;
 	std::string	msg;
+	
 	tokenArr[2].erase(0, 1); 	// token[2] token2'ni basindaki : kaldırır
 	for (size_t i = 2; i < tokenArr.size(); i++)
 	{
@@ -327,6 +328,14 @@ void	Server::part( Client* it, std::vector<std::string> tokenArr )
 	// 	kontrol edilmeli.
 }
 
+/*
+	"/list -y" yazınca tüm kanalları listeleyecek.
+ 
+	#42kocaeli
+	#BEn
+	#VoidChannel
+	...
+*/
 void	Server::list( Client* it, std::vector<std::string> tokenArr )
 {
 	(void)tokenArr;
@@ -342,7 +351,7 @@ void	Server::list( Client* it, std::vector<std::string> tokenArr )
 	for	(itChannels itChan = this->_channels.begin();\
 			itChan != this->_channels.end(); itChan++)
 	{
-		it->sendMessageFd("LIST :#" + itChan->first);
+		it->sendMessageFd("LIST :" + itChan->first);
 	}
 	it->sendMessageFd("------------- LIST END ------------------");
 }
@@ -378,6 +387,7 @@ void	Server::whois( Client* it, std::vector<std::string> tokenArr )
 
 void	Server::info( Client* it, std::vector<std::string> tokenArr )
 {
+	std::cout << YELLOW << "INFO" << END << std::endl;
 	(void)it;
 	(void)tokenArr;
 	// Burada info komutu cagirildiginda Server'le ilgili bilgilerin,
@@ -386,6 +396,49 @@ void	Server::info( Client* it, std::vector<std::string> tokenArr )
 	// 	yazan bir komut.
 }
 
+/*
+	//Channel içindeyken /who yazınca bu çıktıyı veriyor, ana sayfaya.
+
+	"/who asdf" yazarsan, asdf'nin başında # olmadığı içni ele alma.
+	"/who #asdf" ise, asdf channelini ara ve kullancıların bilgilerini bastır.
+	"/who #A #B #C" şeklindeki bir yapıda sadece #A ele alınacaktır.
+	17:13 -!- #42kocaeli akaraca   H   0  
+						~akaraca@2d6b-1b29-411f-5a9-8db6.88.176.ip 
+						[k2m15s08.42kocaeli.com.tr]
+	17:13 -!- #42kocaeli gsever    H@  4  
+						~gsever@2d6b-1b29-411f-5a9-8db6.88.176.ip [Gorkem 
+						Sever]
+	17:13 -!- End of /WHO list
+
+	--> ERR_NOSUCHCHANNEL
+	--> RPL_WHOREPLY
+	--> RPL_ENDOFWHO
+
+*/
+void	Server::who( Client* it, std::vector<std::string> tokenArr )
+{
+	std::cout << YELLOW << "WHO" << END << std::endl;
+	if (tokenArr[1][0] == '#')
+	{
+		itChannels itC = _channels.find(tokenArr[1]); // channeli bul.
+		if (itC != _channels.end()) // eğer channel varsa
+		{
+			Channel* itChanel = itC->second;
+			for (size_t i = 0; i < itChanel->_channelClients.size(); i++)
+			{
+				Client* A = itChanel->_channelClients[i]; 
+				it->sendMessageFd(RPL_WHOREPLY(it->getPrefix(), tokenArr[1], A->getUsername(), A->getHostname(), A->getServername(), A->getNickname(), "1", A->getRealname()));
+			}
+			it->sendMessageFd(RPL_ENDOFWHO(it->getPrefix(), tokenArr[1]));
+		}
+		else // channel yoksa hata döndür.
+			it->sendMessageFd(ERR_NOSUCHCHANNEL(it->getPrefix(), tokenArr[1]));
+	}
+	else
+	{
+		// hatalı yazımda # bilgisi gönder.
+	}
+}
 
 // **************************************
 // IRC (Internet Relay Chat), internet üzerinden gerçek zamanlı metin tabanlı iletişim için bir protokoldür. IRC sunucuları, sunucunun ve kanallarının farklı yönlerini kontrol etmek ve yönetmek için çeşitli komut bayrakları kullanır. Bu komut bayrakları genellikle '/mode' komutuyla birlikte kullanılır ve bayrağın ayarlandığını veya ayarlanmadığını belirtmek için önünde bir artı ('+') veya eksi ('-') işareti bulunur.

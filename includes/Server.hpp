@@ -85,6 +85,7 @@ class Server
 		void	list( Client*, std::vector<std::string> );
 		void	info( Client*, std::vector<std::string> );
 		void	whois( Client*, std::vector<std::string> );
+		void	who( Client*, std::vector<std::string> );
 		void	infoFd( void );
 		void	removeClient( int clientFd );
 /* -------------------------------------------------------------------------- */

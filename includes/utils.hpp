@@ -41,4 +41,7 @@
 
 #define RPL_TOPIC(source, channel, topic)   "332 " + source + " " + channel + " :" + topic
 
+#define RPL_WHOREPLY(source, channel, user, host, server, nick, hopcount, realname)	"352 " + source + " " + channel + " " + user + " " + host + " " + server + " " + nick + " :" + hopcount  + " " + realname
+#define RPL_ENDOFWHO(source, channel)	"315 " + source + " " + channel + " :End of WHO list"
+
 #endif

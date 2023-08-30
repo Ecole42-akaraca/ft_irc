@@ -74,7 +74,7 @@ void	Server::initCommands( void )
 
 	// t_cmdFunc["KICK"] = &Server::kick;
 	// t_cmdFunc["PART"] = &Server::part;
-	// t_cmdFunc["WHO"] = &Server::who;
+	 t_cmdFunc["WHO"] = &Server::who;
 	t_cmdFunc["WHOIS"] = &Server::whois;
 }
 
