@@ -45,7 +45,7 @@ void	Server::cap( Client* it, std::vector<std::string> tokenArr ) // OK
 }
 
 // https://dd.ircdocs.horse/refs/commands/join
-void	Server::join( Client* it, std::vector<std::string> tokenArr )
+void	Server::join( Client* it, std::vector<std::string> tokenArr ) // kullanici diğer kullanicinin katildiğini görmüyor.
 {
 	std::cout << YELLOW << "JOIN" << END << std::endl;
 	if (it->getRegistered() == false)
@@ -57,7 +57,6 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr )
 	it->sendMessageFd(RPL_JOIN(it->getPrefix(), tokenArr[1])); // kanal olsada olmasada katılması gerekiyor.
 	if (find != _channels.end()) // Channel mevcut mu?
 	{
-		std::cout << __LINE__ << std::endl;
 		messageTopic = "New User Login Channel!";
 		it->sendMessageFd(RPL_TOPIC(it->getPrefix(), tokenArr[1], messageTopic)); // Kullanıcı kanala katıldığı zaman bilgi paylaşıyor.
 		find->second->addClient(it); // var olan channel'a yeni kullanıcıyı ekle.
@@ -72,7 +71,6 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr )
 	}
 	else // Channel mevcut değilse, yeni channel için ayarlama yap.
 	{
-		std::cout << __LINE__ << std::endl;
 		Channel *channel = new Channel(tokenArr[1], "NULL", it); // channel oluştur. // channel'e admin ekle.
 		//channel->setAdmin(it); // channel'e admin ekle.
 		channel->addClient(it); // Admini channel'in _channelClient'ına ekliyor.
@@ -250,28 +248,29 @@ void Server::user(Client* it, std::vector<std::string> tokenArr )
 	}
 }
 
+/*
+	tokenArr[0] -> Command Name -> "PRIVMSG" 
+	tokenArr[1] -> Channel Name -> #ASDF
+	tokenArr[2] -> First Message -> :Ben
+	tokenArr[3] -> Second Message -> deli
+	tokenArr[4] -> Third Message -> değilim.
+
+*/
 void	Server::privmsg( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "PRIVMSG" << END << std::endl;
 	std::string	msg;
-	// Örnek: ":John!john@example.com PRIVMSG #channel :Merhaba, nasılsınız?"
-	// #define RPL_PRIVMSG(source, target, message)	":" + source + " PRIVMSG " + target + " :" + message
-	// it->sendMessageBroadcast(RPL_PRIVMSG(it->getPrefix(), ))
-	for (itMessage itMsg = tokenArr.begin() + 1; itMsg != tokenArr.end(); itMsg++)
+	tokenArr[2].erase(0, 1); 	// token[2] token2'ni basindaki : kaldırır
+	for (size_t i = 2; i < tokenArr.size(); i++)
 	{
-		msg.append(*itMsg + " ");
+		if (i + 1 < tokenArr.size())
+			msg += tokenArr[i] + " ";
+		else
+			msg += tokenArr[i];
 	}
-
-	msg = msg.at(0) == ':' ? msg.substr(1) : msg;
-	
-	msg = tokenArr[2];
-	std::cout << "msg: " << msg << std::endl;
-	std::cout << tokenArr[0] << std::endl;
-	std::cout << tokenArr[1] << std::endl;
-	std::cout << tokenArr[2] << std::endl;
 	this->_channels[tokenArr[1]]->sendMessageBroadcast(\
-		it, RPL_PRIVMSG(it->getPrefix(), tokenArr[1], msg));
-	
+		it, RPL_PRIVMSG(it->getPrefix(), "#" + tokenArr[1], msg));
+	// Örnek: ":John!john@example.com PRIVMSG #channel :Merhaba, nasılsınız?"
 }
 
 /**

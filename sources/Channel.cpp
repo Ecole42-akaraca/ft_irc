@@ -86,11 +86,9 @@ void	Channel::sendMessageBroadcast( std::string message )
  */
 void	Channel::sendMessageBroadcast( Client* exclude, std::string message )
 {
-	std::cout << "sendmesage'detis asdgfadsgdsf  -> " << this->_channelClients.size() << std::endl;
-	for	(itChannelClients itCli = this->_channelClients.begin();
-			itCli != this->_channelClients.end(); itCli++)
+	for	(itChannelClients itCli = this->_channelClients.begin(); itCli != this->_channelClients.end(); itCli++)
 	{
-		std::cout << "ee abi " << std::endl;
+		std::cout << __LINE__ << std::endl;
 		if (*itCli == exclude)
 			continue;
 		(*itCli)->sendMessageFd(message);
