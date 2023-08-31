@@ -79,7 +79,7 @@ class Server
 		void	quit( Client*, std::vector<std::string> );
 		void	privmsg( Client*, std::vector<std::string> );
 		void	user( Client*, std::vector<std::string> );
-		// void mode( Client*, std::vector<std::string> );
+		void	mode( Client*, std::vector<std::string> );
 		void	ping( Client*, std::vector<std::string> );
 		void	part( Client*, std::vector<std::string> );
 		void	list( Client*, std::vector<std::string> );

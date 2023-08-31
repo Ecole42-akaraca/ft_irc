@@ -283,17 +283,14 @@ void	Server::privmsg( Client* it, std::vector<std::string> tokenArr )
  * 
  * @param message 
  */
-// void Server::mode( Client* it, std::vector<std::string> tokenArr )
-// {
-// 	std::cout << YELLOW << "MODE" << END << std::endl;
-// 	(void)it;
-// 	(void)message;
-// // #define RPL_MODE(source, channel, modes, args)		":" + source + " MODE " + channel + " " + modes + " " + args
-// 	// std::string response = ": MODE " + it->getNickname() + message + "\r\n";
-// 	// std::cout << YELLOW << "Response:>" + response << "<" << std::endl;
-// 	// send(it->getFd(), response.c_str(), response.size(), 0);
-// 	// it->sendMessageFd(RPL_MODE(it->getPrefix(), ));
-// }
+void Server::mode( Client* it, std::vector<std::string> tokenArr )
+{
+	std::cout << YELLOW << "MODE" << END << std::endl;
+	(void)it;
+	(void)tokenArr;
+	// #define RPL_MODE(source, channel, modes, args)	":" + source + " MODE " + channel + " " + modes + " " + args
+	// it->sendMessageFd(RPL_MODE(it->getPrefix(), it->get));
+}
 
 void	Server::ping( Client* it, std::vector<std::string> tokenArr ) // OK
 {

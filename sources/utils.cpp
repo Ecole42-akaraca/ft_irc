@@ -64,18 +64,17 @@ void	Server::initCommands( void )
 	t_cmdFunc["NICK"] = &Server::nick;
 	t_cmdFunc["PASS"] = &Server::pass;
 	t_cmdFunc["QUIT"] = &Server::quit;
-
 	t_cmdFunc["PRIVMSG"] = &Server::privmsg;
 	t_cmdFunc["USER"] = &Server::user;
-	// t_cmdFunc["MODE"] = &Server::mode;
+	t_cmdFunc["MODE"] = &Server::mode;
 	t_cmdFunc["PING"] = &Server::ping;
 	t_cmdFunc["LIST"] = &Server::list;
 	t_cmdFunc["INFO"] = &Server::info;
+	t_cmdFunc["WHO"] = &Server::who;
+	t_cmdFunc["WHOIS"] = &Server::whois;
 
 	// t_cmdFunc["KICK"] = &Server::kick;
 	// t_cmdFunc["PART"] = &Server::part;
-	 t_cmdFunc["WHO"] = &Server::who;
-	t_cmdFunc["WHOIS"] = &Server::whois;
 }
 
 std::map<std::string, std::string>	Server::splitMessage( std::string message )

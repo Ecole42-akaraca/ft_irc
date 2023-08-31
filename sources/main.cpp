@@ -31,7 +31,8 @@
 	Nickname:>yuandre
 	Hostname:>localhost
 	Realname:>:Görkem Sever -> buradaki kisma girmiyor orasi duzeltilecek.
- * 
+ * TODO: /msg ile olan durumu ele al; client'ten client'e ozel mesaj atma olayi.
+ mode, part, privmsg 
  * @param argc: Server port number.
  * @param argv: Server password.
  * @return int 
