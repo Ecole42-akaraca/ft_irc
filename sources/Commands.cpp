@@ -455,8 +455,8 @@ void	Server::who( Client* it, std::vector<std::string> tokenArr )
 		{
 			Client *itC = _clients.at(fd);
 			it->sendMessageFd(RPL_WHOREPLY(it->getPrefix(), "*", itC->getUsername(), itC->getHostname(), itC->getServername(), itC->getNickname(), "@","0", itC->getRealname()));
-			it->sendMessageFd(RPL_ENDOFWHO(it->getPrefix(), "*"));
 		}
+		it->sendMessageFd(RPL_ENDOFWHO(it->getPrefix(), "*"));
 	}
 }
 
