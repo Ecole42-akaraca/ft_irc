@@ -85,7 +85,7 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr ) // kullanici 
 	//  {
 	//      std::cout << "yeni biri kanala baglandi abi" << std::endl;
 	//      this->_channels.find(tokenArr[1])->second->addClient(*it);
-	//      it->sendMessageFd(B_CYAN + it->getNickname() + END\
+	//      it->sendMessageFd(B_CYAN + it->getNickname() + END
 	//          + it->getPrefix() + "has joined " + tokenArr[1]);
 	//  }
 	//  else
@@ -97,7 +97,7 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr ) // kullanici 
 	//  this->_channels.insert(std::make_pair(tokenArr[1], channel)); // Kanal olusturuldu.
 	//  std::cout << "Yeni channel'e admin ataniyor." << std::endl;
 	//  this->_channels.find(tokenArr[1])->second->addClient(*it);
-	//  it->sendMessageFd(B_CYAN + it->getNickname() + END\
+	//  it->sendMessageFd(B_CYAN + it->getNickname() + END
 	//      + " " + it->getPrefix() + " has joined " + tokenArr[1]);
 	//  this->_channels.find(tokenArr[1])->second->setAdmin(*it); // Kanali olusturdugu icin admin de bu client olmus oluyor.
 	//  it->sendMessageFd("Since you created the channel, also you are also the admin.");
@@ -270,7 +270,7 @@ void	Server::privmsg( Client* it, std::vector<std::string> tokenArr )
 			msg += tokenArr[i];
 	}
 	this->_channels[tokenArr[1]]->sendMessageBroadcast(\
-		it, RPL_PRIVMSG(it->getPrefix(), "#" + tokenArr[1], msg));
+		it, RPL_PRIVMSG(it->getPrefix(), tokenArr[1], msg));
 	// Örnek: ":John!john@example.com PRIVMSG #channel :Merhaba, nasılsınız?"
 }
 
@@ -418,7 +418,7 @@ void	Server::info( Client* it, std::vector<std::string> tokenArr )
 void	Server::who( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "WHO" << END << std::endl;
-	if (tokenArr[1][0] == '#')
+	if (tokenArr[1][0] == '#') //kanal aramak için
 	{
 		itChannels itC = _channels.find(tokenArr[1]); // channeli bul.
 		if (itC != _channels.end()) // eğer channel varsa
@@ -426,17 +426,37 @@ void	Server::who( Client* it, std::vector<std::string> tokenArr )
 			Channel* itChanel = itC->second;
 			for (size_t i = 0; i < itChanel->_channelClients.size(); i++)
 			{
-				Client* A = itChanel->_channelClients[i]; 
-				it->sendMessageFd(RPL_WHOREPLY(it->getPrefix(), tokenArr[1], A->getUsername(), A->getHostname(), A->getServername(), A->getNickname(), "1", A->getRealname()));
+				Client* A = itChanel->_channelClients[i];
+				std::string isAdmin = "";
+				if (A == itChanel->getAdmin())
+					isAdmin = "@";
+				it->sendMessageFd(RPL_WHOREPLY(it->getPrefix(), tokenArr[1], A->getUsername(), A->getHostname(), A->getServername(), A->getNickname(), isAdmin,"0", A->getRealname()));
+				// @ -> kullanıcının operator olduğunu temsil ediyor.
+				// "0" ise kullanıcının o anki sunucu üzerinden mesajlaştığını ifade eder.
+
+				//  * abc       H   3
+				// "H 3" ifadesi, kullanıcının "abc" takma adına sahip olduğunu ve sunucu ile arasında 3 "hop" olduğunu belirtir. Yani, bu kullanıcı ile mesajlar üç aracı sunucu aracılığıyla iletilmiştir.
 			}
 			it->sendMessageFd(RPL_ENDOFWHO(it->getPrefix(), tokenArr[1]));
 		}
 		else // channel yoksa hata döndür.
-			it->sendMessageFd(ERR_NOSUCHCHANNEL(it->getPrefix(), tokenArr[1]));
+			it->sendMessageFd(ERR_NOSUCHCHANNEL(it->getPrefix(), tokenArr[1])); // #x: No such channel
 	}
-	else
+	else // Burada sadece serverda arama yaptığımız için admin işaretine gerek yok??
 	{
-		// hatalı yazımda # bilgisi gönder.
+		//	Server'da kullanıcıyı aramak için yapılıyor.
+		//	Channel bilgisi "*" şeklinde gözüküyor.
+		//	Aradağı kişi yoksa herhangi bir çıktı vermiyor sadece End of /WHO list çıktısı bulunuyor.
+			// 09:56 -!-          * akaraca   H   3  ~akaraca@bbdb-4a67-88a1-bfa9-1d6d.190.78.ip [ahmet karaca]
+			// 09:56 -!- End of /WHO list
+		// "/who akaraca X Ben" şeklinde bir girdi olsada sadece akaraca hakkında bilgi veriliyor.
+		int fd = Server::findClientName(tokenArr[1]);
+		if (fd != -1)
+		{
+			Client *itC = _clients.at(fd);
+			it->sendMessageFd(RPL_WHOREPLY(it->getPrefix(), "*", itC->getUsername(), itC->getHostname(), itC->getServername(), itC->getNickname(), "@","0", itC->getRealname()));
+			it->sendMessageFd(RPL_ENDOFWHO(it->getPrefix(), "*"));
+		}
 	}
 }
 
