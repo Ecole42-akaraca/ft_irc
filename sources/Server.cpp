@@ -188,3 +188,16 @@ void	Server::startListening( void )
 		throw std::runtime_error("Error while listening on socket.");
 	std::cout << YELLOW "Socket listening with a pending queue." END << std::endl;
 }
+
+Channel*	Server::getChannel( Client* client )
+{
+	for (itChannels itC = this->_channels.begin(); itC != _channels.end(); itC++)
+	{
+		Channel* channel = itC->second;
+		for	(size_t i = 0; i < channel->_channelClients.size(); i++)
+			if (channel->_channelClients[i]\
+					->getNickname().compare(client->getNickname()))
+				return (channel);
+	}
+	return (NULL);
+}

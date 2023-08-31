@@ -45,6 +45,7 @@ void	Server::cap( Client* it, std::vector<std::string> tokenArr ) // OK
 }
 
 // https://dd.ircdocs.horse/refs/commands/join
+// channel içinde: /name veya /names kullanıcıları listeler.
 void	Server::join( Client* it, std::vector<std::string> tokenArr ) // kullanici diğer kullanicinin katildiğini görmüyor.
 {
 	std::cout << YELLOW << "JOIN" << END << std::endl;
@@ -79,42 +80,23 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr ) // kullanici 
 		messageTopic = "New Channel Created.";
 		it->sendMessageFd(RPL_TOPIC(it->getPrefix(), tokenArr[1], messageTopic)); // Kullanıcı kanala katıldığı zaman bilgi paylaşıyor.
 	}
-	//if (tokenArr[1].compare(this->_channels.find(tokenArr[1])->first) == 0) // Kanal mevcut mu?
-	//{
-	//  if (!this->_channels.find(tokenArr[1])->second->ifClientJoined(it)) // Eger kanalin icinde client var mi?
-	//  {
-	//      std::cout << "yeni biri kanala baglandi abi" << std::endl;
-	//      this->_channels.find(tokenArr[1])->second->addClient(*it);
-	//      it->sendMessageFd(B_CYAN + it->getNickname() + END
-	//          + it->getPrefix() + "has joined " + tokenArr[1]);
-	//  }
-	//  else
-	//      it->sendMessageFd(it->getNickname() + "already on this channel!");
-	//}
-	//else
-	//{ // kanal yok, yeni kanal olusturuluyor.
-	//  Channel *channel = new Channel(tokenArr[1], tokenArr[2], it); // token[0]=JOIN, token[1]=asdf, token[2]=password
-	//  this->_channels.insert(std::make_pair(tokenArr[1], channel)); // Kanal olusturuldu.
-	//  std::cout << "Yeni channel'e admin ataniyor." << std::endl;
-	//  this->_channels.find(tokenArr[1])->second->addClient(*it);
-	//  it->sendMessageFd(B_CYAN + it->getNickname() + END
-	//      + " " + it->getPrefix() + " has joined " + tokenArr[1]);
-	//  this->_channels.find(tokenArr[1])->second->setAdmin(*it); // Kanali olusturdugu icin admin de bu client olmus oluyor.
-	//  it->sendMessageFd("Since you created the channel, also you are also the admin.");
-	//  // Gerekirse bu adimlarin hepsini 1 tane functionun icerisine topla; bunu da Server'in icerisine koy.
-	//  // ornek; bool  Server::createChannel( std::string channelName, Client* adminClient );
-	//  // Kanali olusturduktan sonra her client eklemek icin yine Server'in icerisine;
-	//  // bool Server::addClient( std::map<std::string, Channel *> channelName, Client * clientName );
-	//  // Seklinde ekleyebilirsin.
-	//}
-	//it->sendMessageFd(RPL_JOIN(it->getUsername(), tokenArr[1]));
 }
 
 void	Server::nick( Client* it, std::vector<std::string> tokenArr )
 {
 	// `NICK``yuandre``USER``yuandre``yuandre``localhost``:Görkem``Sever`
 	std::cout << YELLOW << "NICK" << END << std::endl;
-	if (it->getRegistered() == false) //welcome mesajı için mecburi bu if olmalı, olmasada çalışıyor.
+	if (tokenArr.size() < 2 || tokenArr[1][0] == '#') // saçma bir nick girme işlemi gerçekleşirse önlemek için. // kullanıcı adının başında # olamaz.
+	{
+		it->sendMessageFd(ERR_ERRONEUSNICKNAME(it->getPrefix(), tokenArr[1]));
+		if (it->getRegistered() == false) // kayıt enasında hatalı bir kullanım söz konusuysa server'dan atmamız lazım.
+		{
+			tokenArr.clear();
+			tokenArr.push_back("Nickname is wrong use.");
+			Server::quit(it, tokenArr); // boş gönderirsem seg. yiyor
+		}
+	}
+	else if (it->getRegistered() == false) //welcome mesajı için mecburi bu if olmalı, olmasada çalışıyor.
 	{
 		if (Server::findClientName(tokenArr[1]) != -1)
 			it->sendMessageFd(ERR_NICKNAMEINUSE(tokenArr[1]));
@@ -223,9 +205,20 @@ void	Server::removeClient(int clientFd)
 //Nick Adı (Nickname): "akaraca"
 //Host Adı (Hostname): "localhost" (genellikle boş bırakılır)
 //Gerçek İsim (Realname): "Ahmet Karaca"
+// /set nick ...
+// /set user_name ...
+// /set hostname ...
+// /set real_name ...
 void Server::user(Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "USER" << END << std::endl;
+	if (tokenArr.size() < 4) // saçma sapan bir set'leme gerçekleşirme önlemek için.
+	{
+		tokenArr.clear();
+		tokenArr.push_back("User block is wrong.");
+		Server::quit(it, tokenArr);
+		return ;
+	}
 	if (it->getActiveStatus() == true) // quit attıktan sonra USER komutunu işlemeye çalışıyor lakin yarıda kesiliyor bu yüzden aktif mi değil mi kontrol etmek zorundayım.
 	{
 		it->setUsername(tokenArr[1]);
@@ -249,8 +242,17 @@ void Server::user(Client* it, std::vector<std::string> tokenArr )
 }
 
 /*
+// in the channel: Message:>PRIVMSG-#ASDF :Ben deli değilim.<
 	tokenArr[0] -> Command Name -> "PRIVMSG" 
 	tokenArr[1] -> Channel Name -> #ASDF
+	tokenArr[2] -> First Message -> :Ben
+	tokenArr[3] -> Second Message -> deli
+	tokenArr[4] -> Third Message -> değilim.
+-> Channel dışında, "/msg #ASDF Ben deli değilim." şeklindeki kullanımı, channel'e mesaj gönderecektir.
+
+// out the channel: Message:>PRIVMSG-akaraca :Ben deli değilim.<
+	tokenArr[0] -> Command Name -> "PRIVMSG" 
+	tokenArr[1] -> Nick Name -> akaraca
 	tokenArr[2] -> First Message -> :Ben
 	tokenArr[3] -> Second Message -> deli
 	tokenArr[4] -> Third Message -> değilim.
@@ -259,8 +261,8 @@ void Server::user(Client* it, std::vector<std::string> tokenArr )
 void	Server::privmsg( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "PRIVMSG" << END << std::endl;
+
 	std::string	msg;
-	
 	tokenArr[2].erase(0, 1); 	// token[2] token2'ni basindaki : kaldırır
 	for (size_t i = 2; i < tokenArr.size(); i++)
 	{
@@ -269,9 +271,30 @@ void	Server::privmsg( Client* it, std::vector<std::string> tokenArr )
 		else
 			msg += tokenArr[i];
 	}
-	this->_channels[tokenArr[1]]->sendMessageBroadcast(\
-		it, RPL_PRIVMSG(it->getPrefix(), tokenArr[1], msg));
-	// Örnek: ":John!john@example.com PRIVMSG #channel :Merhaba, nasılsınız?"
+	if (tokenArr[1][0] == '#') // Channel içinde gönderilen mesajı temsil ediyor.
+	{
+		if (_channels.find(tokenArr[1]) != _channels.end()) // belirtilen isimde channel varsa,
+		{
+			this->_channels[tokenArr[1]]->sendMessageBroadcast(\
+				it, RPL_PRIVMSG(it->getPrefix(), tokenArr[1], msg));
+			// Örnek: ":John!john@example.com PRIVMSG #channel :Merhaba, nasılsınız?"
+		}
+		else // belirtilen isimde channel yoksa hata döndürmeliyiz.
+			it->sendMessageFd(ERR_NOSUCHCHANNEL(it->getPrefix(), tokenArr[1]));
+	}
+	else //Channel dışında doğrudan kullanıcıya atılan mesajı temsil ediyor.
+	{
+		int fd = Server::findClientName(tokenArr[1]);
+		if (fd != -1)
+		{
+			Client *destClient = _clients.find(fd)->second;
+			destClient->sendMessageFd(RPL_PRIVMSG(it->getPrefix(), tokenArr[1], msg));
+			// Mesaj göndereceğimiz client'tı bulup onun client'ında sendMessageFd'yi çalıştırıyoruz.
+			// Eğer kendi mesajı gönderenin clien'tinden yaparsak, 2 mesaj kendisine göndermiş olacak, çünkü IRC client zaten komutu girdiğimiz anda kendisinide yazmaktadır.
+		}
+		else // kişi yoksa hata döndürmelidir.
+			it->sendMessageFd(ERR_NOSUCHNICK(it->getPrefix(), tokenArr[1]));
+	}
 }
 
 /**
@@ -281,13 +304,61 @@ void	Server::privmsg( Client* it, std::vector<std::string> tokenArr )
  * @link https://datatracker.ietf.org/doc/html/rfc2812#section-3.1.5
  * @link https://irssi.org/documentation/help/mode/
  * 
+ * PRIVMSG
+Message:>MODE-naber<
+Message:>naber<
+Tokens:>`naber`<
+MODE
+Message:>MODE-#naber<
+Message:>#naber<
+Tokens:>`#naber`<
+MODE
+Message:>MODE-naber asdf<
+Message:>naber asdf<
+Tokens:>`naber``asdf`<
+MODE
+Message:>MODE-#naber +asdf<
+Message:>#naber +asdf<
+Tokens:>`#naber``+asdf`<
+MODE
+Message:>MODE-#naber +asdf<
+Message:>#naber +asdf<
+Tokens:>`#naber``+asdf`<
+MODE
+Message:>MODE-#naber -asdf<
+Message:>#naber -asdf<
+Tokens:>`#naber``-asdf`<
+MODE
+Message:>MODE-naber -asdf<
+Message:>naber -asdf<
+Tokens:>`naber``-asdf`<
+MODE
+Message:>MODE-naber -asdf asdf asdf<
+Message:>naber -asdf asdf asdf<
+Tokens:>`naber``-asdf``asdf``asdf`<
+MODE
+Message:>MODE-#naber -asdfasdfasdf<
+Message:>#naber -asdfasdfasdf<
+Tokens:>`#naber``-asdfasdfasdf`<
+MODE
+Message:>MODE-#naber +asdfasdfasdfasdfasfasdf<
+Message:>#naber +asdfasdfasdfasdfasfasdf<
+Tokens:>`#naber``+asdfasdfasdfasdfasfasdf`<
+MODE
+^C
+ * 
  * @param message 
  */
-void Server::mode( Client* it, std::vector<std::string> tokenArr )
+void	Server::mode( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "MODE" << END << std::endl;
-	(void)it;
-	(void)tokenArr;
+	std::cout << "tokenarr[0]: " << tokenArr[0] << std::endl;
+	if (tokenArr.size() < 2)
+	{
+		it->sendMessageFd(ERR_NEEDMOREPARAMS(it->getNickname(), tokenArr[0]));
+		return;
+	}
+
 	// #define RPL_MODE(source, channel, modes, args)	":" + source + " MODE " + channel + " " + modes + " " + args
 	// it->sendMessageFd(RPL_MODE(it->getPrefix(), it->get));
 }
@@ -344,13 +415,13 @@ void	Server::list( Client* it, std::vector<std::string> tokenArr )
 		// 16:10 -!- End of /LIST
 	}
 
-	it->sendMessageFd("-------- Server's 'Channel' list; --------");
+	it->sendMessageFd(">-------- Server's 'Channel' list; --------<");
 	for	(itChannels itChan = this->_channels.begin();\
 			itChan != this->_channels.end(); itChan++)
 	{
 		it->sendMessageFd("LIST :" + itChan->first);
 	}
-	it->sendMessageFd("------------- LIST END ------------------");
+	it->sendMessageFd("<------------- LIST END ------------------>");
 }
 
 /*

@@ -32,7 +32,12 @@
 	Hostname:>localhost
 	Realname:>:Görkem Sever -> buradaki kisma girmiyor orasi duzeltilecek.
  * TODO: /msg ile olan durumu ele al; client'ten client'e ozel mesaj atma olayi.
- mode, part, privmsg 
+ mode, part, privmsg info
+ * TODO: Kayitli olmayan bir kullanici cikis yaparsa sever patliyor. nc localhost 8888
+ * TODO: /msg #asdf hello -> diye kanala mesaj gonderdigimizde okay, ama
+ * 	/msg #gsever naber -> diye kullaniciya gonderdigimizde patliyor cunku
+ * 	kullanicilarin isimleri # ile baslayamaz.
+ * TODO: PING var PONG'unu da ekle aynisi zaten kopyala yapistir pingi pong yap.
  * @param argc: Server port number.
  * @param argv: Server password.
  * @return int 

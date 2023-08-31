@@ -88,7 +88,6 @@ void	Channel::sendMessageBroadcast( Client* exclude, std::string message )
 {
 	for	(itChannelClients itCli = this->_channelClients.begin(); itCli != this->_channelClients.end(); itCli++)
 	{
-		std::cout << __LINE__ << std::endl;
 		if (*itCli == exclude)
 			continue;
 		(*itCli)->sendMessageFd(message);

@@ -44,4 +44,5 @@
 #define RPL_WHOREPLY(source, channel, user, host, server, nick, isOP, hopcount, realname)	"352 " + source + " " + channel + " " + user + " " + host + " " + server + " " + nick + " H" + isOP + " :" + hopcount  + " " + realname
 #define RPL_ENDOFWHO(source, channel)	"315 " + source + " " + channel + " :End of WHO list"
 
+#define ERR_ERRONEUSNICKNAME(source, nick) "432 " + source + " " + nick + " :Erroneous nickname"
 #endif

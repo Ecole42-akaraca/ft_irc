@@ -34,6 +34,7 @@ typedef std::map<int, Client *>::iterator			itClients;
 typedef std::map<std::string, Channel *>::iterator	itChannels;
 typedef std::vector<std::string>::iterator			itCmd;
 typedef std::vector<std::string>::iterator			itMessage;
+typedef	std::vector<Client *>::iterator				itChannelClients;
 
 // Commands
 // typedef void (Server::*CommandFunction)( Client*, std::string );
@@ -68,6 +69,7 @@ class Server
 		void	start( void );
 		void	acceptClients( void );
 		void	commandHandler( itPoll &itClient );
+		Channel*	getChannel( Client* client );
 /* -------------------------------------------------------------------------- */
 /* _________________________ COMMANDS _______________________________________ */
 	private:
