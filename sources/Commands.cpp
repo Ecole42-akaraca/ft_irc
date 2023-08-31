@@ -53,13 +53,14 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr ) // kullanici 
 		return ;
 	if (!tokenArr[1].compare("#")) // asdf
 		tokenArr[1] = "#" + tokenArr[1]; // #asdf -> #'i ekliyoruz.
-	std::string messageTopic;
+
 	itChannels find = _channels.find(tokenArr[1]); // aynı isimde kanal var mı?
 	it->sendMessageFd(RPL_JOIN(it->getPrefix(), tokenArr[1])); // kanal olsada olmasada katılması gerekiyor.
 	if (find != _channels.end()) // Channel mevcut mu?
 	{
-		messageTopic = "New User Login Channel!";
-		it->sendMessageFd(RPL_TOPIC(it->getPrefix(), tokenArr[1], messageTopic)); // Kullanıcı kanala katıldığı zaman bilgi paylaşıyor.
+		this->_channels[tokenArr[1]]->sendMessageBroadcast(\
+			it, RPL_JOIN(it->getPrefix(), tokenArr[1]));
+		it->sendMessageFd(RPL_TOPIC(it->getPrefix(), tokenArr[1], "New User Login Channel!")); // Kullanıcı kanala katıldığı zaman bilgi paylaşıyor.
 		find->second->addClient(it); // var olan channel'a yeni kullanıcıyı ekle.
 		for (size_t i = 0; i < find->second->_channelClients.size(); i++) // kullanıcı var olan bir kanala girdiği zaman, kanaldaki kullancıları listele.
 		{
@@ -76,9 +77,8 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr ) // kullanici 
 		//channel->setAdmin(it); // channel'e admin ekle.
 		channel->addClient(it); // Admini channel'in _channelClient'ına ekliyor.
 		this->_channels.insert(std::make_pair(tokenArr[1], channel)); // Server'a channel'ı ekle.
+		it->sendMessageFd(RPL_TOPIC(it->getPrefix(), tokenArr[1], "New Channel Created.")); // Kullanıcı kanala katıldığı zaman bilgi paylaşıyor.
 		it->sendMessageFd(RPL_MODE(it->getNickname(), tokenArr[1], "+nto", it->getNickname())); // Kimlik doğrulaması ve admini belirt.
-		messageTopic = "New Channel Created.";
-		it->sendMessageFd(RPL_TOPIC(it->getPrefix(), tokenArr[1], messageTopic)); // Kullanıcı kanala katıldığı zaman bilgi paylaşıyor.
 	}
 }
 
@@ -158,6 +158,22 @@ void	Server::quit( Client* it, std::vector<std::string> tokenArr ) // OK
 {
 	// :syrk!kalt@millennium.stealth.net QUIT :Gone to have lunch
 	std::cout << YELLOW << "QUIT" << END << std::endl;
+
+	for (itChannels itC = _channels.begin(); itC != _channels.end(); itC++) // Çıkan kullanıcı hangi kanaldaysa o kanaldan ayrıldığı bilgisini vermelidir.
+	{
+		for (size_t i = 0; i < itC->second->_channelClients.size(); i++)
+		{
+			if (itC->second->_channelClients[i]->getNickname().compare(it->getNickname()) == 0)
+			{
+				std::vector<std::string> msg;
+				msg.push_back("PART");
+				msg.push_back(itC->second->getName());
+				msg.push_back(":QUIT");
+				Server::part(it, msg);
+			}
+		}
+	}
+
 	Server::infoFd();
 	int	fd = it->getFd();
 	for (size_t i = 0; i < _pollfds.size(); i++)
@@ -346,6 +362,8 @@ Message:>#naber +asdfasdfasdfasdfasfasdf<
 Tokens:>`#naber``+asdfasdfasdfasdfasfasdf`<
 MODE
 ^C
+
+ * @link https://matrix-org.github.io/matrix-appservice-irc/latest/irc_modes.html
  * 
  * @param message 
  */
@@ -389,8 +407,31 @@ void	Server::part( Client* it, std::vector<std::string> tokenArr )
 {
 	// Message:>PART-#asdf :Lorem ipsum naber ehe.<
 	std::cout << YELLOW << "PART" << END << std::endl;
-	(void)it;
-	(void)tokenArr;
+	if (_channels.find(tokenArr[1]) != _channels.end()) // Channel varsa eğer,
+	{
+		std::string	msg;
+		tokenArr[2].erase(0, 1); 	// token[2] token2'ni basindaki : kaldırır
+		for (size_t i = 2; i < tokenArr.size(); i++)
+		{
+			if (i + 1 < tokenArr.size())
+				msg += tokenArr[i] + " ";
+			else
+				msg += tokenArr[i];
+		}
+		// kanaldan çıktığına dair herhangi bir bilgi paylaşmıyor (kendisine)
+		// Ama ayrıldığı channele mesaj yazdırmalıdır: 'BEN_ [~AHMET@176.88.10.20] has left #42kocaeli []'
+		it->sendMessageFd(RPL_PART(it->getPrefix(), tokenArr[1], msg)); // Kanaldan ayrılması için.
+		this->_channels[tokenArr[1]]->sendMessageBroadcast(\
+				it, RPL_PART(it->getPrefix(), tokenArr[1], msg)); // Kanaldaki tüm kullancıların görmesi için.
+		_channels[tokenArr[1]]->removeClient(it); // Channel'den client çıkınca client'inin silinmesi gerek.
+		if (_channels[tokenArr[1]]->getClientCount() == 0) // eğerki channelde kimse kalmazsa silinsin.
+			Server::removeChannel(_channels[tokenArr[1]]->getName());
+	}
+	else // eğerki kanal yoksa hata döndürmelidir
+	{
+		it->sendMessageFd(ERR_NOSUCHCHANNEL(it->getPrefix(), tokenArr[1]));
+	}
+
 	// Eger part komutu ile channel'den ayrildiginda; channel'de kullanici
 	// 	kalmadiginda channel kapatilir. Bunun kontrolu quit komutu icinde
 	// 	kontrol edilmeli.

@@ -201,3 +201,13 @@ Channel*	Server::getChannel( Client* client )
 	}
 	return (NULL);
 }
+
+void	Server::removeChannel( std::string channelName )
+{
+	itChannels it = this->_channels.find(channelName);
+	if (it != _channels.end())
+	{
+		std::cout << it->second->getName() << ": Channel removed." << std::endl;
+		_channels.erase(it);
+	}
+}

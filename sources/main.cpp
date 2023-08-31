@@ -20,24 +20,13 @@
  * 
  * 			https://beej.us/guide/bgnet/html/split/
  * 
- * TODO: MODE; komutundaki parse'lenen inputa gore ayarla.
  * TODO: 11:53 -!- Irssi: (default) critical nicklist_set_host: assertion 'host != NULL' failed
- * TODO: NP: /nick ile ismimizi degistirdigimizde ana sayfada degil de channel'deyse channel'in icine
- *  ciktisini yazmasi lazim.
  * TODO: LEAK kontrolu gerekiyor.
- * TODO: Ilk baglantida ayni isimde nick varsa USER komutunda 
- * USER
-	Username:>yuandre
-	Nickname:>yuandre
-	Hostname:>localhost
-	Realname:>:Görkem Sever -> buradaki kisma girmiyor orasi duzeltilecek.
- * TODO: /msg ile olan durumu ele al; client'ten client'e ozel mesaj atma olayi.
- mode, part, privmsg info
- * TODO: Kayitli olmayan bir kullanici cikis yaparsa sever patliyor. nc localhost 8888
+ * TODO: mode, part, quit, privmsg, info, kick
+ * TODO: macos'ta kayitli olmayan bir kullanici cikis yaparsa server patliyor. nc localhost 8888
  * TODO: /msg #asdf hello -> diye kanala mesaj gonderdigimizde okay, ama
  * 	/msg #gsever naber -> diye kullaniciya gonderdigimizde patliyor cunku
  * 	kullanicilarin isimleri # ile baslayamaz.
- * TODO: PING var PONG'unu da ekle aynisi zaten kopyala yapistir pingi pong yap.
  * @param argc: Server port number.
  * @param argv: Server password.
  * @return int 
@@ -52,6 +41,7 @@ int	main( int argc, char **argv )
 	catch (std::exception &e)
 	{
 		std::cerr << e.what() << std::endl;
-		return (EXIT_SUCCESS);
+		return (EXIT_FAILURE);
 	}
+	return (EXIT_SUCCESS);
 }

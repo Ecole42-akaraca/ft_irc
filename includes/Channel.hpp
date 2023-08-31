@@ -40,6 +40,7 @@ class Channel
 		bool		ifClientJoined( Client* client );
 
 		void		addClient( Client* client );
+		void		removeClient( Client* client );
 
 		void		sendMessageBroadcast( std::string message );
 		void		sendMessageBroadcast( Client* exclude, std::string message );

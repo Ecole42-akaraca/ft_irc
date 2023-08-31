@@ -27,7 +27,7 @@
 
 // COMMAND REPLIES
 #define RPL_JOIN(source, channel)					":" + source + " JOIN :" + channel
-#define RPL_PART(source, channel)					":" + source + " PART :" + channel
+#define RPL_PART(source, channel, message)			":" + source + " PART " + channel + " :" + message
 #define RPL_PING(source, token)						":" + source + " PONG :" + token
 #define RPL_PRIVMSG(source, target, message)		":" + source + " PRIVMSG " + target + " :" + message
 #define RPL_NOTICE(source, target, message)			":" + source + " NOTICE " + target + " :" + message
@@ -39,10 +39,10 @@
 #define RPL_WHOISUSER(source, nickname, username, hostname, realname)	"311 " + source + " " + nickname + " ~" + username + " " + hostname + " * :" + realname
 #define RPL_ENDOFWHOIS(source, nickname)								"318 " + source + " " + nickname + " :End of /WHOIS list"
 
-#define RPL_TOPIC(source, channel, topic)   "332 " + source + " " + channel + " :" + topic
+#define RPL_TOPIC(source, channel, topic)			"332 " + source + " " + channel + " :" + topic
 
 #define RPL_WHOREPLY(source, channel, user, host, server, nick, isOP, hopcount, realname)	"352 " + source + " " + channel + " " + user + " " + host + " " + server + " " + nick + " H" + isOP + " :" + hopcount  + " " + realname
-#define RPL_ENDOFWHO(source, channel)	"315 " + source + " " + channel + " :End of WHO list"
+#define RPL_ENDOFWHO(source, channel)				"315 " + source + " " + channel + " :End of WHO list"
 
-#define ERR_ERRONEUSNICKNAME(source, nick) "432 " + source + " " + nick + " :Erroneous nickname"
+#define ERR_ERRONEUSNICKNAME(source, nick)			"432 " + source + " " + nick + " :Erroneous nickname"
 #endif

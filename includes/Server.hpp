@@ -70,6 +70,7 @@ class Server
 		void	acceptClients( void );
 		void	commandHandler( itPoll &itClient );
 		Channel*	getChannel( Client* client );
+		void	removeChannel( std::string channelName );
 /* -------------------------------------------------------------------------- */
 /* _________________________ COMMANDS _______________________________________ */
 	private:

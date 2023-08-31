@@ -63,8 +63,18 @@ bool	Channel::ifClientJoined( Client* client )
 void	Channel::addClient( Client* client )
 {
 	this->_channelClients.push_back(client);
+	this->_clientCount++;
 	std::cout << this->getName() << ": " << client->getNickname()
 		<< " joined." << std::endl;
+}
+
+void	Channel::removeClient( Client* client )
+{
+	itChannelClients it = std::find(_channelClients.begin(), _channelClients.end(), client);
+	_channelClients.erase(it);
+	this->_clientCount--;
+	std::cout << this->getName() << ": " << client->getNickname()
+		<< " removed." << std::endl;
 }
 
 void	Channel::sendMessageBroadcast( std::string message )
