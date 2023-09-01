@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: akaraca <akaraca@student.42.tr>            +#+  +:+       +#+         #
+#    By: gsever <gsever@student.42kocaeli.com.tr    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/18 18:46:27 by gsever            #+#    #+#              #
-#    Updated: 2023/08/20 17:52:08 by akaraca          ###   ########.fr        #
+#    Updated: 2023/09/01 13:49:08 by gsever           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -52,9 +52,13 @@ LIBRARIES	= \
 HEADERS_DIRECTORY = includes
 HEADERS		= $(wildcard $(HEADERS_DIRECTORY)/*.hpp)
 SOURCES_DIRECTORY = sources
-SOURCES		= $(wildcard $(SOURCES_DIRECTORY)/*.cpp)
+SOURCES		= $(wildcard $(SOURCES_DIRECTORY)/*.cpp) # All sources files.
+COMMANDS_DIRECTORY = sources/commands
+SOURCES		+= $(wildcard $(COMMANDS_DIRECTORY)/*.cpp) # All sources/commands files.
 OBJECTS_DIRECTORY = objects
 OBJECTS		= $(addprefix $(OBJECTS_DIRECTORY)/, $(notdir $(SOURCES:%.cpp=%.o)))
+
+vpath %.cpp $(SOURCES_DIRECTORY):$(COMMANDS_DIRECTORY) # Getting this locations's *.cpp files.
 
 #	COLORS --> 🟥 🟩 🟦
 BLACK	= \033[0;30m
@@ -96,7 +100,8 @@ all:
 #	@$(MAKE) -s $(NAME) -j $(NUMPROC)
 
 #	Compiling
-$(OBJECTS_DIRECTORY)/%.o: $(SOURCES_DIRECTORY)/%.cpp | $(OBJECTS_DIRECTORY)
+# $(OBJECTS_DIRECTORY)/%.o: $(SOURCES_DIRECTORY)/%.cpp | $(OBJECTS_DIRECTORY)
+$(OBJECTS_DIRECTORY)/%.o: %.cpp | $(OBJECTS_DIRECTORY)
 	@$(CC) $(FLAGS) -c $< -o $@
 	@printf "%-57b %b" "$(BLUE)COMPILED $(CYAN)$@" "$(GREEN)[✓]$(X)\n"
 # NOTE: $@ -> First $(<ARGUMAN>)

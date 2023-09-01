@@ -53,7 +53,6 @@ class Server
 		std::vector<pollfd>		_pollfds;
 		std::map<int, Client*>	_clients; // client's with fd numbers.
 		std::map<std::string, Channel *>	_channels; // channel's vector.
-		// std::vector<std::string>			_inputToken; // client'ten gelen mesajin tokenlerine ayrilmis hali.
 
 		Server( void ); // Default Constructor.
 		void			openSocket( void );
@@ -76,20 +75,20 @@ class Server
 	private:
 		std::map<std::string, CommandFunction> t_cmdFunc;
 		void	cap( Client*, std::vector<std::string> );
-		void	join( Client*, std::vector<std::string> );
-		void	nick( Client*, std::vector<std::string> );
-		void	pass( Client*, std::vector<std::string> );
-		void	quit( Client*, std::vector<std::string> );
-		void	privmsg( Client*, std::vector<std::string> );
-		void	user( Client*, std::vector<std::string> );
-		void	mode( Client*, std::vector<std::string> );
-		void	ping( Client*, std::vector<std::string> );
-		void	part( Client*, std::vector<std::string> );
-		void	list( Client*, std::vector<std::string> );
 		void	info( Client*, std::vector<std::string> );
-		void	whois( Client*, std::vector<std::string> );
-		void	who( Client*, std::vector<std::string> );
 		void	infoFd( void );
+		void	join( Client*, std::vector<std::string> );
+		void	list( Client*, std::vector<std::string> );
+		void	mode( Client*, std::vector<std::string> );
+		void	nick( Client*, std::vector<std::string> );
+		void	part( Client*, std::vector<std::string> );
+		void	pass( Client*, std::vector<std::string> );
+		void	ping( Client*, std::vector<std::string> );
+		void	privmsg( Client*, std::vector<std::string> );
+		void	quit( Client*, std::vector<std::string> );
+		void	user( Client*, std::vector<std::string> );
+		void	who( Client*, std::vector<std::string> );
+		void	whois( Client*, std::vector<std::string> );
 		void	removeClient( int clientFd );
 /* -------------------------------------------------------------------------- */
 /* _________________________ UTILS __________________________________________ */
