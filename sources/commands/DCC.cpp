@@ -49,3 +49,27 @@ Bu komutlar genellikle IRC istemcilerinde bulunur ve doğrudan IRC sunucusu yeri
  kullanıcılar arasında bağlantı kurarlar.
  * 
  */
+
+
+/*
+DCC (Direct Client-to-Client) protokolü, IRC (Internet Relay Chat) istemcileri arasında doğrudan bağlantılar kurmak için kullanılır¹. DCC bağlantıları, IRC ağı ve sunucularını atlayarak istemciler arasında çeşitli verilerin aktarılmasına olanak sağlar². İşte DCC protokolünün bazı temel komutları ve nasıl çalıştıkları:
+
+1. **DCC CHAT**: Bu hizmet, kullanıcıların bir DCC bağlantısı üzerinden birbirleriyle sohbet etmelerini sağlar¹. Trafik doğrudan kullanıcılar arasında gider ve IRC ağı üzerinden gitmez¹. DCC CHAT genellikle bir CTCP (Client-To-Client Protocol) el sıkışması kullanılarak başlatılır¹.
+
+2. **DCC SEND**: Bu hizmet, bir dosyanın bir kullanıcıdan diğerine gönderilmesini sağlar¹. Dosya transferi genellikle bir CTCP el sıkışması kullanılarak başlatılır¹.
+
+3. **DCC RESUME**: Bu komut, durdurulmuş bir dosya transferini sürdürmek için kullanılır. Örnek: `/DCC RESUME KullaniciAdi dosya.zip`
+
+4. **DCC ACCEPT**: Bu komut, durdurulmuş bir dosya transferinin devam etmesini kabul etmek için kullanılır. Örnek: `/DCC ACCEPT KullaniciAdi dosya.zip`
+
+5. **DCC CLOSE**: Bu komut, bir DCC bağlantısını kapatmak için kullanılır. Örnek: `/DCC CLOSE get KullaniciAdi`
+
+Bu komutların her biri, belirli bir DCC işlemi gerçekleştirmek için kullanılır. Her komutun tam olarak nasıl çalıştığını anlamak için, belirli bir IRC istemcisinin belgelerine veya yardım dosyalarına başvurmanız önerilir.
+
+Umarım bu bilgiler yardımcı olur! Başka bir sorunuz varsa, lütfen sormaktan çekinmeyin. 😊
+
+Source: Conversation with Bing, 03.09.2023
+(1) Direct Client-to-Client - Wikipedia. https://en.wikipedia.org/wiki/Direct_Client-to-Client.
+(2) Direct Client-to-Client Protocol (DCC). https://modern.ircdocs.horse/dcc.html.
+(3) List of Internet Relay Chat commands - Wikipedia. https://en.wikipedia.org/wiki/List_of_Internet_Relay_Chat_commands.
+*/
