@@ -6,9 +6,11 @@
 #    By: gsever <gsever@student.42kocaeli.com.tr    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/18 18:46:27 by gsever            #+#    #+#              #
-#    Updated: 2023/09/03 14:40:39 by gsever           ###   ########.fr        #
+#    Updated: 2023/09/03 15:01:50 by gsever           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
+
+# https://www.freecodecamp.org/news/git-clone-branch-how-to-clone-a-specific-branch/
 
 #!!!!!!!!! NOTE: < here > you need change with your customize. !!!!!!!
 NAME		= ircserv
