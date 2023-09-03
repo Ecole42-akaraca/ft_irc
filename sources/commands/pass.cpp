@@ -1,5 +1,8 @@
 # include "../../includes/Server.hpp"
 
+/*
+	// `PASS``asdf``NICK``yuandre``USER``yuandre``yuandre``localhost``:Görkem``Sever`
+*/
 void	Server::pass( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "PASS" << END << std::endl;

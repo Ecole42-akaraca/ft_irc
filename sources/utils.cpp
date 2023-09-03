@@ -59,10 +59,10 @@ void	Server::initCommands( void )
 	t_cmdFunc["PING"] = &Server::ping;
 	t_cmdFunc["PART"] = &Server::part;
 	// t_cmdFunc["MODE"] = &Server::mode;
-	// t_cmdFunc["LIST"] = &Server::list;
-	// t_cmdFunc["INFO"] = &Server::info;
-	// t_cmdFunc["WHO"] = &Server::who;
-	// t_cmdFunc["WHOIS"] = &Server::whois;
+	t_cmdFunc["LIST"] = &Server::list;
+	t_cmdFunc["INFO"] = &Server::info;
+	t_cmdFunc["WHO"] = &Server::who;
+	t_cmdFunc["WHOIS"] = &Server::whois;
 
 	// t_cmdFunc["KICK"] = &Server::kick;
 }
@@ -87,10 +87,23 @@ std::map<std::string, std::string>	Server::splitMessage( std::string message )
 	while ((pos = message.find(delimeter)) != std::string::npos)
 	{
 		int posFirst = message.find(' ');
+
+		std::string firstWord = message.substr(0, posFirst);
+		// \r ve \n karakterlerini temizle // /info yazdığımızda sonunda \n bulunuyor, kaldırmak istiyorum bu yüzden ekledim.
+		for (size_t i = 0; i < firstWord.size(); ++i) {
+			if (firstWord[i] == '\r' || firstWord[i] == '\n') {
+				firstWord.erase(i, 1);
+				--i; // Karakter silindiği için i'yi azalt
+			}
+		}
+		// Ilk kelimeyi yani komutu büyük harfe çevirir
+		for (size_t i = 0; i < firstWord.size(); ++i)
+			firstWord[i] = std::toupper(firstWord[i]);
+
 		// 1. Kısım: USER 2. Kısım: A B C D E F G asdf
 		//posFirst + 1; CAP'ten sonra gelene boşluğun indexi
 		//pos - posFirst - 1; "CAP LS\r\n" yapısında LS'i almak için LS'in uzunluğuna bulmaya ihtiyaç var, -1 ise \r'ı almak istemiyoruz.
-		tokens.insert(std::make_pair(message.substr(0, posFirst), message.substr(posFirst + 1, pos - posFirst - 1)));
+		tokens.insert(std::make_pair(firstWord, message.substr(posFirst + 1, pos - posFirst - 1)));
 		message.erase(0, pos + delimeter.length());
 	}
 	// mesaj boş olarak geliyor. Kontrol için yapılandırılabilir.

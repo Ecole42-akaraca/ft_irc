@@ -12,25 +12,6 @@ Channel::~Channel( void )
 	delete [] (this);
 }
 
-void	Channel::sendMessageBroadcast( std::string message )
-{
-	for	(itChannelClients itCli = this->_channelClients.begin();
-			itCli != this->_channelClients.end(); itCli++)
-	{
-		(*itCli)->sendMessageFd(message);
-	}
-}
-
-void	Channel::sendMessageBroadcast( Client* exclude, std::string message )
-{
-	for	(itChannelClients itCli = this->_channelClients.begin(); itCli != this->_channelClients.end(); itCli++)
-	{
-		if (*itCli == exclude)
-			continue;
-		(*itCli)->sendMessageFd(message);
-	}
-}
-
 void	Channel::addClient( Client* client )
 {
 	this->_channelClients.push_back(client);
@@ -48,6 +29,33 @@ void	Channel::removeClient( Client* client )
 		this->_clientCount--;
 		std::cout << this->getName() << ": " << client->getNickname()
 			<< " removed." << std::endl;
+	}
+}
+
+void	Channel::sendMessageBroadcast( std::string message )
+{
+	for	(itChannelClients itCli = this->_channelClients.begin();
+			itCli != this->_channelClients.end(); itCli++)
+	{
+		(*itCli)->sendMessageFd(message);
+	}
+}
+
+/**
+ * @brief Eger bir Client Channel'e mesaj attiginda burasi calisacak.
+ * 
+ * Cunku yazdigi mesaji kanaldaki herkese gonderip, kendisine gondermemesi lazim.
+ * 
+ * @param exclude Mesaji gonderen Client'in kendisi.
+ * @param message 
+ */
+void	Channel::sendMessageBroadcast( Client* exclude, std::string message )
+{
+	for	(itChannelClients itCli = this->_channelClients.begin(); itCli != this->_channelClients.end(); itCli++)
+	{
+		if (*itCli == exclude)
+			continue;
+		(*itCli)->sendMessageFd(message);
 	}
 }
 

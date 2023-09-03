@@ -1,3 +1,22 @@
+/**
+ * @file Server.cpp
+ * @author Görkem SEVER (gsever), Ahmet KARACA (akaraca)
+ * @brief 
+ * @version 0.1
+ * @date 2023-08-27
+ * 
+ * @note: How messaging 2 client each other?
+ * @link http://chi.cs.uchicago.edu/chirc/irc_examples.html
+ * 
+ * @note: All IRC commands.
+ * @link http://www.ae.metu.edu.tr/~evren/history/documents/commands.htm
+ * @link http://www.csun.edu/~webteach/mirc/commands.html
+ * @link https://www.antionline.com/showthread.php?136933-IRC-flags
+ * @link https://modern.ircdocs.horse/#irc-concepts
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
 # include "../includes/Server.hpp"
 
 Server::Server( int argc, char **argv )
@@ -5,7 +24,8 @@ Server::Server( int argc, char **argv )
 		_port(port( argv[1] )),
 		_password(password( argv[2] )),
 		_host( "127.0.0.1" ),
-		_isRun( true )
+		_isRun( true ),
+		_serverName( "ft_irc")
 {
 	std::cout << "Server Constructor called." << std::endl;
 	openSocket();
@@ -53,7 +73,6 @@ void	Server::start( void )
 			if (it->revents & POLLHUP)
 			{
 				std::cout << "Client disconnected." << std::endl;
-				// this->_isRun = false;
 				break; // Move to the next socket
 			}
 
@@ -95,6 +114,10 @@ void	Server::acceptClients( void )
 	}
 }
 
+/*
+// std::vector<std::string> tokenArr = splitMessage(buffer);
+// MODE gsever akaraca gorkem ahmet
+*/
 void	Server::commandHandler( itPoll &itClient )
 {
 	char buffer[MAX_BUFFER];
@@ -135,6 +158,23 @@ void	Server::removeClient(int clientFd)
 	}
 }
 
+void	Server::removeChannel( std::string channelName )
+{
+	itChannels it = this->_channels.find(channelName);
+	if (it != _channels.end())
+	{
+		std::cout << it->second->getName() << ": Channel removed." << std::endl;
+		_channels.erase(it);
+	}
+}
+
+void	Server::quitReason( Client* client, std::string message )
+{
+	std::vector<std::string> msg;
+	msg.push_back(message);
+	Server::quit(client, msg);
+}
+
 void	Server::serverInfo( void )
 {
 	std::cout << BLUE << "------------POLL.FDS-----------------" << END << std::endl;
@@ -147,21 +187,4 @@ void	Server::serverInfo( void )
 	for (itChannels it = _channels.begin(); it != _channels.end(); it++)
 		std::cout << it->first << " - ";
 	std::cout << BLUE << "\n-------------------------------------" << END << std::endl;
-}
-
-void	Server::quitReason( Client* client, std::string message )
-{
-	std::vector<std::string> msg;
-	msg.push_back(message);
-	Server::quit(client, msg);
-}
-
-void	Server::removeChannel( std::string channelName )
-{
-	itChannels it = this->_channels.find(channelName);
-	if (it != _channels.end())
-	{
-		std::cout << it->second->getName() << ": Channel removed." << std::endl;
-		_channels.erase(it);
-	}
 }

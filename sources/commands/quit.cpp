@@ -1,13 +1,15 @@
 # include "../../includes/Server.hpp"
 
+/*
+	// :syrk!kalt@millennium.stealth.net QUIT :Gone to have lunch
+*/
 void	Server::quit( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "QUIT" << END << std::endl;
 	it->setIRCstatus(DISCONNECTED);
 
-	for (size_t i = 0; i < it->getRegisteredChannels().size(); ++i)
+	for (size_t i = 0; i < it->getRegisteredChannels().size(); ++i) // Quit ile ayrılan channel, kayıtlı olduğu channel'lardan ayrılmalıdır.
 	{
-		std::cout << __LINE__ << std::endl;
 		std::vector<std::string> leaveChannel;
 		leaveChannel.push_back("PART");
 		leaveChannel.push_back(it->getRegisteredChannels()[i]->getName());

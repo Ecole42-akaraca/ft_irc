@@ -42,6 +42,7 @@ typedef std::map<std::string, CmdFunc>::iterator	itCmdFunc;
 
 class Server
 {
+/* _________________________ VARIABLES ______________________________________ */
 	private:
 		bool								_isCheck; // arguments size is okay.
 		const unsigned short				_port; // server port number.
@@ -52,25 +53,21 @@ class Server
 		std::vector<pollfd>					_pollfds;
 		std::map<int, Client*>				_clients; // client's with fd numbers.
 		std::map<std::string, Channel *>	_channels; // channel's vector.
-
+		std::string							_serverName;
+/* -------------------------------------------------------------------------- */
+/* _________________________ MAIN FUCTIONS __________________________________ */
+	private:
 		Server( void ); // Default Constructor.
-		void			openSocket( void );
-		void			setSocketOptions( void );
-		void			createSocketAddress( void );
-		void			startListening( void );
-		std::string		welcomeServer( void );
-/* _________________________ MAIN FUCTION ___________________________________ */
 	public:
 		Server( int argc, char **argv );
 		~Server( void ); // Destructor.
 		void	start( void );
 		void	acceptClients( void );
 		void	commandHandler( itPoll &itClient );
-		// Channel*	getChannel( Client* client );
 		void	removeChannel( std::string channelName );
 		void	removeClient( int clientFd );
-		void	serverInfo( void );
 		void	quitReason( Client* client, std::string message );
+		void	serverInfo( void );
 /* -------------------------------------------------------------------------- */
 /* _________________________ COMMANDS _______________________________________ */
 	private:
@@ -84,24 +81,32 @@ class Server
 		void	privmsg( Client*, std::vector<std::string> );
 		void	ping( Client*, std::vector<std::string> );
 		void	part( Client*, std::vector<std::string> );
+		void	list( Client*, std::vector<std::string> );
+		void	whois( Client*, std::vector<std::string> );
+		void	who( Client*, std::vector<std::string> );
 		// void	mode( Client*, std::vector<std::string> );
-		// void	list( Client*, std::vector<std::string> );
-		// void	info( Client*, std::vector<std::string> );
-		// void	whois( Client*, std::vector<std::string> );
-		// void	who( Client*, std::vector<std::string> );
+		void	info( Client*, std::vector<std::string> );
+/* -------------------------------------------------------------------------- */
+/* _________________________ SOCKET FUCTIONS ________________________________ */
+	private:
+		void			openSocket( void );
+		void			setSocketOptions( void );
+		void			createSocketAddress( void );
+		void			startListening( void );
 /* -------------------------------------------------------------------------- */
 /* _________________________ UTILS __________________________________________ */
 	private:
-		bool			check( int argc );
-		unsigned short	port( std::string argv );
-		std::string		password( std::string argv );
-		void			initCommands( void );
-		void			addToPollfds( int fd,  short events, short revents );
-		std::map<std::string, std::string> splitMessage( std::string message );
-		std::vector<std::string>	cmdMessage( std::string message );
-		int				getClientFdByNickname( std::string name );
-		std::string		combineMessage( size_t i, std::vector<std::string> vectorMessage );
-		bool			isChannelAdmin(Client* client, Channel* channel);
+		bool								check( int argc );
+		unsigned short						port( std::string argv );
+		std::string							password( std::string argv );
+		void								initCommands( void );
+		void								addToPollfds( int fd,  short events, short revents );
+		std::map<std::string, std::string>	splitMessage( std::string message );
+		std::vector<std::string>			cmdMessage( std::string message );
+		int									getClientFdByNickname( std::string name ); //Nickname'ye Client'in fd'sini döndürür.
+		std::string							combineMessage( size_t i, std::vector<std::string> vectorMessage ); //splitMessage fonk. tam tersi.
+		bool								isChannelAdmin(Client* client, Channel* channel); // Client'in belirtilen Channel'in admini mi, kontrol ediliyor.
+		std::string							welcomeServer( void );
 /* -------------------------------------------------------------------------- */	
 };
 

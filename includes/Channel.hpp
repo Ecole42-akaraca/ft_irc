@@ -16,7 +16,7 @@ class Channel
 		std::string	_name;
 		int			_clientCount;
 		Client*		_admin;
-		std::string _channelTopic;
+		std::string _channelTopic; // Channel'e bağlantı kurulduğunda konu başlığının belirlenmesinde yardımcı oluyor.
 
 		std::string	_k;
 
@@ -36,14 +36,12 @@ class Channel
 		void		setAdmin( Client* admin ) { this->_admin = admin; }
 		// void		setPassword( std::string password ) {this->_k = password; }
 
-		// bool		ifClientJoined( Client* client );
-
 		void		addClient( Client* client );
 		void		removeClient( Client* client );
 
 		void		sendMessageBroadcast( std::string message );
 		void		sendMessageBroadcast( Client* exclude, std::string message );
-		void		channelUsers(Client* client, Channel* channel, std::string channelName );
+		void		channelUsers(Client* client, Channel* channel, std::string channelName ); // Channel'e girişte kullanıcıların listesini channel'e bastırıyor.
 };
 
 #endif
