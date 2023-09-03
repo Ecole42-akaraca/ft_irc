@@ -1,7 +1,7 @@
 #include "../includes/Server.hpp"
 
-/* _________________________ UTILS __________________________________________ */
-bool			Server::check( int argc ){
+bool			Server::check( int argc )
+{
 	std::cout << YELLOW "Checking parameters..." END << std::endl;
 	if (argc != 3)
 		throw( std::invalid_argument(RED "Error: Invalid Argument Count\n"
@@ -9,8 +9,8 @@ bool			Server::check( int argc ){
 	return (true);
 }
 
-unsigned short	Server::port( std::string port ){
-
+unsigned short	Server::port( std::string port )
+{
 	// for: ' $> ./ircserv "" 1234 '
 	//		' $> ./ircserv '' 1234 '
 	if (port.empty())
@@ -36,8 +36,8 @@ unsigned short	Server::port( std::string port ){
 	return (portVal);
 }
 
-std::string		Server::password( std::string password ){
-
+std::string		Server::password( std::string password )
+{
 	// for: ' $> ./ircserv 1234 "" '
 	//		' $> ./ircserv 1234 '' '
 	if (password.empty())
@@ -45,6 +45,26 @@ std::string		Server::password( std::string password ){
 		"Password cannot be empty." END) );
 	std::cout << GREEN "Parameters okay." END << std::endl;
 	return (password);
+}
+
+void	Server::initCommands( void )
+{
+	t_cmdFunc["CAP"] = &Server::cap;
+	t_cmdFunc["JOIN"] = &Server::join;
+	t_cmdFunc["NICK"] = &Server::nick;
+	t_cmdFunc["PASS"] = &Server::pass;
+	t_cmdFunc["QUIT"] = &Server::quit;
+	t_cmdFunc["USER"] = &Server::user;
+	t_cmdFunc["PRIVMSG"] = &Server::privmsg;
+	t_cmdFunc["PING"] = &Server::ping;
+	t_cmdFunc["PART"] = &Server::part;
+	// t_cmdFunc["MODE"] = &Server::mode;
+	// t_cmdFunc["LIST"] = &Server::list;
+	// t_cmdFunc["INFO"] = &Server::info;
+	// t_cmdFunc["WHO"] = &Server::who;
+	// t_cmdFunc["WHOIS"] = &Server::whois;
+
+	// t_cmdFunc["KICK"] = &Server::kick;
 }
 
 void	Server::addToPollfds( int fd,  short events, short revents )
@@ -55,26 +75,6 @@ void	Server::addToPollfds( int fd,  short events, short revents )
 	newPoll.events = events;
 	newPoll.revents = revents;
 	this->_pollfds.push_back(newPoll);
-}
-
-void	Server::initCommands( void )
-{
-	t_cmdFunc["CAP"] = &Server::cap;
-	t_cmdFunc["JOIN"] = &Server::join;
-	t_cmdFunc["NICK"] = &Server::nick;
-	t_cmdFunc["PASS"] = &Server::pass;
-	t_cmdFunc["QUIT"] = &Server::quit;
-	t_cmdFunc["PRIVMSG"] = &Server::privmsg;
-	t_cmdFunc["USER"] = &Server::user;
-	t_cmdFunc["MODE"] = &Server::mode;
-	t_cmdFunc["PING"] = &Server::ping;
-	t_cmdFunc["LIST"] = &Server::list;
-	t_cmdFunc["INFO"] = &Server::info;
-	t_cmdFunc["WHO"] = &Server::who;
-	t_cmdFunc["WHOIS"] = &Server::whois;
-	t_cmdFunc["PART"] = &Server::part;
-
-	// t_cmdFunc["KICK"] = &Server::kick;
 }
 
 std::map<std::string, std::string>	Server::splitMessage( std::string message )
@@ -118,43 +118,7 @@ std::vector<std::string>	Server::cmdMessage( std::string message )
 	return (tokenArr);
 }
 
-// std::map<std::string, std::string> Server::splitMessage( std::string message )
-// {
-// 	std::string delimeter = "\r\n";
-// 	std::map<std::string, std::string> tokens;
-// 	size_t pos = 0;
-// 	// CAP LS\r\nNICK gsever\r\nUSER A B C D E F G asdf\r\n
-// 	while ((pos = message.find(delimeter)) != std::string::npos)
-// 	{
-// 		int posFirst = message.find(' ');
-// 		// 1. Kısım: USER 2. Kısım: A B C D E F G asdf
-// 		//posFirst + 1; CAP'ten sonra gelene boşluğun indexi
-// 		//pos - posFirst - 1; "CAP LS\r\n" yapısında LS'i almak için LS'in uzunluğuna bulmaya ihtiyaç var, -1 ise \r'ı almak istemiyoruz.
-// 		tokens.insert(std::make_pair(message.substr(0, posFirst), message.substr(posFirst + 1, pos - posFirst - 1)));
-// 		message.erase(0, pos + delimeter.length());
-// 	}
-// 	// mesaj boş olarak geliyor. Kontrol için yapılandırılabilir.
-// 	if (!message.empty())
-// 		tokens.insert(std::make_pair("UNKNOWN", message));
-// 	return (tokens);
-// }
-
-std::string Server::trim(const std::string& str)
-{
-	int	start;
-	int	end;
-
-	start = 0;
-	while (str[start] != '\0' && str[start] == ' ')
-		start++;
-	end = str.length() - 1;
-	while (end >= 0 && str[end] == ' ')
-		end--;
-
-	return (str.substr(start, end));
-}
-
-int	Server::findClientName( std::string name )
+int	Server::getClientFdByNickname( std::string name )
 {
 	for (itClients it = this->_clients.begin(); it != _clients.end(); it++)
 	{
@@ -162,6 +126,27 @@ int	Server::findClientName( std::string name )
 			return (it->second->getFd());
 	}
 	return (-1);
+}
+
+std::string	Server::combineMessage( size_t i, std::vector<std::string> vectorMessage )
+{
+	std::string msg;
+	for (; i < vectorMessage.size(); i++)
+	{
+		if (i + 1 < vectorMessage.size())
+			msg += vectorMessage[i] + " ";
+		else
+			msg += vectorMessage[i];
+	}
+	return (msg);
+}
+
+bool	Server::isChannelAdmin(Client* client, Channel* channel)
+{
+	if (channel->getAdmin()->getNickname().compare(client->getNickname()) == 0 && \
+		channel->getAdmin()->getNickname().size() == client->getNickname().size())
+		return (true);
+	return (false);
 }
 
 std::string	Server::welcomeServer( void )
@@ -195,4 +180,3 @@ std::string	Server::welcomeServer( void )
 	msg += " ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n";
 	return (msg);
 }
-/* -------------------------------------------------------------------------- */

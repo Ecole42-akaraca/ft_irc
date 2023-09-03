@@ -6,12 +6,13 @@
 #    By: gsever <gsever@student.42kocaeli.com.tr    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/07/18 18:46:27 by gsever            #+#    #+#              #
-#    Updated: 2023/09/01 13:49:08 by gsever           ###   ########.fr        #
+#    Updated: 2023/09/03 14:40:39 by gsever           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 #!!!!!!!!! NOTE: < here > you need change with your customize. !!!!!!!
 NAME		= ircserv
+NAME_BOT	= ircbot
 
 #	Flags for compile
 CC			= c++
@@ -36,6 +37,7 @@ OPENSSL_LIB_OS	:= $(BREW_PREFIX)/Cellar/openssl/*/lib
 
 INCLUDE_FLAGS	= \
 	-I$(HEADERS_DIRECTORY) \
+	-I$(HEADERS_DIRECTORY_BOT) \
 	# -I$(OPENSSL_INC_OS)
 
 #	Locations Part --> OK
@@ -51,14 +53,26 @@ LIBRARIES	= \
 
 HEADERS_DIRECTORY = includes
 HEADERS		= $(wildcard $(HEADERS_DIRECTORY)/*.hpp)
+
 SOURCES_DIRECTORY = sources
 SOURCES		= $(wildcard $(SOURCES_DIRECTORY)/*.cpp) # All sources files.
 COMMANDS_DIRECTORY = sources/commands
 SOURCES		+= $(wildcard $(COMMANDS_DIRECTORY)/*.cpp) # All sources/commands files.
+
+HEADERS_DIRECTORY_BOT = includes/bot
+BOT_HEADERS		= $(wildcard $(HEADERS_DIRECTORY_BOT)/*.hpp)
+BOT_DIRECTORY	= sources/bot
+SOURCES_BOT			= $(wildcard $(BOT_DIRECTORY)/*.cpp) # All Bot's file.
+
 OBJECTS_DIRECTORY = objects
 OBJECTS		= $(addprefix $(OBJECTS_DIRECTORY)/, $(notdir $(SOURCES:%.cpp=%.o)))
+OBJECTS_DIRECTORY_BOT = objects/bot
+OBJECTS_BOT		+= $(addprefix $(OBJECTS_DIRECTORY_BOT)/, $(notdir $(SOURCES_BOT:%.cpp=%.o)))
+
+# BOT_SRC		= $(foreach FILE, $(BOT), $(shell find $(SOURCES_DIR) -name $(FILE)))
 
 vpath %.cpp $(SOURCES_DIRECTORY):$(COMMANDS_DIRECTORY) # Getting this locations's *.cpp files.
+# vpath %.cpp $(BOT_DIRECTORY) # Getting this BOT location's *.cpp files.
 
 #	COLORS --> 🟥 🟩 🟦
 BLACK	= \033[0;30m
@@ -99,6 +113,9 @@ all:
 	@$(MAKE) $(NAME) -j $(NUMPROC) --no-print-directory
 #	@$(MAKE) -s $(NAME) -j $(NUMPROC)
 
+bonus:
+	@$(MAKE) $(NAME_BOT) -j $(NUMPROC) --no-print-directory
+
 #	Compiling
 # $(OBJECTS_DIRECTORY)/%.o: $(SOURCES_DIRECTORY)/%.cpp | $(OBJECTS_DIRECTORY)
 $(OBJECTS_DIRECTORY)/%.o: %.cpp | $(OBJECTS_DIRECTORY)
@@ -112,6 +129,13 @@ $(NAME): $(OBJECTS_DIRECTORY) $(OBJECTS)
 	@printf "%-50b %b" "$(GREEN)CREATED $@" "[FINISHED]$(X)\n"
 	@echo $(OS) Compiled with $(NUMPROC) cores!
 
+# $(NAME_BOT): $(OBJECTS_DIRECTORY) $(BOT_DIRECTORY)/*.cpp
+# @$(CC) $(FLAGS) $(BOT_DIRECTORY)/*.cpp -o $(NAME_BOT)
+$(NAME_BOT): $(OBJECTS_DIRECTORY_BOT) $(OBJECTS_BOT)
+	@$(CC) $(FLAGS) $(OBJECTS_BOT) -o $(NAME_BOT)
+	@printf "%-50b %b" "$(GREEN)CREATED $@" "[FINISHED]$(X)\n"
+	@echo $(OS) Compiled with $(NUMPROC) cores!
+
 #	Objects file creating
 $(OBJECTS_DIRECTORY):
 	@if [ ! -d $@ ]; then \
@@ -122,13 +146,22 @@ $(OBJECTS_DIRECTORY):
 # @mkdir -p $(OBJECTS_DIRECTORY);
 # @echo "$(NAME): $(GREEN)$(OBJECTS_DIRECTORY) was created$(RESET)";
 
+#	Objects file creating
+$(OBJECTS_DIRECTORY_BOT):
+	@if [ ! -d $@ ]; then \
+		mkdir -p $@; \
+		echo "$(NAME): $(GREEN)$@ folder was created$(RESET)"; \
+	fi
+
 clean: 
 	@rm -rf $(OBJECTS_DIRECTORY)
 	@echo "$(NAME): $(RED)$(OBJECTS) was deleted$(RESET)"
 
 fclean: clean
 	@rm -f $(NAME)
+	@rm -f $(NAME_BOT)
 	@echo "$(NAME): $(RED)$(NAME) was deleted$(RESET)"
+	@echo "$(NAME): $(RED)$(NAME_BOT) was deleted$(RESET)"
 
 re:
 	@$(MAKE) fclean --no-print-directory
@@ -140,7 +173,6 @@ print:
 	@echo "$(BREW_LIB_OS) inc burada."
 	@echo "$(FLAGS)"
 	@grep -q '$(BREW_PREFIX)' ~/.zshrc && echo "Var" || echo "Yok"
-
 
 open:
 	@echo "$(BREW_PREFIX)"
@@ -193,4 +225,4 @@ install_brew:
 valgrind:
 	valgrind --leak-check=full ./$(NAME) 1234 abc
 
-.PHONY: all clean fclean re print open brew_readline
+.PHONY: all clean fclean re bonus print open brew_readline

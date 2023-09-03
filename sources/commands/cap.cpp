@@ -1,4 +1,4 @@
-#include "../../includes/Server.hpp"
+# include "../../includes/Server.hpp"
 
 void	Server::cap( Client* it, std::vector<std::string> tokenArr ) // OK
 {
@@ -16,11 +16,5 @@ void	Server::cap( Client* it, std::vector<std::string> tokenArr ) // OK
 
 	if (!tokenArr[0].compare("CAP")
 			&& !tokenArr[1].compare("END"))
-	{
-		if (!it->getNickname().empty())
-		{
-			it->setRegistered();
-			it->sendMessageFd(Server::welcomeServer() + RPL_WELCOME(it->getNickname()));
-		}
-	}
+		it->setIRCstatus(HANDSHAKE);
 }

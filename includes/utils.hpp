@@ -1,7 +1,7 @@
 #ifndef UTILS_HPP
 # define UTILS_HPP
 
-# include "Colors.hpp"
+# include "colors.hpp"
 
 #define ERR_UNKNOWNCOMMAND(source, command)				"421 " + source + " " + command + " :Unknown command"
 #define ERR_NEEDMOREPARAMS(source, command)				"461 " + source + " " + command + " :Not enough parameters"
@@ -39,10 +39,10 @@
 #define RPL_WHOISUSER(source, nickname, username, hostname, realname)	"311 " + source + " " + nickname + " ~" + username + " " + hostname + " * :" + realname
 #define RPL_ENDOFWHOIS(source, nickname)								"318 " + source + " " + nickname + " :End of /WHOIS list"
 
-#define RPL_TOPIC(source, channel, topic)			"332 " + source + " " + channel + " :" + topic
+#define RPL_TOPIC(source, channel, topic)   "332 " + source + " " + channel + " :" + topic
 
 #define RPL_WHOREPLY(source, channel, user, host, server, nick, isOP, hopcount, realname)	"352 " + source + " " + channel + " " + user + " " + host + " " + server + " " + nick + " H" + isOP + " :" + hopcount  + " " + realname
-#define RPL_ENDOFWHO(source, channel)				"315 " + source + " " + channel + " :End of WHO list"
+#define RPL_ENDOFWHO(source, channel)	"315 " + source + " " + channel + " :End of WHO list"
 
-#define ERR_ERRONEUSNICKNAME(source, nick)			"432 " + source + " " + nick + " :Erroneous nickname"
+#define ERR_ERRONEUSNICKNAME(source, nick) "432 " + source + " " + nick + " :Erroneous nickname"
 #endif
