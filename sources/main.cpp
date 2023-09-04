@@ -13,6 +13,12 @@
  * 					nc localhost  8080
  * 					url olarak: localhost:8080
  * 
+ * nc veya telnet ile argüman giriş sırası:
+ * CAP END
+ * PASS 1
+ * NICK AHMET
+ * USER AHMET akaraca localhost :Ahmet Karaca
+ * 
  * izlemek için(Mac'te): nettop -m tcp	
  * 
  * IRC url:	https://www.youtube.com/watch?v=JpLwB14L2Rk&ab_channel=TallPaulTech

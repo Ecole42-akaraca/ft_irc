@@ -21,7 +21,10 @@ void	Server::part( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "PART" << END << std::endl;
 	if (it->getIRCstatus() != AUTHENTICATED)
+	{
+		it->sendMessageFd(RPL_NOTICE(it->getPrefix(), it->getNickname(), "Client's status is insufficient."));
 		return ;
+	}
 	if (it->isRegisteredChannel(tokenArr[1]) == true) // Client tarafından belirlenen channel ismi var mı kontrol ediliyor, '/part #asdf'
 	{
 		Channel *chan = _channels[tokenArr[1]]; // Ayrılış gerçekleştirdiği channel'ın pointer'ı tutuluyor.

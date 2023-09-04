@@ -80,7 +80,10 @@ void	Server::mode( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "MODE" << END << std::endl;
 	if (it->getIRCstatus() != AUTHENTICATED)
+	{
+		it->sendMessageFd(RPL_NOTICE(it->getPrefix(), it->getNickname(), "Client's status is insufficient."));
 		return ;
+	}
 
 	if (tokenArr.size() < 2)
 	{
@@ -94,14 +97,14 @@ void	Server::mode( Client* it, std::vector<std::string> tokenArr )
 		return ;
 	}
 
-	Channel* Chan = _channels.at(tokenArr[1]);
-	if (Chan == NULL)
+	itChannels itChan = _channels.find(tokenArr[1]);
+	if (itChan == _channels.end())
 	{
 		it->sendMessageFd(ERR_NOSUCHCHANNEL(it->getPrefix(), tokenArr[1]));
 		return ;
 	}
 
-	if (!isChannelAdmin(it, Chan))
+	if (!isChannelAdmin(it, itChan->second))
 	{
 		it->sendMessageFd(ERR_CHANOPRIVSNEEDED(it->getPrefix(), tokenArr[1]));
 		return ;
@@ -116,15 +119,15 @@ void	Server::mode( Client* it, std::vector<std::string> tokenArr )
 		{
 			case 'k':
 			{
-				Chan->setPassword( active ? tokenArr[3] : "" );
-				Chan->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], (active ? "+k" : "-k"), (active ? tokenArr[3] : "")));
+				itChan->second->setPassword( active ? tokenArr[3] : "" );
+				itChan->second->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], (active ? "+k" : "-k"), (active ? tokenArr[3] : "")));
 				break;
 			}
 
 			case 'l':
 			{
-				Chan->setMaxClient(active ? atoi(tokenArr[3].c_str()) : -1);
-				Chan->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], (active ? "+l" : "-l"), (active ? tokenArr[3] : "")));
+				itChan->second->setMaxClient(active ? atoi(tokenArr[3].c_str()) : -1);
+				itChan->second->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], (active ? "+l" : "-l"), (active ? tokenArr[3] : "")));
 				break;
 			}
 
@@ -133,10 +136,10 @@ void	Server::mode( Client* it, std::vector<std::string> tokenArr )
 				Client* user = getClientByNickname(tokenArr[3]);
 				if (user != NULL)
 				{
-					if (isChannelUser(user, Chan))
+					if (isChannelUser(user, itChan->second))
 					{
-						Chan->setAdmin(active ? user : NULL);
-						Chan->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], (active ? "+o" : "-o"), (active ? tokenArr[3] : "")));
+						itChan->second->setAdmin(active ? user : NULL);
+						itChan->second->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], (active ? "+o" : "-o"), (active ? tokenArr[3] : "")));
 					}
 					else
 						it->sendMessageFd(ERR_USERNOTINCHANNEL(it->getPrefix(), tokenArr[3], tokenArr[1]));

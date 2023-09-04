@@ -23,7 +23,10 @@ void	Server::privmsg( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "PRIVMSG" << END << std::endl;
 	if (it->getIRCstatus() != AUTHENTICATED)
+	{
+		it->sendMessageFd(RPL_NOTICE(it->getPrefix(), it->getNickname(), "Client's status is insufficient."));
 		return ;
+	}
 	std::string msg = Server::combineMessage(2, tokenArr);
 	if (tokenArr[1][0] == '#') // Channel içinde gönderilen mesajı temsil ediyor.
 	{

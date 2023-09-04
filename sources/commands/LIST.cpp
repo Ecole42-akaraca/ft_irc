@@ -13,7 +13,10 @@ void	Server::list( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "LIST" << END << std::endl;
 	if (it->getIRCstatus() != AUTHENTICATED)
+	{
+		it->sendMessageFd(RPL_NOTICE(it->getPrefix(), it->getNickname(), "Client's status is insufficient."));
 		return ;
+	}
 	it->sendMessageFd(RPL_LISTSTART(it->getPrefix()));
 
 	size_t i = tokenArr.size();

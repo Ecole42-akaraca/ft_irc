@@ -11,7 +11,10 @@ void	Server::kick( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "KICK" << END << std::endl;
 	if (it->getIRCstatus() != AUTHENTICATED)
+	{
+		it->sendMessageFd(RPL_NOTICE(it->getPrefix(), it->getNickname(), "Client's status is insufficient."));
 		return ;
+	}
 	itChannels itChan = _channels.find(tokenArr[1]);
 	if (itChan != _channels.end()) // Belirtilen channel var mıdır?
 	{

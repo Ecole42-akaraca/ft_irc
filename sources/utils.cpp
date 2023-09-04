@@ -110,7 +110,7 @@ std::map<std::string, std::string>	Server::splitMessage(std::string delimeter, s
 	// mesaj komutsuz olarak geliyor. Kontrol için yapılandırılabilir.
 	if (!message.empty()) // Bilinmeyen komut ve netcat için parslama işlemini yapıyorum.
 	{
-		if (message.back() == '\n')
+		if (message[message.size() - 1] == '\n')
 			return (Server::splitMessage("\n", message));
 		else
 		{
@@ -176,6 +176,8 @@ std::string	Server::combineMessage( size_t i, std::vector<std::string> vectorMes
 
 bool	Server::isChannelAdmin(Client* client, Channel* channel)
 {
+	if (channel->getAdmin() == NULL)
+		return (false);
 	if (channel->getAdmin()->getNickname().compare(client->getNickname()) == 0 && \
 		channel->getAdmin()->getNickname().size() == client->getNickname().size())
 		return (true);

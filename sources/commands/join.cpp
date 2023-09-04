@@ -9,7 +9,10 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "JOIN" << END << std::endl;
 	if (it->getIRCstatus() != AUTHENTICATED) // Kayıt işlemi bitmemiş Client'ler join fonksiyonuna girmesin istiyoruz, irssi client kayıt işlemini bitirmeden JOIN komutu gönderiyor.
+	{
+		it->sendMessageFd(RPL_NOTICE(it->getPrefix(), it->getNickname(), "Client's status is insufficient."));
 		return ;
+	}
 	if (tokenArr[1][0] != '#') // '/join asdf' şeklinde kanal oluşturmak için isim belirlendiğinde,
 		tokenArr[1] = "#" + tokenArr[1];  // Girilen ismin sonuna '#' ekleniyor, Bunun nedeni channel isimleri '#' ile başlamaktadır.
 
