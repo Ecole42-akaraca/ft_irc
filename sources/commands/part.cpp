@@ -1,4 +1,4 @@
-#include "../../includes/Server.hpp"
+# include "../../includes/Server.hpp"
 
 /**
  * @brief 
@@ -11,39 +11,38 @@
  * 	/part 			-> Message:>PART-#asdf<
  * 	/part See ya	-> Message:>PART-#asdf :See ya<
  * 
+ * Response Example>:WiZ!jto@tolsun.oulu.fi PART #playzone :I lost<
+ * 
+ * // Message:>PART-#asdf :Lorem ipsum naber ehe.<
  * @param it 
  * @param tokenArr 
  */
 void	Server::part( Client* it, std::vector<std::string> tokenArr )
 {
-	// Message:>PART-#asdf :Lorem ipsum naber ehe.<
 	std::cout << YELLOW << "PART" << END << std::endl;
-	if (_channels.find(tokenArr[1]) != _channels.end()) // Channel varsa eğer,
+	if (it->getIRCstatus() != AUTHENTICATED)
 	{
-		std::string	msg;
-		tokenArr[2].erase(0, 1); 	// token[2] token2'ni basindaki : kaldırır
-		for (size_t i = 2; i < tokenArr.size(); i++)
+		it->sendMessageFd(RPL_NOTICE(it->getPrefix(), it->getNickname(), "Client's status is insufficient."));
+		return ;
+	}
+	if (it->isRegisteredChannel(tokenArr[1]) == true) // Client tarafından belirlenen channel ismi var mı kontrol ediliyor, '/part #asdf'
+	{
+		Channel *chan = _channels[tokenArr[1]]; // Ayrılış gerçekleştirdiği channel'ın pointer'ı tutuluyor.
+		std::string msg = "";
+		if (tokenArr.size() > 2) // Client, Channel'den ayrılırken, Channel'e kullancının ayrıldığı bilgisi gönderildiği için ve bu mesajda ayrılış nedenide olduğundan dolayı bu kısımda 'ayrılma nedeni' kontrol edilmektedir.
+			msg = Server::combineMessage(2, tokenArr); // Gelen mesajlar splitlendiğinden dolayı birleştirilmek zorundadır.
+		it->sendMessageFd(RPL_PART(it->getPrefix(), tokenArr[1], msg)); // Client'tın kanaldan ayrılması için eklenmiştir.
+		chan->sendMessageBroadcast(it, RPL_PART(it->getPrefix(), tokenArr[1], msg)); // Client, kanaldan ayrılırken channel'daki herkese ayrılış mesajı göndermelidir 'BEN_ [~AHMET@176.88.10.20] has left #42kocaeli []'
+		chan->removeClient(it); // Client, channel'dan ayrıldığından dolayı, channel'den o kullanıcı bilgisi kaldırılmalıdır.
+		it->unregisterChannel(chan); // Client'ta bulunan channel bilgisinden channel kaldırılmalıdır.
+		if (chan->getClientCount() == 0) // Eğerki channel'daki son kişi ise, channel silinmelidir.
+			Server::removeChannel(chan->getName());
+		else if (Server::isChannelAdmin(it, chan) == true) // Eğerki channel'dan ayrılan kişi admin ise,
 		{
-			if (i + 1 < tokenArr.size())
-				msg += tokenArr[i] + " ";
-			else
-				msg += tokenArr[i];
+		 	chan->setAdmin(chan->_channelClients[0]); // Adminlik channele kayıtlı olan bir sonraki kişiye verilir.
+			chan->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], "o", chan->_channelClients[0]->getNickname()));
 		}
-		// kanaldan çıktığına dair herhangi bir bilgi paylaşmıyor (kendisine)
-		// Ama ayrıldığı channele mesaj yazdırmalıdır: 'BEN_ [~AHMET@176.88.10.20] has left #42kocaeli []'
-		it->sendMessageFd(RPL_PART(it->getPrefix(), tokenArr[1], msg)); // Kanaldan ayrılması için.
-		this->_channels[tokenArr[1]]->sendMessageBroadcast(\
-				it, RPL_PART(it->getPrefix(), tokenArr[1], msg)); // Kanaldaki tüm kullancıların görmesi için.
-		_channels[tokenArr[1]]->removeClient(it); // Channel'den client çıkınca client'inin silinmesi gerek.
-		if (_channels[tokenArr[1]]->getClientCount() == 0) // eğerki channelde kimse kalmazsa silinsin.
-			Server::removeChannel(_channels[tokenArr[1]]->getName());
 	}
-	else // eğerki kanal yoksa hata döndürmelidir
-	{
+	else // Eğer o isme sahip bir channel yoksa hata döndürülüyor.
 		it->sendMessageFd(ERR_NOSUCHCHANNEL(it->getPrefix(), tokenArr[1]));
-	}
-
-	// Eger part komutu ile channel'den ayrildiginda; channel'de kullanici
-	// 	kalmadiginda channel kapatilir. Bunun kontrolu quit komutu icinde
-	// 	kontrol edilmeli.
 }

@@ -1,4 +1,4 @@
-#include "../../includes/Server.hpp"
+# include "../../includes/Server.hpp"
 
 /*
 	//Channel içindeyken /who yazınca bu çıktıyı veriyor, ana sayfaya.
@@ -22,6 +22,11 @@
 void	Server::who( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "WHO" << END << std::endl;
+	if (it->getIRCstatus() != AUTHENTICATED)
+	{
+		it->sendMessageFd(RPL_NOTICE(it->getPrefix(), it->getNickname(), "Client's status is insufficient."));
+		return ;
+	}
 	if (tokenArr[1][0] == '#') //kanal aramak için
 	{
 		itChannels itC = _channels.find(tokenArr[1]); // channeli bul.
@@ -34,7 +39,7 @@ void	Server::who( Client* it, std::vector<std::string> tokenArr )
 				std::string isAdmin = "";
 				if (A == itChanel->getAdmin())
 					isAdmin = "@";
-				it->sendMessageFd(RPL_WHOREPLY(it->getPrefix(), tokenArr[1], A->getUsername(), A->getHostname(), A->getServername(), A->getNickname(), isAdmin,"0", A->getRealname()));
+				it->sendMessageFd(RPL_WHOREPLY(it->getPrefix(), tokenArr[1], A->getUsername(), A->getHostname(), _serverName, A->getNickname(), isAdmin, "0", A->getRealname()));
 				// @ -> kullanıcının operator olduğunu temsil ediyor.
 				// "0" ise kullanıcının o anki sunucu üzerinden mesajlaştığını ifade eder.
 
@@ -54,11 +59,11 @@ void	Server::who( Client* it, std::vector<std::string> tokenArr )
 			// 09:56 -!-          * akaraca   H   3  ~akaraca@bbdb-4a67-88a1-bfa9-1d6d.190.78.ip [ahmet karaca]
 			// 09:56 -!- End of /WHO list
 		// "/who akaraca X Ben" şeklinde bir girdi olsada sadece akaraca hakkında bilgi veriliyor.
-		int fd = Server::findClientName(tokenArr[1]);
+		int fd = Server::getClientFdByNickname(tokenArr[1]);
 		if (fd != -1)
 		{
 			Client *itC = _clients.at(fd);
-			it->sendMessageFd(RPL_WHOREPLY(it->getPrefix(), "*", itC->getUsername(), itC->getHostname(), itC->getServername(), itC->getNickname(), "@","0", itC->getRealname()));
+			it->sendMessageFd(RPL_WHOREPLY(it->getPrefix(), "*", itC->getUsername(), itC->getHostname(), _serverName, itC->getNickname(), "","0", itC->getRealname()));
 		}
 		it->sendMessageFd(RPL_ENDOFWHO(it->getPrefix(), "*"));
 	}

@@ -4,51 +4,65 @@
 # include <vector>
 # include <string>
 # include <iostream>
-# include <sys/socket.h> // send();
-# include <errno.h> // errno.
-# include "Colors.hpp"
-// # include <map>
+# include <sys/socket.h>
+# include <errno.h>
+
+# include "colors.hpp"
+# include "Channel.hpp"
+
+class Channel;
+
+/*
+	Server'da gelişi güzel kontrol eklemek yerine client'ın hangi aşamalarda olduğunu tutarlı şekilde takip etmek için eklendi.
+*/
+enum IRCstatus{
+	CONNECTING, // Bu durum, IRC client'ın IRC server'a bağlanmaya çalıştığı durumu temsil eder.
+	HANDSHAKE, // Bu durum, bağlantının kurulduğu ve IRC client'in IRC server ile bir kimlik oluşturmaya çalıştığı durumu temsil eder.
+	AUTHENTICATED, // Bu durum, IRC client'in IRC server tarafından kimlik doğrulaması yapıldığı durumu temsil eder.
+	DISCONNECTED, // Bu durum, bağlantının sonlandırıldığı durumu temsil eder.
+};
 
 class Client
 {
 	private:
-		int				_fd;
-		unsigned short	_port;
-		std::string		_hostname;
-		std::string		_nickname;
-		std::string		_username;
-		std::string		_realname;
-		std::string		_servername;
-		bool			_isRegistered;
-		bool			_isPasswordOK;
-		bool			_isActive;
+		int						_fd;
+		unsigned short			_port;
+		std::string				_hostname;
+		std::string				_nickname;
+		std::string				_username;
+		std::string				_realname;
+		bool					_havePassword; // server'a bağlanırken password olmadığından dolayı pass kontrolü yapamıyoruz, server herzaman passwordlü olduğundan dolayı bu şekilde kullanıcı password girmiş mi girmemiş mi kontrol edebiliyoruz.
+		int						_ircstatus; // enum değerlerini tutmak için bulunuyor.
+		std::vector<Channel*>	_registeredChannels; // Kullanıcının kayıtlı olduğu channel'lara erişmek daha kolay olsun diye eklendi.
 
 	public:
 		Client( int fd, int port, const std::string &hostname );
-		Client	&operator=( Client &rhs );
 		~Client();
 
-		std::string		getPrefix() const;
+		int				getIRCstatus( void ) { return (this->_ircstatus); }
 		int				getFd( void ) { return (this->_fd); }
 		unsigned short	getPort( void ) { return (this->_port); }
 		std::string		getHostname( void ) { return (this->_hostname); }
 		std::string		getNickname( void ) { return (this->_nickname); }
 		std::string		getUsername( void ) { return (this->_username); }
 		std::string		getRealname( void ) { return (this->_realname); }
-		std::string		getServername( void ) { return (this->_servername); }
-		bool			getRegistered( void ) { return (this->_isRegistered); }
-		bool			getPasswordStatus( void ) { return (this->_isPasswordOK); }
-		bool			getActiveStatus( void ) { return (this->_isActive); }
+		bool			getPasswordStatus( void ) { return (this->_havePassword); }
+		std::string		getPrefix() const;
 
+		void	setIRCstatus( int status ) { this->_ircstatus = status; }
 		void	setHostname( std::string name ) { this->_hostname = name; }
 		void	setNickname( std::string name ) { this->_nickname = name; }
 		void	setUsername( std::string name ) { this->_username = name; }
 		void	setRealname( std::string name ) { this->_realname = name; }
-		void	setServername( std::string name ) { this->_servername = name; }
-		void	setRegistered( void ) { this->_isRegistered = true; }
-		void	setPasswordStatus( void ) { this->_isPasswordOK = true; }
-		void	setActiveStatus( void ) { this->_isActive = false; }
+		void	setPasswordStatus( void ) { this->_havePassword = true; }
 		void	sendMessageFd( std::string message );
+		void	sendWelcomeMessage( std::string message );
+
+		void	registerChannel( Channel* channel ); // Client içinde bulunan _registeredChannels'e Channele eklemek için vardır.
+		void	unregisterChannel( Channel* channel ); // Client içinde bulunan _registeredChannels'den Channele kaldırmak için vardır.
+		std::vector<Channel*> getRegisteredChannels( void ) { return (this->_registeredChannels); } // Client'tin kayıtlı olduğu clientlerin listesini döndürür.
+		bool	isRegisteredChannel( std::string channelName ); // Client'in o kanala kayıtlı olup olmadığı kontrol eder.
+		void	clearRegisteredChannels( void ) { this->_registeredChannels.clear(); } // Client quit attığı zaman kayıtlı olduğu tüm channelerden çıkarmak için yapıyoruz.
 };
 
 #endif
