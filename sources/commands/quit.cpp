@@ -7,6 +7,7 @@ void	Server::quit( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "QUIT" << END << std::endl;
 	it->setIRCstatus(DISCONNECTED);
+	it->sendMessageFd(RPL_NOTICE(it->getPrefix(), it->getNickname(), "Client status is now: DISCONNECTED."));
 
 	for (size_t i = 0; i < it->getRegisteredChannels().size(); ++i) // Quit ile ayrılan channel, kayıtlı olduğu channel'lardan ayrılmalıdır.
 	{

@@ -23,7 +23,10 @@ void Server::user(Client* it, std::vector<std::string> tokenArr )
 			return ;
 		}
 		if (!it->getNickname().empty()) // aynı nickli bir kullanıcı girmediği durumda statü değiştirmek için.
+		{
 			it->setIRCstatus(AUTHENTICATED);
+			it->sendMessageFd(RPL_NOTICE(it->getPrefix(), it->getNickname(), "Client status is now: AUTHENTICATED."));
+		}
 
 		it->setUsername(tokenArr[1]);
 		std::cout << "Username:>" << it->getUsername() << std::endl;

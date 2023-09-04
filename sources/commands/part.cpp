@@ -20,6 +20,8 @@
 void	Server::part( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "PART" << END << std::endl;
+	if (it->getIRCstatus() != AUTHENTICATED)
+		return ;
 	if (it->isRegisteredChannel(tokenArr[1]) == true) // Client tarafından belirlenen channel ismi var mı kontrol ediliyor, '/part #asdf'
 	{
 		Channel *chan = _channels[tokenArr[1]]; // Ayrılış gerçekleştirdiği channel'ın pointer'ı tutuluyor.
@@ -32,8 +34,11 @@ void	Server::part( Client* it, std::vector<std::string> tokenArr )
 		it->unregisterChannel(chan); // Client'ta bulunan channel bilgisinden channel kaldırılmalıdır.
 		if (chan->getClientCount() == 0) // Eğerki channel'daki son kişi ise, channel silinmelidir.
 			Server::removeChannel(chan->getName());
-		else if (Server::isChannelAdmin(it, chan) == true) // Eğerki channel'dan ayrılan kişi admin ise, adminlik channele kayıtlı olan bir sonraki kişiye adminlik verilir.
-		 	chan->setAdmin(chan->_channelClients[0]);
+		else if (Server::isChannelAdmin(it, chan) == true) // Eğerki channel'dan ayrılan kişi admin ise,
+		{
+		 	chan->setAdmin(chan->_channelClients[0]); // Adminlik channele kayıtlı olan bir sonraki kişiye verilir.
+			chan->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], "o", chan->_channelClients[0]->getNickname()));
+		}
 	}
 	else // Eğer o isme sahip bir channel yoksa hata döndürülüyor.
 		it->sendMessageFd(ERR_NOSUCHCHANNEL(it->getPrefix(), tokenArr[1]));

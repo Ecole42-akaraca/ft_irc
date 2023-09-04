@@ -25,6 +25,9 @@
  * https://modern.ircdocs.horse/#rplliststart-321
  * https://www.rfc-editor.org/rfc/rfc2812#section-3.2.6
  * https://ircv3.net/specs/extensions/capability-negotiation.html
+ * https://dd.ircdocs.horse/refs/commands/part
+ * https://datatracker.ietf.org/doc/html/rfc2812#section-3.1.5
+ * https://www.alien.net.au/irc/irc2numerics.html
  * 
  * TODO: MODE; komutundaki parse'lenen inputa gore ayarla.
  * TODO: 11:53 -!- Irssi: (default) critical nicklist_set_host: assertion 'host != NULL' failed
@@ -60,6 +63,7 @@
  */
 int	main( int argc, char **argv )
 {
+
 	try
 	{
 		Server Server(argc, argv);

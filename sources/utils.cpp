@@ -58,13 +58,12 @@ void	Server::initCommands( void )
 	t_cmdFunc["PRIVMSG"] = &Server::privmsg;
 	t_cmdFunc["PING"] = &Server::ping;
 	t_cmdFunc["PART"] = &Server::part;
-	// t_cmdFunc["MODE"] = &Server::mode;
+	t_cmdFunc["MODE"] = &Server::mode;
 	t_cmdFunc["LIST"] = &Server::list;
 	t_cmdFunc["INFO"] = &Server::info;
 	t_cmdFunc["WHO"] = &Server::who;
 	t_cmdFunc["WHOIS"] = &Server::whois;
-
-	// t_cmdFunc["KICK"] = &Server::kick;
+	t_cmdFunc["KICK"] = &Server::kick;
 }
 
 void	Server::addToPollfds( int fd,  short events, short revents )
@@ -77,9 +76,8 @@ void	Server::addToPollfds( int fd,  short events, short revents )
 	this->_pollfds.push_back(newPoll);
 }
 
-std::map<std::string, std::string>	Server::splitMessage( std::string message )
+std::map<std::string, std::string>	Server::splitMessage(std::string delimeter, std::string message )
 {
-	std::string delimeter = "\r\n";
 	std::map<std::string, std::string> tokens;
 	size_t pos = 0;
 
@@ -103,12 +101,24 @@ std::map<std::string, std::string>	Server::splitMessage( std::string message )
 		// 1. Kısım: USER 2. Kısım: A B C D E F G asdf
 		//posFirst + 1; CAP'ten sonra gelene boşluğun indexi
 		//pos - posFirst - 1; "CAP LS\r\n" yapısında LS'i almak için LS'in uzunluğuna bulmaya ihtiyaç var, -1 ise \r'ı almak istemiyoruz.
-		tokens.insert(std::make_pair(firstWord, message.substr(posFirst + 1, pos - posFirst - 1)));
+		if (posFirst != -1)
+			tokens.insert(std::make_pair(firstWord, message.substr(posFirst + 1, pos - posFirst - 1)));
+		else
+			tokens.insert(std::make_pair(firstWord, "")); // nc localhost için 'TEK' argüman için kopya durumu söz konusu oluyor, bunu engellemek için eklendi. 'Message:>B-b<'
 		message.erase(0, pos + delimeter.length());
 	}
-	// mesaj boş olarak geliyor. Kontrol için yapılandırılabilir.
-	if (!message.empty())
-		tokens.insert(std::make_pair("UNKNOWN", message));
+	// mesaj komutsuz olarak geliyor. Kontrol için yapılandırılabilir.
+	if (!message.empty()) // Bilinmeyen komut ve netcat için parslama işlemini yapıyorum.
+	{
+		if (message.back() == '\n')
+			return (Server::splitMessage("\n", message));
+		else
+		{
+			message.append("\n");
+			return (Server::splitMessage("\n", message));
+			//tokens.insert(std::make_pair("UNKNOWN", message));
+		}
+	}
 	return (tokens);
 }
 
@@ -141,6 +151,16 @@ int	Server::getClientFdByNickname( std::string name )
 	return (-1);
 }
 
+Client*	Server::getClientByNickname( std::string name )
+{
+	for (itClients it = this->_clients.begin(); it != _clients.end(); it++)
+	{
+		if (it->second->getNickname().compare(name) == 0 && it->second->getNickname().size() == name.size())
+			return (it->second);
+	}
+	return (NULL);
+}
+
 std::string	Server::combineMessage( size_t i, std::vector<std::string> vectorMessage )
 {
 	std::string msg;
@@ -159,6 +179,15 @@ bool	Server::isChannelAdmin(Client* client, Channel* channel)
 	if (channel->getAdmin()->getNickname().compare(client->getNickname()) == 0 && \
 		channel->getAdmin()->getNickname().size() == client->getNickname().size())
 		return (true);
+	return (false);
+}
+
+bool	Server::isChannelUser(Client* client, Channel* channel)
+{
+	if (client->isRegisteredChannel(channel->getName()))
+	{
+		return (true);
+	}
 	return (false);
 }
 

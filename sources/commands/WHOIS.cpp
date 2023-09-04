@@ -18,6 +18,8 @@
 void	Server::whois( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "WHOIS" << END << std::endl;
+	if (it->getIRCstatus() != AUTHENTICATED)
+		return ;
 	int fd = Server::getClientFdByNickname(tokenArr[1]);
 	if (fd != -1)
 	{

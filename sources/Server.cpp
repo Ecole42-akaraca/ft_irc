@@ -72,6 +72,15 @@ void	Server::start( void )
 
 			if (it->revents & POLLHUP)
 			{
+				if (it->fd > 3 && it->fd < _SC_OPEN_MAX) // irssi client ile bağlandığım zaman, buraya gelen it->fd değeri BAYAAAAA bir fazla olduğundan kaynaklı, sınır belirleyip sadece nc localhost ile sinyal kestiğim client'ların bağlantısı için koydum.
+				{
+					Client *nc = _clients.at(it->fd);
+					if (nc != NULL)
+					{
+						//if (nc->getIRCstatus() == CONNECTING)
+							Server::quitReason(nc, "Signal FATAL ERROR!");
+					}
+				}
 				std::cout << "Client disconnected." << std::endl;
 				break; // Move to the next socket
 			}
@@ -119,7 +128,7 @@ void	Server::acceptClients( void )
 // MODE gsever akaraca gorkem ahmet
 */
 void	Server::commandHandler( itPoll &itClient )
-{
+{ 
 	char buffer[MAX_BUFFER];
 	std::vector<std::string>	tokenArr;
 	ssize_t bytesRead = recv(itClient->fd, buffer, sizeof(buffer) - 1, 0);
@@ -127,7 +136,7 @@ void	Server::commandHandler( itPoll &itClient )
 	if (bytesRead > 0)
 	{
 		buffer[bytesRead] = '\0';
-		std::map<std::string, std::string> tokens = splitMessage(buffer);
+		std::map<std::string, std::string> tokens = splitMessage("\r\n", buffer);
 		Client *at = _clients.at(itClient->fd);
 		for(itSplit itToken = tokens.begin(); itToken != tokens.end(); ++itToken)
 		{
@@ -183,7 +192,7 @@ void	Server::serverInfo( void )
 	std::cout << BLUE << "\n------------CLIENTS.FDS--------------" << END << std::endl;
 	for (itClients it = _clients.begin(); it != _clients.end(); it++)
 		std::cout << it->first << " - ";
-	std::cout << BLUE << "\n------------CHANNELS----------------" << END << std::endl;
+	std::cout << BLUE << "\n------------CHANNELS-----------------" << END << std::endl;
 	for (itChannels it = _channels.begin(); it != _channels.end(); it++)
 		std::cout << it->first << " - ";
 	std::cout << BLUE << "\n-------------------------------------" << END << std::endl;

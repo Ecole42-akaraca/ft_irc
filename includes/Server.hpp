@@ -17,6 +17,7 @@
 # include <sys/poll.h>
 # include <netdb.h>
 # include <sstream>
+# include <signal.h>
 
 # include "colors.hpp"
 # include "Client.hpp"
@@ -84,8 +85,9 @@ class Server
 		void	list( Client*, std::vector<std::string> );
 		void	whois( Client*, std::vector<std::string> );
 		void	who( Client*, std::vector<std::string> );
-		// void	mode( Client*, std::vector<std::string> );
+		void	mode( Client*, std::vector<std::string> );
 		void	info( Client*, std::vector<std::string> );
+		void	kick( Client*, std::vector<std::string> );
 /* -------------------------------------------------------------------------- */
 /* _________________________ SOCKET FUCTIONS ________________________________ */
 	private:
@@ -101,11 +103,13 @@ class Server
 		std::string							password( std::string argv );
 		void								initCommands( void );
 		void								addToPollfds( int fd,  short events, short revents );
-		std::map<std::string, std::string>	splitMessage( std::string message );
+		std::map<std::string, std::string>	splitMessage( std::string delimeter, std::string message );
 		std::vector<std::string>			cmdMessage( std::string message );
 		int									getClientFdByNickname( std::string name ); //Nickname'ye Client'in fd'sini döndürür.
+		Client*								getClientByNickname( std::string name ); // Nickname'ye Client'in pointerını döndürür.
 		std::string							combineMessage( size_t i, std::vector<std::string> vectorMessage ); //splitMessage fonk. tam tersi.
-		bool								isChannelAdmin(Client* client, Channel* channel); // Client'in belirtilen Channel'in admini mi, kontrol ediliyor.
+		bool								isChannelAdmin( Client* client, Channel* channel ); // Client'in belirtilen Channel'in admini mi, kontrol ediliyor.
+		bool								isChannelUser( Client* client, Channel* channel ); // Client'in belirtilen Channel'in kullanıcısı mı kontrol ediliyor.
 		std::string							welcomeServer( void );
 /* -------------------------------------------------------------------------- */	
 };
