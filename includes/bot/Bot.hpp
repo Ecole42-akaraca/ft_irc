@@ -13,6 +13,8 @@
 
 # include <unistd.h>
 
+# define MAX_BUFFER 1024
+
 class Channel;
 
 class Bot
@@ -37,6 +39,7 @@ class Bot
 		Bot( int argc, char **argv );
 		~Bot();
 		void	start( void );
+		void	listen( void );
 /* -------------------------------------------------------------------------- */
 /* _________________________ COMMANDS _______________________________________ */
 		void	authenticate( void );

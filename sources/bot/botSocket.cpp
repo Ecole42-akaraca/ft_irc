@@ -29,7 +29,7 @@ void	Bot::connectSocketAddress( void )
 	std::cout << YELLOW "Socket address created." END << std::endl;
 
 	botAddress.sin_family = AF_INET;
-	botAddress.sin_addr.s_addr = inet_addr(_host.c_str());
+	botAddress.sin_addr.s_addr = inet_addr(_host.c_str()); // şeklinde bağlantı kuramayız çünkü host değeri "localhost"'tur yani string'tir 
 	botAddress.sin_port = htons(this->_port);
 	memcpy(&botAddress.sin_addr.s_addr, server_info->h_addr, server_info->h_length);
 	std::cout << YELLOW "Socket address settings set." END << std::endl;
