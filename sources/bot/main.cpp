@@ -2,11 +2,10 @@
 
 int	main( int argc, char **argv )
 {
-	(void)argc;
 	try
 	{
 		Bot	ircBot(argc, argv);
-		std::cout << "Bot created succesfully!" << std::endl;
+		ircBot.start();
 	}
 	catch (const std::exception& e)
 	{

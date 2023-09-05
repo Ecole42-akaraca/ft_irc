@@ -91,7 +91,8 @@ void IrcBot::sendFile(const std::string &source, const std::string &filename, co
 
 	std::thread sender([this] {
 
-		int server_fd = socket(AF_INET, SOCK_STREAM, 0);
+		int 
+		 = socket(AF_INET, SOCK_STREAM, 0);
 		if (server_fd < 0)
 			throw std::runtime_error("Error while opening socket.");
 

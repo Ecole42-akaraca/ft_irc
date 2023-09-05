@@ -69,7 +69,6 @@
  */
 int	main( int argc, char **argv )
 {
-
 	try
 	{
 		Server Server(argc, argv);
