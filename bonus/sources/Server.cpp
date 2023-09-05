@@ -92,7 +92,8 @@ void	Server::start( void )
 					Server::acceptClients();
 					break;
 				}
-				Server::commandHandler(it);
+				else if (it->fd > 0 && it->fd <= _pollfds[_pollfds.size() - 1].fd) // saçma bir fd değeri gelince map seg yiyor. Önlemek için gerekli
+					Server::commandHandler(it);
 			}
 		}
 	}
@@ -128,13 +129,13 @@ void	Server::acceptClients( void )
 // MODE gsever akaraca gorkem ahmet
 */
 void	Server::commandHandler( itPoll &itClient )
-{ 
+{
 	char buffer[MAX_BUFFER];
 	std::vector<std::string>	tokenArr;
 	ssize_t bytesRead = recv(itClient->fd, buffer, sizeof(buffer) - 1, 0);
 	Client *at = _clients.at(itClient->fd);
 
-	if (at != NULL && bytesRead > 0)
+	if (bytesRead > 0)
 	{
 		buffer[bytesRead] = '\0';
 		std::map<std::string, std::string> tokens = splitMessage("\r\n", buffer);
@@ -155,7 +156,7 @@ void	Server::commandHandler( itPoll &itClient )
 		}
 		tokens.clear();
 	}
-	else 
+	else
 		Server::quitReason(at, "SIGTERM QUIT");
 }
 
