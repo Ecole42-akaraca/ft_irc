@@ -58,6 +58,10 @@ Server::~Server( void )
 
 void	Server::start( void )
 {
+	for (int i = 1; i < NSIG; i++) {
+		signal(i, sighandler);
+	}
+
 	Server::addToPollfds( this->_serverFd, POLLIN, 0 );
 	std::cout << "Server listening on port: " << this->_port << std::endl;
 	std::cout << "Server password: " << this->_password << std::endl;
@@ -107,7 +111,7 @@ void	Server::acceptClients( void )
 
 	int	clientFd = accept(this->_serverFd, (sockaddr *) &clientAddress, &clientAddressSize);
 	if (clientFd < 0)
-		std::cerr << "Error while accepting client connection." << std::endl;
+		std::cerr << "Error while accepting client connection. Error code: " << errno << std::endl;
 	else
 	{
 		Server::addToPollfds(clientFd, POLLIN, 0);

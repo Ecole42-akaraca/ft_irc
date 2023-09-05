@@ -28,14 +28,14 @@ void	Client::sendMessageFd( std::string message )
 	std::cout << YELLOW << "Response:>" + message << "<" << END << std::endl;
 	message += "\r\n";
 	if (send(this->getFd(), message.c_str(), message.size(), 0) == -1)
-		throw (std::runtime_error( "Error: sendMessageFd: Failed to send message." ));
+		std::cerr << "Error: sendMessageFd: Failed to send message. Error code: " << errno << std::endl;
 }
 
 void	Client::sendWelcomeMessage( std::string message )
 {
 	message += "\r\n";
 	if (send(this->getFd(), message.c_str(), message.size(), 0) == -1)
-		throw (std::runtime_error( "Error: sendMessageFd: Failed to send message." ));
+		std::cerr << "Error: sendMessageFd: Failed to send message. Error code: " << errno << std::endl;
 }
 
 void	Client::registerChannel( Channel* channel )

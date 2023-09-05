@@ -101,6 +101,7 @@ class Server
 		bool								check( int argc );
 		unsigned short						port( std::string argv );
 		std::string							password( std::string argv );
+		static void							sighandler( int signum );
 		void								initCommands( void );
 		void								addToPollfds( int fd,  short events, short revents );
 		std::map<std::string, std::string>	splitMessage( std::string delimeter, std::string message );

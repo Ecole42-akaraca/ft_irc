@@ -47,6 +47,11 @@ std::string		Server::password( std::string password )
 	return (password);
 }
 
+void	Server::sighandler( int signum )
+{
+	std::cout << "signum: " << signum << std::endl;
+}
+
 void	Server::initCommands( void )
 {
 	t_cmdFunc["CAP"] = &Server::cap;
