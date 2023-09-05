@@ -46,4 +46,3 @@ void	Server::part( Client* it, std::vector<std::string> tokenArr )
 	else // Eğer o isme sahip bir channel yoksa hata döndürülüyor.
 		it->sendMessageFd(ERR_NOSUCHCHANNEL(it->getPrefix(), tokenArr[1]));
 }
-

@@ -21,4 +21,3 @@ void	Server::cap( Client* it, std::vector<std::string> tokenArr ) // OK
 		it->sendMessageFd(RPL_NOTICE(it->getPrefix(), it->getNickname(), "Client status is now: HANDSHAKE."));
 	}
 }
-

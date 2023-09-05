@@ -42,4 +42,3 @@ void	Server::nick( Client* it, std::vector<std::string> tokenArr )
 		it->setNickname(tokenArr[1]); // RPL_NICK kısmında eski kullanıcı adına ihtiyaç olduğundan dolayı (hangi kullanıcın adı, ne oldu?) en sona client'in nick'ini belirleme eklendi.
 	}
 }
-
