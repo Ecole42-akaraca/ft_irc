@@ -6,6 +6,7 @@
 # include <iostream>
 # include <sys/socket.h>
 # include <errno.h>
+# include <sstream>
 
 # include "colors.hpp"
 # include "Channel.hpp"

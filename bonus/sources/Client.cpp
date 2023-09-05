@@ -16,9 +16,11 @@ Client::~Client() {}
 
 std::string	Client::getPrefix() const
 {
+	std::stringstream ss;
+	ss << this->_port;
 	return this->_nickname
 		+ (this->_username.empty() ? "" : "!" + this->_username)
-		+ (this->_hostname.empty() ? "" : "@" + this->_hostname);
+		+ (this->_hostname.empty() ? "" : "@" + this->_hostname) + (":" + ss.str());
 }
 
 void	Client::sendMessageFd( std::string message )
