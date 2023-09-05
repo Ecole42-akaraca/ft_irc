@@ -72,15 +72,15 @@ void	Server::start( void )
 
 			if (it->revents & POLLHUP)
 			{
-				if (it->fd > 3 && it->fd < _SC_OPEN_MAX) // irssi client ile bağlandığım zaman, buraya gelen it->fd değeri BAYAAAAA bir fazla olduğundan kaynaklı, sınır belirleyip sadece nc localhost ile sinyal kestiğim client'ların bağlantısı için koydum.
-				{
-					Client *nc = _clients.at(it->fd);
-					if (nc != NULL)
-					{
-						//if (nc->getIRCstatus() == CONNECTING)
-							Server::quitReason(nc, "Signal FATAL ERROR!");
-					}
-				}
+				// if (it->fd > 3 && it->fd < _SC_OPEN_MAX) // irssi client ile bağlandığım zaman, buraya gelen it->fd değeri BAYAAAAA bir fazla olduğundan kaynaklı, sınır belirleyip sadece nc localhost ile sinyal kestiğim client'ların bağlantısı için koydum.
+				// {
+				// 	Client *nc = _clients.at(it->fd);
+				// 	if (nc != NULL)
+				// 	{
+				// 		//if (nc->getIRCstatus() == CONNECTING)
+				// 			Server::quitReason(nc, "Signal FATAL ERROR!");
+				// 	}
+				// }
 				std::cout << "Client disconnected." << std::endl;
 				break; // Move to the next socket
 			}
@@ -132,12 +132,12 @@ void	Server::commandHandler( itPoll &itClient )
 	char buffer[MAX_BUFFER];
 	std::vector<std::string>	tokenArr;
 	ssize_t bytesRead = recv(itClient->fd, buffer, sizeof(buffer) - 1, 0);
+	Client *at = _clients.at(itClient->fd);
 
-	if (bytesRead > 0)
+	if (at != NULL && bytesRead > 0)
 	{
 		buffer[bytesRead] = '\0';
 		std::map<std::string, std::string> tokens = splitMessage("\r\n", buffer);
-		Client *at = _clients.at(itClient->fd);
 		for(itSplit itToken = tokens.begin(); itToken != tokens.end(); ++itToken)
 		{
 			std::cout << BLUE << "Message:>" << itToken->first << "-" << itToken->second << "<" << END << std::endl;
@@ -155,6 +155,8 @@ void	Server::commandHandler( itPoll &itClient )
 		}
 		tokens.clear();
 	}
+	else 
+		Server::quitReason(at, "SIGTERM QUIT");
 }
 
 void	Server::removeClient(int clientFd)

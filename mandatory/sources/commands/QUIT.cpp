@@ -7,6 +7,8 @@ void	Server::quit( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "QUIT" << END << std::endl;
 
+	std::cout << "Connection closed by client " << it->getHostname() << ":" << it->getPort() << std::endl;
+
 	unsigned int size = it->getRegisteredChannels().size();
 	for (int i = size; i > 0; --i) // Quit ile ayrılan channel, kayıtlı olduğu channel'lardan ayrılmalıdır.
 	{
