@@ -73,3 +73,17 @@ Source: Conversation with Bing, 03.09.2023
 (2) Direct Client-to-Client Protocol (DCC). https://modern.ircdocs.horse/dcc.html.
 (3) List of Internet Relay Chat commands - Wikipedia. https://en.wikipedia.org/wiki/List_of_Internet_Relay_Chat_commands.
 */
+//void	Server::dcc( Client* it, std::vector<std::string> tokenArr )
+//{
+	// https://www.mirc.com/help/html/index.html?send_receive_files.html
+	// /dcc send [-clmn] <nick> <file1> [file2] ... [fileN]
+
+	//Dosya nasıl gönderilir: '/dcc send BEN ./Desktop/1.txt'
+	//Dosyayı alan client'a gelen mesaj: 'DCC SEND from TESTER [127.0.0.1 port 64534]: 1.txt [3kB]'
+	// Eğerki bu eylem karşısında hiçbir şey yapılmazsa şu döndürülür:	'DCC aborted sending file 1.txt for BEN'
+	//																	'DCC aborted receiving file 1.txt from TESTER'
+
+	// Dosyayı almak için: '/dcc get TESTER ~/Downloads/' veya '/dcc get TESTER 127.0.0.1 64534 1.txt ~/Downloads/'
+
+	// Gönderen client'ten bu şekilde mesaj gelmektedir: 'PRIVMSG BEN :DCC SEND 1.txt 2130706433 64740 2481'
+//}

@@ -128,8 +128,6 @@ std::vector<std::string>	Server::cmdMessage( std::string message )
 	std::string					token;
 	std::vector<std::string>	tokenArr;
 
-	std::cout << "Message:>" << message << "<" << std::endl;
-
 	while (ss >> token)
 		tokenArr.push_back(token);
 

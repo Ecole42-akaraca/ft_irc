@@ -19,38 +19,32 @@
 #define ERR_CHANOPRIVSNEEDED(source, channel)			"482 " + source + " " + channel + " :You're not channel operator"
 #define ERR_CHANNELISFULL(source, channel)				"471 " + source + " " + channel + " :Cannot join channel (+l)"
 #define ERR_CANNOTSENDTOCHAN(source, channel)			"404 " + source + " " + channel + " :Cannot send to channel"
+#define ERR_ERRONEUSNICKNAME(source, nick)				"432 " + source + " " + nick + " :Erroneous nickname"
 
 // NUMERIC REPLIES
-#define RPL_WELCOME(source, server)						"001 " + source + " :" + B_GREEN + "Welcome " + source + " to the " + server + " server!" + END
-#define RPL_NAMREPLY(source, channel, users)	"353 " + source + " = " + channel + " :" + users
-#define RPL_ENDOFNAMES(source, channel)			"366 " + source + " " + channel + " :End of /NAMES list."
+#define RPL_WELCOME(source, server)															"001 " + source + " :" + B_GREEN + "Welcome " + source + " to the " + server + " server!" + END
+#define RPL_NAMREPLY(source, channel, users)												"353 " + source + " = " + channel + " :" + users
+#define RPL_ENDOFNAMES(source, channel)														"366 " + source + " " + channel + " :End of /NAMES list."
+#define RPL_WHOISUSER(source, nickname, username, hostname, port, realname)					"311 " + source + " " + nickname + " ~" + username + " " + hostname + ":" + port + " * :" + realname
+#define RPL_ENDOFWHOIS(source, nickname)													"318 " + source + " " + nickname + " :End of /WHOIS list"
+#define RPL_TOPIC(source, channel, topic)													"332 " + source + " " + channel + " :" + topic
+#define RPL_WHOREPLY(source, channel, user, host, server, nick, flag, hopcount, realname)	"352 " + source + " " + channel + " " + user + " " + host + " " + server + " " + nick + " H" + flag + " :" + hopcount  + " " + realname
+#define RPL_ENDOFWHO(source, channel)														"315 " + source + " " + channel + " :End of WHO list"
+#define RPL_LISTSTART(client)																"321 " + client + " Channel - Users Count - Channel Topic"
+#define RPL_LIST(client, channel, clientCount, topic)										"322 " + client + " " + channel + " - " + clientCount + " - :" + topic 
+#define RPL_LISTEND(client)																	"323 " + client + " :End of /LIST"
+#define RPL_INFO(client, string)															"371 " + client + " :" + string
+#define RPL_ENDOFINFO(client)																"374 " + client + " :End of INFO list"
 
 // COMMAND REPLIES
-#define RPL_JOIN(source, channel)					":" + source + " JOIN :" + channel
-#define RPL_PART(source, channel, message)			":" + source + " PART " + channel + " " + message // :" + message
-#define RPL_PING(source, token)						":" + source + " PONG :" + token
-#define RPL_PRIVMSG(source, target, message)		":" + source + " PRIVMSG " + target + " " + message // :" + message
-#define RPL_NOTICE(source, target, message)			":" + source + " NOTICE " + target + " :" + message
-#define RPL_QUIT(source, message)					":" + source + " QUIT :Quit: " + message
-#define RPL_KICK(source, channel, target, reason)	":" + source + " KICK " + channel + " " + target + " " + reason // :" + reason
-#define RPL_MODE(source, channel, modes, args)		":" + source + " MODE " + channel + " " + modes + " " + args
-#define RPL_NICK(source, nickname)					":" + source + " NICK " + nickname
-
-#define RPL_WHOISUSER(source, nickname, username, hostname, realname)	"311 " + source + " " + nickname + " ~" + username + " " + hostname + " * :" + realname
-#define RPL_ENDOFWHOIS(source, nickname)								"318 " + source + " " + nickname + " :End of /WHOIS list"
-
-#define RPL_TOPIC(source, channel, topic)   "332 " + source + " " + channel + " :" + topic
-
-#define RPL_WHOREPLY(source, channel, user, host, server, nick, flag, hopcount, realname)	"352 " + source + " " + channel + " " + user + " " + host + " " + server + " " + nick + " H" + flag + " :" + hopcount  + " " + realname
-#define RPL_ENDOFWHO(source, channel)	"315 " + source + " " + channel + " :End of WHO list"
-
-#define ERR_ERRONEUSNICKNAME(source, nick) "432 " + source + " " + nick + " :Erroneous nickname"
-
-#define RPL_LISTSTART(client)	"321 " + client + " Channel - Users Count - Channel Topic"
-#define RPL_LIST(client, channel, clientCount, topic)	"322 " + client + " " + channel + " - " + clientCount + " - :" + topic 
-#define RPL_LISTEND(client) "323 " + client + " :End of /LIST"
-
-#define RPL_INFO(client, string) "371 " + client + " :" + string
-#define RPL_ENDOFINFO(client) "374 " + client + " :End of INFO list"
+#define RPL_JOIN(source, channel)						":" + source + " JOIN :" + channel
+#define RPL_PART(source, channel, message)				":" + source + " PART " + channel + " " + message // :" + message
+#define RPL_PING(source, token)							":" + source + " PONG :" + token
+#define RPL_PRIVMSG(source, target, message)			":" + source + " PRIVMSG " + target + " " + message // :" + message
+#define RPL_NOTICE(source, target, message)				":" + source + " NOTICE " + target + " :" + message
+#define RPL_QUIT(source, message)						":" + source + " QUIT :Quit: " + message
+#define RPL_KICK(source, channel, target, reason)		":" + source + " KICK " + channel + " " + target + " " + reason // :" + reason
+#define RPL_MODE(source, channel, modes, args)			":" + source + " MODE " + channel + " " + modes + " " + args
+#define RPL_NICK(source, nickname)						":" + source + " NICK " + nickname
 
 #endif

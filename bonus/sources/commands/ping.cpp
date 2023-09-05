@@ -7,3 +7,4 @@ void	Server::ping( Client* it, std::vector<std::string> tokenArr ) // OK
 		it->sendMessageFd(ERR_NEEDMOREPARAMS(it->getNickname(), "PING"));
 	it->sendMessageFd(RPL_PING(it->getNickname(), tokenArr[1]));
 }
+

@@ -7,6 +7,8 @@
 # include <arpa/inet.h>
 # include <netinet/in.h>
 # include <netdb.h>
+# include <cstring>
+# include <limits>
 
 # include "../colors.hpp"
 # include "../Channel.hpp"

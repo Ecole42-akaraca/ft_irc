@@ -9,7 +9,9 @@ void	Server::info( Client* it, std::vector<std::string> tokenArr )
 	for (itClients itC = _clients.begin(); itC != _clients.end(); ++itC)
 	{
 		Client *dest = itC->second;
-		it->sendMessageFd(RPL_WHOISUSER(it->getPrefix(), dest->getNickname(), dest->getUsername(), dest->getHostname(), dest->getRealname()));
+		std::stringstream ss;
+		ss << dest->getPort();
+		it->sendMessageFd(RPL_WHOISUSER(it->getPrefix(), dest->getNickname(), dest->getUsername(), dest->getHostname(), ss.str(), dest->getRealname()));
 	}
 	it->sendMessageFd(RPL_ENDOFWHOIS(it->getPrefix(), ""));
 

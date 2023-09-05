@@ -47,3 +47,4 @@ void Server::user(Client* it, std::vector<std::string> tokenArr )
 			Server::pass(it, std::vector<std::string>());
 	}
 }
+

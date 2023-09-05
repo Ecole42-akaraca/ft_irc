@@ -27,7 +27,9 @@ void	Server::whois( Client* it, std::vector<std::string> tokenArr )
 	if (fd != -1)
 	{
 		Client *dest = _clients.at(fd);
-		it->sendMessageFd(RPL_WHOISUSER(it->getPrefix(), dest->getNickname(), dest->getUsername(), dest->getHostname(), dest->getRealname())); // Aranan kullanıcı hakkında bilgiyi yazdırır
+		std::stringstream ss;
+		ss << dest->getPort();
+		it->sendMessageFd(RPL_WHOISUSER(it->getPrefix(), dest->getNickname(), dest->getUsername(), dest->getHostname(), ss.str(), dest->getRealname())); // Aranan kullanıcı hakkında bilgiyi yazdırır
 		it->sendMessageFd(RPL_ENDOFWHOIS(it->getPrefix(), dest->getNickname())); // Arama işleminin bittiğini ifade eder.
 	}
 	else

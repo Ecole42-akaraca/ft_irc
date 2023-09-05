@@ -49,3 +49,4 @@ void	Server::privmsg( Client* it, std::vector<std::string> tokenArr )
 			it->sendMessageFd(ERR_NOSUCHNICK(it->getPrefix(), tokenArr[1]));
 	}
 }
+

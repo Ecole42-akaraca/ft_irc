@@ -36,3 +36,4 @@ void	Server::quit( Client* it, std::vector<std::string> tokenArr )
 	}
 	Server::serverInfo();
 }
+

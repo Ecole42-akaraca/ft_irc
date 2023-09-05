@@ -14,3 +14,4 @@ void	Server::pass( Client* it, std::vector<std::string> tokenArr )
 	else
 		Server::quitReason(it, "Password is empty!");
 }
+
