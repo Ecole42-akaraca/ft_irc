@@ -17,13 +17,13 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr )
 		tokenArr[1] = "#" + tokenArr[1];  // Girilen ismin sonuna '#' ekleniyor, Bunun nedeni channel isimleri '#' ile başlamaktadır.
 
 	itChannels itChannel = _channels.find(tokenArr[1]); // Aynı isimde channel var mı kontrol ediliyor.
-	it->sendMessageFd(RPL_JOIN(it->getPrefix(), tokenArr[1])); // Kullanıcı kanal olsada, olmasada hertürlü o kanala katılacağından dolayı RPL yanıtını gönderiyoruz.
+	//it->sendMessageFd(RPL_JOIN(it->getPrefix(), tokenArr[1])); // Kullanıcı kanal olsada, olmasada hertürlü o kanala katılacağından dolayı RPL yanıtını gönderiyoruz.
 	if (itChannel != _channels.end()) // Channel mevcutsa buraya giriyor.
 	{
-		if (itChannel->second->getPassword().compare(tokenArr[2]) != 0)
+		if (itChannel->second->getPassword().compare(tokenArr[2].c_str()) != 0)
 		{
 			it->sendMessageFd(ERR_PASSWDMISMATCH(it->getPrefix())); // Channela girerken şifresi yanlışsa
-			it->sendMessageFd(RPL_KICK(it->getPrefix(), tokenArr[1], tokenArr[1], "Password is incorrect!")); // Irc client channel oluşturuyor lakin boş gözüküyor, bu yüzden kicklemeliyiz.
+			//it->sendMessageFd(RPL_KICK(it->getPrefix(), tokenArr[1], tokenArr[1], "Password is incorrect!")); // Irc client channel oluşturuyor lakin boş gözüküyor, bu yüzden kicklemeliyiz.
 			return ;
 		}
 		if (itChannel->second->getMaxClient() != -1 &&\
@@ -34,10 +34,11 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr )
 		}
 		itChannel->second->sendMessageBroadcast(it, RPL_JOIN(it->getPrefix(), tokenArr[1])); // Channel'da bulunan diğer Client'lara yeni katılan Client'ın katıldı bilgisi gönderiliyor.
 		itChannel->second->setChannelTopic("I have no idea what the topic is.");
-		it->sendMessageFd(RPL_TOPIC(it->getPrefix(), tokenArr[1], itChannel->second->getChannelTopic())); // var olan bir Channel'e kullanıcı katıldığı zaman göreceği channel başlığı bilgisi gönderiliyor.
 		itChannel->second->addClient(it); // Channel'e bağlı olan client'lar listesi güncelleniyor.
 		itChannel->second->channelUsers(it, itChannel->second, tokenArr[1]); // Client, channel'e bağlandığı zaman, channel'deki kullanıcılar listeleniyor.
 		it->registerChannel(itChannel->second); // Client içinde bulunan, kayıtlı kullanıcıların olduğu listeye channel ekleniyor.
+		it->sendMessageFd(RPL_JOIN(it->getPrefix(), tokenArr[1])); // Kullanıcı kanal olsada, olmasada hertürlü o kanala katılacağından dolayı RPL yanıtını gönderiyoruz.
+		it->sendMessageFd(RPL_TOPIC(it->getPrefix(), tokenArr[1], itChannel->second->getChannelTopic())); // var olan bir Channel'e kullanıcı katıldığı zaman göreceği channel başlığı bilgisi gönderiliyor.
 	}
 	else // Channel mevcut değilse, yeni channel oluşturulup, ayarlamalar gerçekleştiriliyor.
 	{
@@ -45,9 +46,10 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr )
 		channel->addClient(it); // Channel'ı oluşturan kişiyi _channelClient'ına ekliyor.
 		this->_channels.insert(std::make_pair(tokenArr[1], channel)); // Server'a channel'ı ekliyor.
 		channel->setChannelTopic("What day is it today?"); // Channel başlığı belirleniyor.
+		it->registerChannel(channel); // Client içinde bulunan, kayıtlı kullanıcıların olduğu listeye channel ekleniyor.
+		it->sendMessageFd(RPL_JOIN(it->getPrefix(), tokenArr[1])); // Kullanıcı kanal olsada, olmasada hertürlü o kanala katılacağından dolayı RPL yanıtını gönderiyoruz.
 		it->sendMessageFd(RPL_TOPIC(it->getPrefix(), tokenArr[1], channel->getChannelTopic())); // Client kanala katıldığı zaman channel başlığı gönderiliyor.
 		it->sendMessageFd(RPL_MODE(it->getNickname(), tokenArr[1], "+nto", it->getNickname())); // Kimlik doğrulaması gerçekleşiyor.
-		it->registerChannel(channel); // Client içinde bulunan, kayıtlı kullanıcıların olduğu listeye channel ekleniyor.
 	}
 }
 

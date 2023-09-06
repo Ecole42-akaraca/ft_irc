@@ -47,11 +47,6 @@ std::string		Server::password( std::string password )
 	return (password);
 }
 
-void	Server::sighandler( int signum )
-{
-	std::cout << "signum: " << signum << std::endl;
-}
-
 void	Server::initCommands( void )
 {
 	t_cmdFunc["CAP"] = &Server::cap;
@@ -194,6 +189,20 @@ bool	Server::isChannelUser(Client* client, Channel* channel)
 		return (true);
 	}
 	return (false);
+}
+
+void	Server::leaveAllChannel( Client* client )
+{
+	size_t size = client->getRegisteredChannels().size();
+	for (size_t i = size; i > 0; --i) // Quit ile ayrılan channel, kayıtlı olduğu channel'lardan ayrılmalıdır.
+	{
+		std::vector<std::string> leaveChannel;
+		leaveChannel.push_back("PART");
+		leaveChannel.push_back(client->getRegisteredChannels()[i - 1]->getName());
+		leaveChannel.push_back(":QUIT");
+		Server::part(client, leaveChannel);
+	}
+	client->clearRegisteredChannels();
 }
 
 std::string	Server::welcomeServer( void )

@@ -58,10 +58,6 @@ Server::~Server( void )
 
 void	Server::start( void )
 {
-	for (int i = 1; i < NSIG; i++) {
-		signal(i, sighandler);
-	}
-	
 	Server::addToPollfds( this->_serverFd, POLLIN, 0 );
 	std::cout << "Server listening on port: " << this->_port << std::endl;
 	std::cout << "Server password: " << this->_password << std::endl;
@@ -76,19 +72,18 @@ void	Server::start( void )
 
 			if (it->revents & POLLHUP)
 			{
-				// if (it->fd > 3 && it->fd < _SC_OPEN_MAX) // irssi client ile bağlandığım zaman, buraya gelen it->fd değeri BAYAAAAA bir fazla olduğundan kaynaklı, sınır belirleyip sadece nc localhost ile sinyal kestiğim client'ların bağlantısı için koydum.
-				// {
-				// 	Client *nc = _clients.at(it->fd);
-				// 	if (nc != NULL)
-				// 	{
-				// 		//if (nc->getIRCstatus() == CONNECTING)
-				// 			Server::quitReason(nc, "Signal FATAL ERROR!");
-				// 	}
-				// }
+				int fd = it->fd;
+				Client *at = _clients.at(fd);
+				Server::leaveAllChannel(at);
+				_clients.erase(fd);
+				_pollfds.erase(it);
+				close(fd);
+				delete at;
 				std::cout << "Client disconnected." << std::endl;
+				Server::serverInfo();
 				break; // Move to the next socket
 			}
-
+ 
 			if (it->revents & POLLIN)
 			{
 				if (it->fd == _serverFd)
@@ -96,8 +91,8 @@ void	Server::start( void )
 					Server::acceptClients();
 					break;
 				}
-				else if (it->fd > 0 && it->fd <= _pollfds[_pollfds.size() - 1].fd) // saçma bir fd değeri gelince map seg yiyor. Önlemek için gerekli
-					Server::commandHandler(it);
+				Server::commandHandler(it);
+				//else if (it->fd > 0 && it->fd <= _pollfds[_pollfds.size() - 1].fd) // saçma bir fd değeri gelince map seg yiyor. Önlemek için gerekli
 			}
 		}
 	}
@@ -161,7 +156,7 @@ void	Server::commandHandler( itPoll &itClient )
 		tokens.clear();
 	}
 	else
-		Server::quitReason(at, "SIGTERM QUIT");
+		Server::quitReason(at, "'bytesRead < 0'");
 }
 
 void	Server::removeClient(int clientFd)

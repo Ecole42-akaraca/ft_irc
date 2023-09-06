@@ -101,7 +101,6 @@ class Server
 		bool								check( int argc );
 		unsigned short						port( std::string argv );
 		std::string							password( std::string argv );
-		static void							sighandler( int signum );
 		void								initCommands( void );
 		void								addToPollfds( int fd,  short events, short revents );
 		std::map<std::string, std::string>	splitMessage( std::string delimeter, std::string message );
@@ -111,6 +110,7 @@ class Server
 		std::string							combineMessage( size_t i, std::vector<std::string> vectorMessage ); //splitMessage fonk. tam tersi.
 		bool								isChannelAdmin( Client* client, Channel* channel ); // Client'in belirtilen Channel'in admini mi, kontrol ediliyor.
 		bool								isChannelUser( Client* client, Channel* channel ); // Client'in belirtilen Channel'in kullanıcısı mı kontrol ediliyor.
+		void								leaveAllChannel( Client* client );
 		std::string							welcomeServer( void );
 /* -------------------------------------------------------------------------- */	
 };
