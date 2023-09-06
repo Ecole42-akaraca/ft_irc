@@ -22,11 +22,16 @@
 void	Server::who( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "WHO" << END << std::endl;
+
 	if (it->getIRCstatus() != AUTHENTICATED)
 	{
 		it->sendMessageFd(RPL_NOTICE(it->getPrefix(), it->getNickname(), "Client's status is insufficient."));
 		return ;
 	}
+
+	if (tokenArr.size() < 2)
+		return ;
+
 	if (tokenArr[1][0] == '#') //kanal aramak için
 	{
 		itChannels itC = _channels.find(tokenArr[1]); // channeli bul.

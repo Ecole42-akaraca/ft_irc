@@ -85,7 +85,7 @@ void	Server::mode( Client* it, std::vector<std::string> tokenArr )
 		return ;
 	}
 
-	if (tokenArr.size() < 2)
+	if (tokenArr.size() < 3)
 	{
 		it->sendMessageFd(ERR_NEEDMOREPARAMS(it->getPrefix(), tokenArr[0]));
 		return ;
