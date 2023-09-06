@@ -53,7 +53,7 @@ void Server::user(Client* it, std::vector<std::string> tokenArr )
 		it->setRealname(tokenArr[4]);
 		std::cout << "Realname:>" << it->getRealname() << std::endl;
 		
-		if (reNick == true) // değilse burada welcome mesajı yazdırılacak.
+		if (reNick == false) // değilse burada welcome mesajı yazdırılacak.
 		{
 			it->setIRCstatus(AUTHENTICATED);
 			it->sendMessageFd(RPL_NOTICE(it->getPrefix(), it->getNickname(), "Client status is now: AUTHENTICATED."));
