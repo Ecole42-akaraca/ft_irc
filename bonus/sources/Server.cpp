@@ -175,6 +175,7 @@ void	Server::removeChannel( std::string channelName )
 	if (it != _channels.end())
 	{
 		std::cout << it->second->getName() << ": Channel removed." << std::endl;
+		delete it->second;
 		_channels.erase(it);
 	}
 }
