@@ -20,11 +20,15 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr )
 	//it->sendMessageFd(RPL_JOIN(it->getPrefix(), tokenArr[1])); // Kullanıcı kanal olsada, olmasada hertürlü o kanala katılacağından dolayı RPL yanıtını gönderiyoruz.
 	if (itChannel != _channels.end()) // Channel mevcutsa buraya giriyor.
 	{
-		if (itChannel->second->getPassword().compare(tokenArr[2].c_str()) != 0)
+		if (!itChannel->second->getPassword().empty()) // eğer channelin şifresi varsa
 		{
-			it->sendMessageFd(ERR_PASSWDMISMATCH(it->getPrefix())); // Channela girerken şifresi yanlışsa
-			//it->sendMessageFd(RPL_KICK(it->getPrefix(), tokenArr[1], tokenArr[1], "Password is incorrect!")); // Irc client channel oluşturuyor lakin boş gözüküyor, bu yüzden kicklemeliyiz.
-			return ;
+			if ((tokenArr.size() != 3 ) || \
+				(tokenArr.size() == 3 && itChannel->second->getPassword().compare(tokenArr[2]) != 0))
+			{
+				it->sendMessageFd(ERR_PASSWDMISMATCH(it->getPrefix())); // Channela girerken şifresi yanlışsa
+				it->sendMessageFd(RPL_KICK(it->getPrefix(), tokenArr[1], tokenArr[1], "Password is incorrect!")); // Irc client channel oluşturuyor lakin boş gözüküyor, bu yüzden kicklemeliyiz.
+				return ;
+			}
 		}
 		if (itChannel->second->getMaxClient() != -1 &&\
 		 itChannel->second->getMaxClient() < itChannel->second->getClientCount() + 1)
@@ -42,7 +46,7 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr )
 	}
 	else // Channel mevcut değilse, yeni channel oluşturulup, ayarlamalar gerçekleştiriliyor.
 	{
-		Channel *channel = new Channel(tokenArr[1], "", it); // Channel oluşturulur ve admini belirlenir. Channel şifresi için henüz bir şey yoktur.
+		Channel *channel = new Channel(tokenArr[1], "\0", it); // Channel oluşturulur ve admini belirlenir. Channel şifresi için henüz bir şey yoktur.
 		channel->addClient(it); // Channel'ı oluşturan kişiyi _channelClient'ına ekliyor.
 		this->_channels.insert(std::make_pair(tokenArr[1], channel)); // Server'a channel'ı ekliyor.
 		channel->setChannelTopic("What day is it today?"); // Channel başlığı belirleniyor.
