@@ -19,6 +19,7 @@ class Channel;
 enum IRCstatus{
 	CONNECTING, // Bu durum, IRC client'ın IRC server'a bağlanmaya çalıştığı durumu temsil eder.
 	HANDSHAKE, // Bu durum, bağlantının kurulduğu ve IRC client'in IRC server ile bir kimlik oluşturmaya çalıştığı durumu temsil eder.
+	RENICK, // Bu durum, ilk bağlantıdaki client'ın nick'i aynı ise tekrardan nick isteminde bulunmak için tanımlanmaktadır.
 	AUTHENTICATED, // Bu durum, IRC client'in IRC server tarafından kimlik doğrulaması yapıldığı durumu temsil eder.
 	DISCONNECTED, // Bu durum, bağlantının sonlandırıldığı durumu temsil eder.
 };
