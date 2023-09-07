@@ -44,6 +44,7 @@ void	Server::nick( Client* it, std::vector<std::string> tokenArr )
 			it->sendWelcomeMessage(Server::welcomeServer()); // ilk bağlantı olduğundan dolayı, emoji mesajıdır
 			it->sendMessageFd(RPL_WELCOME(tokenArr[1], _serverName));  // ilk bağlantı olduğundan dolayı, selamlama mesajıdır
 			it->setNickname(tokenArr[1]);
+			it->sendMessageFd(RPL_NICK(it->getPrefix(), tokenArr[1])); // Client'e kullanıcı adının değiştiği bilgisi verilir.
 			if (it->getPasswordStatus() == true) // re_nick durumunda yaşanan problemi atlamak için koydum.
 			{
 				it->setIRCstatus(AUTHENTICATED); // Ilk bağlantı ile güvenli bir şekilde nick belirlendiyse kullanıcının kimlik doğrulaması ok sayılır.

@@ -70,6 +70,7 @@ void Server::user(Client* it, std::vector<std::string> tokenArr )
 		it->setIRCstatus(AUTHENTICATED);
 		it->sendWelcomeMessage(Server::welcomeServer()); // ilk bağlantı olduğundan dolayı, emoji mesajıdır
 		it->sendMessageFd(RPL_WELCOME(it->getNickname(), _serverName));  // ilk bağlantı olduğundan dolayı, selamlama mesajıdır
+		it->sendMessageFd(RPL_NICK(it->getPrefix(), it->getNickname())); // Client'e kullanıcı adının değiştiği bilgisi verilir.
 		std::stringstream ss;
 		ss << it->getPort();
 		it->sendMessageFd(RPL_NOTICE(it->getPrefix() + ":" + ss.str() , it->getNickname(), "Client status is now: AUTHENTICATED."));
