@@ -6,6 +6,13 @@
 void	Server::nick( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "NICK" << END << std::endl;
+
+	if (it->getIRCstatus() == HANDSHAKE && tokenArr.size() == 2)
+	{
+		it->setNickname(tokenArr[1]);
+		return ;
+	}
+
 	if (it->getIRCstatus() != AUTHENTICATED && it->getIRCstatus() != RENICK)
 	{
 		it->sendMessageFd(RPL_NOTICE(it->getPrefix(), it->getNickname(), "Client's status is insufficient."));

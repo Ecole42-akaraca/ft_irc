@@ -18,11 +18,16 @@
 void	Server::whois( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "WHOIS" << END << std::endl;
+
 	if (it->getIRCstatus() != AUTHENTICATED)
 	{
 		it->sendMessageFd(RPL_NOTICE(it->getPrefix(), it->getNickname(), "Client's status is insufficient."));
 		return ;
 	}
+
+	if (tokenArr.size() < 2)
+		return ;
+
 	int fd = Server::getClientFdByNickname(tokenArr[1]);
 	if (fd != -1)
 	{

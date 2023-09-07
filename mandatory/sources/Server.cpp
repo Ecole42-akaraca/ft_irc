@@ -156,7 +156,10 @@ void	Server::commandHandler( itPoll &itClient )
 		tokens.clear();
 	}
 	else
-		Server::quitReason(at, "'bytesRead < 0'");
+	{
+		// bytesRead <= 0 durumunda POLLHUP otomatik olarak tetiklenir, bu nedenle burada ek bir işlem yapmanıza gerek yok
+		//Server::quitReason(at, "'bytesRead < 0'");
+	}
 }
 
 void	Server::removeClient(int clientFd)

@@ -6,6 +6,16 @@
 void	Server::pass( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "PASS" << END << std::endl;
+
+	if (it->getIRCstatus() != HANDSHAKE)
+	{
+		it->sendMessageFd(RPL_NOTICE(it->getPrefix(), it->getNickname(), "Client's status is insufficient."));
+		return ;	
+	}
+
+	if (tokenArr.size() < 2)
+		return ;
+
 	if (!tokenArr.empty() && !tokenArr[0].compare("PASS"))
 		if (!tokenArr[1].compare(this->_password))
 			it->setPasswordStatus();
