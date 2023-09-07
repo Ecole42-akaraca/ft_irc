@@ -47,7 +47,9 @@ void	Server::nick( Client* it, std::vector<std::string> tokenArr )
 			if (it->getPasswordStatus() == true) // re_nick durumunda yaşanan problemi atlamak için koydum.
 			{
 				it->setIRCstatus(AUTHENTICATED); // Ilk bağlantı ile güvenli bir şekilde nick belirlendiyse kullanıcının kimlik doğrulaması ok sayılır.
-				it->sendMessageFd(RPL_NOTICE(it->getPrefix(), it->getNickname(), "Client status is now: AUTHENTICATED."));
+				std::stringstream ss;
+				ss << it->getPort();
+				it->sendMessageFd(RPL_NOTICE(it->getPrefix() + ":" + ss.str() , it->getNickname(), "Client status is now: AUTHENTICATED."));
 			}
 		}
 	}
