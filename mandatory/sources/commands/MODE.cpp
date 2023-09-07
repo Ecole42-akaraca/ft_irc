@@ -119,13 +119,23 @@ void	Server::mode( Client* it, std::vector<std::string> tokenArr )
 		{
 			case 'k':
 			{
-				itChan->second->setPassword( active ? tokenArr[3] : "" );
-				itChan->second->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], (active ? "+k" : "-k"), (active ? tokenArr[3] : "")));
+				if (active && tokenArr.size() != 4) // '/mode #asdf +k' şeklindeki bir yapı yüzünden seg yiyor, bu yüzden hata döndürülmelidir.
+				{
+					it->sendMessageFd(ERR_NEEDMOREPARAMS(it->getPrefix(), tokenArr[0]));
+					break;
+				}
+				itChan->second->setPassword( active ? tokenArr[3] : "\0" );
+				itChan->second->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], (active ? "+k" : "-k"), (active ? tokenArr[3] : "\0")));
 				break;
 			}
 
 			case 'l':
 			{
+				if (active && tokenArr.size() != 4) // '/mode #asdf +l' şeklindeki bir yapı yüzünden seg yiyor, bu yüzden hata döndürülmelidir.
+				{
+					it->sendMessageFd(ERR_NEEDMOREPARAMS(it->getPrefix(), tokenArr[0]));
+					break;
+				}
 				itChan->second->setMaxClient(active ? atoi(tokenArr[3].c_str()) : -1);
 				itChan->second->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], (active ? "+l" : "-l"), (active ? tokenArr[3] : "")));
 				break;
@@ -153,76 +163,6 @@ void	Server::mode( Client* it, std::vector<std::string> tokenArr )
 				break;
 		}
 	}
-
-	//Sadece Channel mode işlemini ele alıyoruz.
-	//if (tokenArr.size() > 2)
-	//{
-	//	if (tokenArr[1][0] == '#') // Argümanın channel tipinde olup olmadığı kontrol ediliyor.
-	//	{
-	//		itChannels itChan = _channels.find(tokenArr[1]);
-	//		if (itChan != _channels.end()) // Eğer channel varsa
-	//		{
-	//			if (isChannelAdmin(it, itChan->second)) // Mode kullanan admin mi kontrol ediliyor.
-	//			{
-	//				Client* user = getClientByNickname(tokenArr[3]); // Mode'un uygulanacak kişisi var mı kontrol ediliyor.
-	//				if (user != NULL)
-	//				{
-	//					if (isChannelUser(user, itChan->second)) // Uygulanacak kişi aynı channel'da mı?
-	//					{
-	//						// Mode komutlarının kontrolü burada yapılıyor...
-	//						if (tokenArr[2][0] == '+')
-	//						{
-	//							if (tokenArr[2].find("o"))  //adminlik yetkisi veriliyor mu?
-	//							{
-	//								itChan->second->setAdmin(user);
-	//								itChan->second->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], "+o", user->getNickname()));
-	//								itChan->second->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], "-o", it->getNickname()));
-	//							}
-	//							if (tokenArr[2].find("k")) // Channel password belirleniyor
-	//							{
-	//								itChan->second->setPassword(tokenArr[3]);
-	//								itChan->second->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], "+k", user->getNickname()));
-	//							}
-	//							if (tokenArr[2].find("l")) // Channel'e bağlanıcak max kullanıcı sayısı
-	//							{
-	//								itChan->second->setMaxClient(atoi(tokenArr[3].c_str()));
-	//							}
-	//						}
-	//						else if (tokenArr[2][0] == '-')
-	//						{
-	//							if (tokenArr[2].find("o"))
-	//							{
-	//								itChan->second->setAdmin(NULL);
-	//								itChan->second->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], "-o", it->getNickname()));
-	//							}
-	//							if (tokenArr[2].find("k"))
-	//							{
-	//								itChan->second->setPassword("");
-	//								itChan->second->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], "-k", user->getNickname()));
-	//							}
-	//							if (tokenArr[2].find("l"))
-	//							{
-	//								itChan->second->setMaxClient(-1);
-	//							}
-	//						}
-	//						else
-	//							it->sendMessageFd(ERR_UNKNOWNCOMMAND(it->getPrefix(), tokenArr[2]));
-	//					}
-	//					else
-	//						it->sendMessageFd(ERR_USERNOTINCHANNEL(it->getPrefix(), tokenArr[3], tokenArr[1]));
-	//				}
-	//				else
-	//					it->sendMessageFd(ERR_NOSUCHNICK(it->getPrefix(), tokenArr[3]));
-	//			}
-	//			else
-	//				it->sendMessageFd(ERR_CHANOPRIVSNEEDED(it->getPrefix(), tokenArr[1]));
-	//		}
-	//		else // Eğer channel yoksa
-	//			it->sendMessageFd(ERR_NOSUCHCHANNEL(it->getPrefix(), tokenArr[1]));
-	//	}
-	//}
-	//else
-	//	it->sendMessageFd(ERR_NEEDMOREPARAMS(it->getPrefix(), tokenArr[0]));
 }
 
 // **************************************

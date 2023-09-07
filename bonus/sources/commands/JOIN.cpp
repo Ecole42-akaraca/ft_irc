@@ -15,7 +15,7 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr )
 		return ;
 	}
 
-	if (tokenArr.size() != 2)
+	if (tokenArr.size() != 2 && tokenArr.size() != 3)
 		return;
 
 	if (tokenArr[1][0] != '#') // '/join asdf' şeklinde kanal oluşturmak için isim belirlendiğinde,
@@ -25,22 +25,21 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr )
 	//it->sendMessageFd(RPL_JOIN(it->getPrefix(), tokenArr[1])); // Kullanıcı kanal olsada, olmasada hertürlü o kanala katılacağından dolayı RPL yanıtını gönderiyoruz.
 	if (itChannel != _channels.end()) // Channel mevcutsa buraya giriyor.
 	{
-		if (!itChannel->second->getPassword().empty()) // eğer channelin şifresi varsa
+		if (!itChannel->second->getPassword().empty() &&\
+			((tokenArr.size() != 3 ) || (tokenArr.size() == 3 && itChannel->second->getPassword().compare(tokenArr[2]) != 0))) // eğer channelin şifresi varsa
 		{
-			if ((tokenArr.size() != 3 ) || \
-				(tokenArr.size() == 3 && itChannel->second->getPassword().compare(tokenArr[2]) != 0))
-			{
-				it->sendMessageFd(ERR_PASSWDMISMATCH(it->getPrefix())); // Channela girerken şifresi yanlışsa
-				it->sendMessageFd(RPL_KICK(it->getPrefix(), tokenArr[1], tokenArr[1], "Password is incorrect!")); // Irc client channel oluşturuyor lakin boş gözüküyor, bu yüzden kicklemeliyiz.
-				return ;
-			}
+			it->sendMessageFd(ERR_PASSWDMISMATCH(it->getPrefix())); // Channela girerken şifresi yanlışsa
+			it->sendMessageFd(RPL_KICK(it->getPrefix(), tokenArr[1], tokenArr[1], "Password is incorrect!")); // Irc client channel oluşturuyor lakin boş gözüküyor, bu yüzden kicklemeliyiz.
+			return ;
 		}
+
 		if (itChannel->second->getMaxClient() != -1 &&\
 		 itChannel->second->getMaxClient() < itChannel->second->getClientCount() + 1)
 		{
 			it->sendMessageFd(ERR_CHANNELISFULL(it->getPrefix(), tokenArr[1]));
 			return ;
 		}
+
 		itChannel->second->sendMessageBroadcast(it, RPL_JOIN(it->getPrefix(), tokenArr[1])); // Channel'da bulunan diğer Client'lara yeni katılan Client'ın katıldı bilgisi gönderiliyor.
 		itChannel->second->setChannelTopic("I have no idea what the topic is.");
 		itChannel->second->addClient(it); // Channel'e bağlı olan client'lar listesi güncelleniyor.
