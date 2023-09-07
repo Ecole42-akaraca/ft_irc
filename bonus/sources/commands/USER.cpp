@@ -33,21 +33,11 @@ void Server::user(Client* it, std::vector<std::string> tokenArr )
 		return;
 	}
 
-	it->setIRCstatus(RENICK);
-	std::vector<std::string> arr;
-	arr.push_back("NICK");
-	if (!it->getNickname().empty())
-		arr.push_back(it->getNickname());
-	Server::nick(it, arr);
-
 	it->setUsername(tokenArr[1]);
 	std::cout << "Username:>" << it->getUsername() << std::endl;
 
-	if (it->getNickname().empty()) // Eğerki nickname boş gelirse, nickname'i username ile aynı yapacağız.
-		it->setNickname(tokenArr[2]); // User'a gelen bu token'de username'yi temsil etmektedir. Nickname değildir.
 	std::cout << "Nickname:>" << it->getNickname() << std::endl;
 
-	it->setHostname(tokenArr[3]);
 	std::cout << "Hostname:>" << it->getHostname() << std::endl;
 
 	tokenArr[4].erase(0, 1); // token[4] token4'un basindaki : kaldırır
@@ -56,6 +46,11 @@ void Server::user(Client* it, std::vector<std::string> tokenArr )
 	it->setRealname(tokenArr[4]);
 	std::cout << "Realname:>" << it->getRealname() << std::endl;
 
+	it->setIRCstatus(RENICK);
+	std::vector<std::string> arr;
+	arr.push_back("NICK");
+	arr.push_back(it->getNickname().empty() ? tokenArr[1] : it->getNickname());
+	Server::nick(it, arr);
 }
 
 //END -> NICK -> USER

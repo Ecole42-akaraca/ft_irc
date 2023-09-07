@@ -72,15 +72,21 @@ void	Server::start( void )
 
 			if (it->revents & POLLHUP)
 			{
-				int fd = it->fd;
-				Client *at = _clients.at(fd);
-				Server::leaveAllChannel(at);
-				_clients.erase(fd);
-				_pollfds.erase(it);
-				close(fd);
-				delete at;
-				std::cout << "Client disconnected." << std::endl;
-				Server::serverInfo();
+				// try
+				// {
+					int fd = it->fd;
+					Client *at = _clients.at(fd);
+					Server::leaveAllChannel(at);
+					_clients.erase(fd);
+					_pollfds.erase(it);
+					close(fd);
+					delete at;
+					std::cout << "Client disconnected." << std::endl;
+					Server::serverInfo();
+				// }
+				// catch (std::out_of_range& e) {
+				// }
+
 				break; // Move to the next socket
 			}
  
@@ -120,7 +126,7 @@ void	Server::acceptClients( void )
 		std::cout << "Client's host length: " << hostInfo->h_length << std::endl;
 		std::cout << "Client's port: " << ntohs(clientAddress.sin_port) << std::endl;
 		std::cout << "Client's fd: " << clientFd << std::endl;
-	}
+	}	
 }
 
 /*

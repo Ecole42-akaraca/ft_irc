@@ -11,11 +11,6 @@ void	Server::nick( Client* it, std::vector<std::string> tokenArr )
 	{
 		if (tokenArr.size() == 2)
 			it->setNickname(tokenArr[1]); // at() kullanmadım çünkü client'e hata dönünce mal gibi kalıyor
-		else
-		{
-			it->setIRCstatus(DISCONNECTED);
-			Server::quitReason(it, "Nickname is empty.");
-		}
 		return ;
 	}
 
