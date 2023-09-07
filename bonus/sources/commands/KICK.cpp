@@ -17,15 +17,12 @@ void	Server::kick( Client* it, std::vector<std::string> tokenArr )
 		return ;
 	}
 
-	if (tokenArr.size() < 3)
-		return ;
-
-	itChannels itChan = _channels.find(tokenArr[1]);
+	itChannels itChan = _channels.find(tokenArr.at(1));
 	if (itChan != _channels.end()) // Belirtilen channel var mıdır?
 	{
 		if (isChannelAdmin(it, itChan->second)) // /kick komutunu kullanan kişi o channelin admini mi? (channel'de user mi diye kontrol etmeye gerek yok, zaten admin kontrolü ile sağlanmış olunuyor.)
 		{
-			Client* user = getClientByNickname(tokenArr[2]);
+			Client* user = getClientByNickname(tokenArr.at(2));
 			if (user != NULL)
 			{
 				if (isChannelUser(user, itChan->second)) // Channel'dan atılmak istenen kişi var mıdır?

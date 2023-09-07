@@ -13,11 +13,8 @@ void	Server::pass( Client* it, std::vector<std::string> tokenArr )
 		return ;	
 	}
 
-	if (tokenArr.size() < 2)
-		return ;
-
-	if (!tokenArr.empty() && !tokenArr[0].compare("PASS"))
-		if (!tokenArr[1].compare(this->_password))
+	if (!tokenArr.empty() && !tokenArr.at(0).compare("PASS"))
+		if (!tokenArr.at(1).compare(this->_password))
 			it->setPasswordStatus();
 		else
 			Server::quitReason(it, "Password is wrong!");

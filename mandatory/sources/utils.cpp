@@ -162,9 +162,10 @@ Client*	Server::getClientByNickname( std::string name )
 std::string	Server::combineMessage( size_t i, std::vector<std::string> vectorMessage )
 {
 	std::string msg;
-	for (; i < vectorMessage.size(); i++)
+	size_t size = vectorMessage.size();
+	for (; i < size; i++)
 	{
-		if (i + 1 < vectorMessage.size())
+		if (i + 1 < size)
 			msg += vectorMessage[i] + " ";
 		else
 			msg += vectorMessage[i];

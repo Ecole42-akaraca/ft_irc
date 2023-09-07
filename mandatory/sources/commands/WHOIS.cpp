@@ -25,10 +25,7 @@ void	Server::whois( Client* it, std::vector<std::string> tokenArr )
 		return ;
 	}
 
-	if (tokenArr.size() < 2)
-		return ;
-
-	int fd = Server::getClientFdByNickname(tokenArr[1]);
+	int fd = Server::getClientFdByNickname(tokenArr.at(1));
 	if (fd != -1)
 	{
 		Client *dest = _clients.at(fd);

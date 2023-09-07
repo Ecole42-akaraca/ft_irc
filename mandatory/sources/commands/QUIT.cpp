@@ -10,5 +10,5 @@ void	Server::quit( Client* it, std::vector<std::string> tokenArr )
 	Server::leaveAllChannel(it);
 	it->setIRCstatus(DISCONNECTED);
 	std::cout << "Connection closed by client " << it->getHostname() << ":" << it->getPort() << std::endl;
-	it->sendMessageFd(RPL_QUIT(it->getPrefix(), tokenArr[0]));
+	it->sendMessageFd(RPL_QUIT(it->getPrefix(), tokenArr.at(0)));
 }

@@ -15,10 +15,7 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr )
 		return ;
 	}
 
-	if (tokenArr.size() != 2 && tokenArr.size() != 3)
-		return;
-
-	if (tokenArr[1][0] != '#') // '/join asdf' şeklinde kanal oluşturmak için isim belirlendiğinde,
+	if (tokenArr.at(1)[0] != '#') // '/join asdf' şeklinde kanal oluşturmak için isim belirlendiğinde,
 		tokenArr[1] = "#" + tokenArr[1];  // Girilen ismin sonuna '#' ekleniyor, Bunun nedeni channel isimleri '#' ile başlamaktadır.
 
 	itChannels itChannel = _channels.find(tokenArr[1]); // Aynı isimde channel var mı kontrol ediliyor.

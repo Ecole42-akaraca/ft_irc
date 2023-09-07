@@ -29,10 +29,7 @@ void	Server::who( Client* it, std::vector<std::string> tokenArr )
 		return ;
 	}
 
-	if (tokenArr.size() < 2)
-		return ;
-
-	if (tokenArr[1][0] == '#') //kanal aramak için
+	if (tokenArr.at(1)[0] == '#') //kanal aramak için
 	{
 		itChannels itC = _channels.find(tokenArr[1]); // channeli bul.
 		if (itC != _channels.end()) // eğer channel varsa

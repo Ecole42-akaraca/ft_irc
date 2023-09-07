@@ -27,10 +27,7 @@ void	Server::part( Client* it, std::vector<std::string> tokenArr )
 		return ;
 	}
 
-	if (tokenArr.size() < 2)
-		return ;
-
-	if (it->isRegisteredChannel(tokenArr[1]) == true) // Client tarafından belirlenen channel ismi var mı kontrol ediliyor, '/part #asdf'
+	if (it->isRegisteredChannel(tokenArr.at(1)) == true) // Client tarafından belirlenen channel ismi var mı kontrol ediliyor, '/part #asdf'
 	{
 		Channel *chan = _channels[tokenArr[1]]; // Ayrılış gerçekleştirdiği channel'ın pointer'ı tutuluyor.
 		std::string msg = "";

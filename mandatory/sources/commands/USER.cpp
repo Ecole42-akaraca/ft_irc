@@ -33,21 +33,12 @@ void Server::user(Client* it, std::vector<std::string> tokenArr )
 		return;
 	}
 
-	bool reNick = false;
-	if (it->getNickname().empty() && Server::getClientFdByNickname(tokenArr[2]) != -1) // eğer nicki yoksa ve aynı username'ye sahip biri varsa, USER'dan nicke gönderilecek ve nick'te welcome mesajı ile karşılanacak.
-	{
-		reNick = true;
-		it->setIRCstatus(RENICK);
-		it->sendMessageFd(RPL_NOTICE(it->getPrefix(), tokenArr[2], "Client status is now: RENICK."));
-		it->sendMessageFd(ERR_NICKNAMEINUSE(tokenArr[2])); // Client, server'a kayıtlı aynı nick'e sahip bir kullanıcı varsa, bu ismi alamayacağını belirtmek için vardır.
-	}
-	if (!it->getNickname().empty() && Server::getClientFdByNickname(it->getNickname()) != it->getFd()) //Eğerki nicki boş gelmiyorsa, ve kendi fd'sine denk değilse yani kendinden başkası bu nicki kullanmıyorsa tekrardan nick istenir.
-	{
-		reNick = true;
-		it->setIRCstatus(RENICK);
-		it->sendMessageFd(RPL_NOTICE(it->getPrefix(), it->getNickname(), "Client status is now: RENICK."));
-		it->sendMessageFd(ERR_NICKNAMEINUSE(it->getNickname())); // Client, server'a kayıtlı aynı nick'e sahip bir kullanıcı varsa, bu ismi alamayacağını belirtmek için vardır.
-	}
+	it->setIRCstatus(RENICK);
+	std::vector<std::string> arr;
+	arr.push_back("NICK");
+	if (!it->getNickname().empty())
+		arr.push_back(it->getNickname());
+	Server::nick(it, arr);
 
 	it->setUsername(tokenArr[1]);
 	std::cout << "Username:>" << it->getUsername() << std::endl;
@@ -64,17 +55,7 @@ void Server::user(Client* it, std::vector<std::string> tokenArr )
 		tokenArr[4].append(" " + tokenArr[i]); // realname boş olabilir veya birden fazla argümana sahip olabilir deneyin: /set real_name A B C D E F
 	it->setRealname(tokenArr[4]);
 	std::cout << "Realname:>" << it->getRealname() << std::endl;
-	
-	if (reNick == false) // değilse burada welcome mesajı yazdırılacak.
-	{
-		it->setIRCstatus(AUTHENTICATED);
-		it->sendWelcomeMessage(Server::welcomeServer()); // ilk bağlantı olduğundan dolayı, emoji mesajıdır
-		it->sendMessageFd(RPL_WELCOME(it->getNickname(), _serverName));  // ilk bağlantı olduğundan dolayı, selamlama mesajıdır
-		it->sendMessageFd(RPL_NICK(it->getPrefix(), it->getNickname())); // Client'e kullanıcı adının değiştiği bilgisi verilir.
-		std::stringstream ss;
-		ss << it->getPort();
-		it->sendMessageFd(RPL_NOTICE(it->getPrefix() + ":" + ss.str() , it->getNickname(), "Client status is now: AUTHENTICATED."));
-	}
+
 }
 
 //END -> NICK -> USER

@@ -85,13 +85,7 @@ void	Server::mode( Client* it, std::vector<std::string> tokenArr )
 		return ;
 	}
 
-	if (tokenArr.size() < 3)
-	{
-		it->sendMessageFd(ERR_NEEDMOREPARAMS(it->getPrefix(), tokenArr[0]));
-		return ;
-	}
-
-	if (tokenArr[1][0] != '#')
+	if (tokenArr.at(1)[0] != '#')
 	{
 		it->sendMessageFd(ERR_NOSUCHCHANNEL(it->getPrefix(), tokenArr[1]));
 		return ;
@@ -110,7 +104,8 @@ void	Server::mode( Client* it, std::vector<std::string> tokenArr )
 		return ;
 	}
 
-	for (size_t i = 0; i < tokenArr[2].size(); ++i)
+	size_t size = tokenArr.at(2).size();
+	for (size_t i = 0; i < size; ++i)
 	{
 		char c = tokenArr[2][i];
 		char prevC = i > 0 ? tokenArr[2][i - 1] : '\0';
@@ -119,31 +114,21 @@ void	Server::mode( Client* it, std::vector<std::string> tokenArr )
 		{
 			case 'k':
 			{
-				if (active && tokenArr.size() != 4) // '/mode #asdf +k' şeklindeki bir yapı yüzünden seg yiyor, bu yüzden hata döndürülmelidir.
-				{
-					it->sendMessageFd(ERR_NEEDMOREPARAMS(it->getPrefix(), tokenArr[0]));
-					break;
-				}
-				itChan->second->setPassword( active ? tokenArr[3] : "\0" );
+				itChan->second->setPassword( active ? tokenArr.at(3) : "\0" );
 				itChan->second->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], (active ? "+k" : "-k"), (active ? tokenArr[3] : "\0")));
 				break;
 			}
 
 			case 'l':
 			{
-				if (active && tokenArr.size() != 4) // '/mode #asdf +l' şeklindeki bir yapı yüzünden seg yiyor, bu yüzden hata döndürülmelidir.
-				{
-					it->sendMessageFd(ERR_NEEDMOREPARAMS(it->getPrefix(), tokenArr[0]));
-					break;
-				}
-				itChan->second->setMaxClient(active ? atoi(tokenArr[3].c_str()) : -1);
+				itChan->second->setMaxClient(active ? atoi(tokenArr.at(3).c_str()) : -1);
 				itChan->second->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], (active ? "+l" : "-l"), (active ? tokenArr[3] : "")));
 				break;
 			}
 
 			case 'o':
 			{
-				Client* user = getClientByNickname(tokenArr[3]);
+				Client* user = getClientByNickname(tokenArr.at(3));
 				if (user != NULL)
 				{
 					if (isChannelUser(user, itChan->second))

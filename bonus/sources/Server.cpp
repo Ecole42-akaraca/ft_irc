@@ -145,11 +145,18 @@ void	Server::commandHandler( itPoll &itClient )
 			{
 				if (itToken->first.compare(itCF->first) == 0)
 				{
-					std::vector<std::string> cmd = cmdMessage(itToken->second);
-					cmd.insert(cmd.begin(), itToken->first);
-					(this->*(itCF->second))(at, cmd);
-					cmd.clear();
-					break;
+					try
+					{
+						std::vector<std::string> cmd = cmdMessage(itToken->second);
+						cmd.insert(cmd.begin(), itToken->first);
+						(this->*(itCF->second))(at, cmd);
+						cmd.clear();
+						break;
+					}
+					catch (std::out_of_range& e) // std::vector::operator[]() tarzında doğrudan index'e erişirken gelen parametre sayısını kontrol etmek zorunda kalıyoruz, bunun yerine at() kullanarak, hatalı argüman girişi varsa trycatch bizim yerimize yakalıyor.
+					{
+						at->sendMessageFd(ERR_NEEDMOREPARAMS(at->getPrefix(), itToken->first));
+					}
 				}
 			}
 		}

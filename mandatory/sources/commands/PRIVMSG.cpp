@@ -29,11 +29,8 @@ void	Server::privmsg( Client* it, std::vector<std::string> tokenArr )
 		return ;
 	}
 
-	if (tokenArr.size() < 2)
-		return ;
-
 	std::string msg = Server::combineMessage(2, tokenArr);
-	if (tokenArr[1][0] == '#') // Channel içinde gönderilen mesajı temsil ediyor.
+	if (tokenArr.at(1)[0] == '#') // Channel içinde gönderilen mesajı temsil ediyor.
 	{
 		if (it->isRegisteredChannel(tokenArr[1]) == true)  // belirtilen isimde channel varsa,
 			this->_channels[tokenArr[1]]->sendMessageBroadcast(it, RPL_PRIVMSG(it->getPrefix(), tokenArr[1], msg));
