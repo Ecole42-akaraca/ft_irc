@@ -159,6 +159,16 @@ Client*	Server::getClientByNickname( std::string name )
 	return (NULL);
 }
 
+Client*	Server::getClientByFd( int fd )
+{
+	for (itClients it = this->_clients.begin(); it != this->_clients.end(); ++it)
+	{
+		if (it->second->getFd() == fd)
+			return (it->second);
+	}
+	return (NULL);
+}
+
 std::string	Server::combineMessage( size_t i, std::vector<std::string> vectorMessage )
 {
 	std::string msg;

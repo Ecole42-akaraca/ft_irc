@@ -64,7 +64,7 @@ class Server
 		~Server( void ); // Destructor.
 		void	start( void );
 		void	acceptClients( void );
-		void	commandHandler( itPoll &itClient );
+		void	commandHandler( Client* at );
 		void	removeChannel( std::string channelName );
 		void	removeClient( int clientFd );
 		void	quitReason( Client* client, std::string message );
@@ -107,6 +107,7 @@ class Server
 		std::vector<std::string>			cmdMessage( std::string message );
 		int									getClientFdByNickname( std::string name ); //Nickname'ye Client'in fd'sini döndürür.
 		Client*								getClientByNickname( std::string name ); // Nickname'ye Client'in pointerını döndürür.
+		Client* 							getClientByFd( int fd ); //Fd'ye client'in pointerini döndürür.
 		std::string							combineMessage( size_t i, std::vector<std::string> vectorMessage ); //splitMessage fonk. tam tersi.
 		bool								isChannelAdmin( Client* client, Channel* channel ); // Client'in belirtilen Channel'in admini mi, kontrol ediliyor.
 		bool								isChannelUser( Client* client, Channel* channel ); // Client'in belirtilen Channel'in kullanıcısı mı kontrol ediliyor.

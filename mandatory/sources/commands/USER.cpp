@@ -38,9 +38,10 @@ void Server::user(Client* it, std::vector<std::string> tokenArr )
 
 	std::cout << "Nickname:>" << it->getNickname() << std::endl;
 
-	std::cout << "Hostname:>" << it->getHostname() << std::endl;
+	std::cout << "Hostname:>" << it->getHostname() << std::endl; // '/set hostname' ile değiştirilse bile client'in ilk bağlantısında hostname atanmış oluyor.
 
-	tokenArr[4].erase(0, 1); // token[4] token4'un basindaki : kaldırır
+	if (tokenArr[4][0] == ':')
+		tokenArr[4].erase(0, 1); // token[4] token4'un basindaki : kaldırır
 	for (size_t i = 5; i < tokenArr.size(); i++)
 		tokenArr[4].append(" " + tokenArr[i]); // realname boş olabilir veya birden fazla argümana sahip olabilir deneyin: /set real_name A B C D E F
 	it->setRealname(tokenArr[4]);

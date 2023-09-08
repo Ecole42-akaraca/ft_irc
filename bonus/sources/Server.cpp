@@ -70,26 +70,22 @@ void	Server::start( void )
 			if (it->revents == 0)
 				continue;
 
-			if (it->revents & POLLHUP)
+			if (it->revents & POLLHUP) // client'in bağlantısı koptuğunda otomatik olarak buraya girer lakin linuxta değil :/
 			{
-				// try
-				// {
-					int fd = it->fd;
-					Client *at = _clients.at(fd);
+				Client *at = Server::getClientByFd(it->fd);
+				if (at != NULL)
+				{
 					Server::leaveAllChannel(at);
-					_clients.erase(fd);
+					Server::removeClient(it->fd);
 					_pollfds.erase(it);
-					close(fd);
-					delete at;
-					std::cout << "Client disconnected." << std::endl;
 					Server::serverInfo();
-				// }
-				// catch (std::out_of_range& e) {
-				// }
-
+				}
+				else
+					_pollfds.erase(it);
+				std::cout << "Client disconnected." << std::endl;
 				break; // Move to the next socket
 			}
- 
+
 			if (it->revents & POLLIN)
 			{
 				if (it->fd == _serverFd)
@@ -97,8 +93,23 @@ void	Server::start( void )
 					Server::acceptClients();
 					break;
 				}
-				Server::commandHandler(it);
-				//else if (it->fd > 0 && it->fd <= _pollfds[_pollfds.size() - 1].fd) // saçma bir fd değeri gelince map seg yiyor. Önlemek için gerekli
+				Client *at = Server::getClientByFd(it->fd);
+				if (at != NULL)
+				{
+					if (at->getIRCstatus() == DISCONNECTED) // linuxta quit komutuna girdikten sonra pollfd POLLHUP olmuyor veya client'le bağlantısı kopunca olmuyor, halen POLLIN durumunda oluyor mecburen koydum.
+					{
+						Server::leaveAllChannel(at);
+						Server::removeClient(it->fd);
+						std::cout << "Client disconnected." << std::endl;
+						_pollfds.erase(it);
+						Server::serverInfo();
+						break;
+					}
+					else
+						Server::commandHandler(at);
+				}
+				else
+					_pollfds.erase(it);
 			}
 		}
 	}
@@ -111,7 +122,7 @@ void	Server::acceptClients( void )
 	std::string	host;
 
 	int	clientFd = accept(this->_serverFd, (sockaddr *) &clientAddress, &clientAddressSize);
-	if (clientFd < 0)
+	if (clientFd <= 0)
 		std::cerr << "Error while accepting client connection. Error code: " << errno << std::endl;
 	else
 	{
@@ -133,12 +144,11 @@ void	Server::acceptClients( void )
 // std::vector<std::string> tokenArr = splitMessage(buffer);
 // MODE gsever akaraca gorkem ahmet
 */
-void	Server::commandHandler( itPoll &itClient )
+void	Server::commandHandler( Client* at )
 {
 	char buffer[MAX_BUFFER];
 	std::vector<std::string>	tokenArr;
-	ssize_t bytesRead = recv(itClient->fd, buffer, sizeof(buffer) - 1, 0);
-	Client *at = _clients.at(itClient->fd);
+	ssize_t bytesRead = recv(at->getFd(), buffer, sizeof(buffer) - 1, 0);
 
 	if (bytesRead > 0)
 	{
@@ -170,6 +180,7 @@ void	Server::commandHandler( itPoll &itClient )
 	}
 	else
 	{
+		at->setIRCstatus(DISCONNECTED);
 		// bytesRead <= 0 durumunda POLLHUP otomatik olarak tetiklenir, bu nedenle burada ek bir işlem yapmanıza gerek yok
 		//Server::quitReason(at, "'bytesRead < 0'");
 	}
