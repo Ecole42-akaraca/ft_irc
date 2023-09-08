@@ -121,7 +121,10 @@ void	Server::mode( Client* it, std::vector<std::string> tokenArr )
 
 			case 'l':
 			{
-				itChan->second->setMaxClient(active ? atoi(tokenArr.at(3).c_str()) : -1);
+				int count = atoi(tokenArr.at(3).c_str());
+				if (active && count < itChan->second->getMaxClient())
+					break ;
+				itChan->second->setMaxClient(active ? count : 0);
 				itChan->second->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], (active ? "+l" : "-l"), (active ? tokenArr[3] : "")));
 				break;
 			}

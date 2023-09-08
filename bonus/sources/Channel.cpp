@@ -1,7 +1,7 @@
 # include "../includes/Channel.hpp"
 
 Channel::Channel( std::string name, std::string password, Client* admin )
-	: _name(name), _clientCount(0), _admin(admin), _k(password), _l(-1)
+	: _name(name), _clientCount(0), _admin(admin), _k(password), _l(0)
 {
 	std::cout << "Channel Created: Name: " << this->getName() << std::endl;
 }

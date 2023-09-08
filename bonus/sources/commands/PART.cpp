@@ -21,7 +21,7 @@ void	Server::part( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "PART" << END << std::endl;
 
-	if (it->getIRCstatus() != AUTHENTICATED)
+	if (it->getIRCstatus() != AUTHENTICATED && it->getIRCstatus() != DISCONNECTED) // DC neden var: irssi kendisi aktif değilken otomatik çıkıyor, yani part komutunu kullanıyor
 	{
 		it->sendMessageFd(RPL_NOTICE(it->getPrefix(), it->getNickname(), "Client's status is insufficient."));
 		return ;

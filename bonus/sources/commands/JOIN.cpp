@@ -30,7 +30,7 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr )
 			return ;
 		}
 
-		if (itChannel->second->getMaxClient() != -1 &&\
+		if (itChannel->second->getMaxClient() != 0 &&\
 		 itChannel->second->getMaxClient() < itChannel->second->getClientCount() + 1)
 		{
 			it->sendMessageFd(ERR_CHANNELISFULL(it->getPrefix(), tokenArr[1]));
