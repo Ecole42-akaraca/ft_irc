@@ -34,12 +34,12 @@ void	Server::who( Client* it, std::vector<std::string> tokenArr )
 		itChannels itC = _channels.find(tokenArr[1]); // channeli bul.
 		if (itC != _channels.end()) // eğer channel varsa
 		{
-			Channel* itChanel = itC->second;
-			for (size_t i = 0; i < itChanel->_channelClients.size(); i++)
+			Channel* itChannel = itC->second;
+			for (size_t i = 0; i < itChannel->_channelClients.size(); i++)
 			{
-				Client* A = itChanel->_channelClients[i];
+				Client* A = itChannel->_channelClients[i];
 				std::string isAdmin = "";
-				if (A == itChanel->getAdmin())
+				if (A == itChannel->getAdmin())
 					isAdmin = "@";
 				it->sendMessageFd(RPL_WHOREPLY(it->getPrefix(), tokenArr[1], A->getUsername(), A->getHostname(), _serverName, A->getNickname(), isAdmin, "0", A->getRealname()));
 				// @ -> kullanıcının operator olduğunu temsil ediyor.

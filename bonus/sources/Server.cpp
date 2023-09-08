@@ -191,6 +191,7 @@ void	Server::removeClient(int clientFd)
 	itClients it = _clients.find(clientFd);
 	if (it != _clients.end())
 	{
+		close(it->second->getFd());
 		delete it->second; // Belleği serbest bırak
 		_clients.erase(it);
 	}

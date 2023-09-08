@@ -9,7 +9,7 @@ int	main( int argc, char **argv )
 	}
 	catch (const std::exception& e)
 	{
-		std::cerr << e.what() << std::endl;
+		std::cerr << RED << e.what() << END << std::endl;
 		return (EXIT_FAILURE);
 	}
 	return (EXIT_SUCCESS);

@@ -32,11 +32,11 @@ Bot::~Bot( void )
 
 void	Bot::start( void )
 {
-	signal(SIGINT, sigHandler);
-	authenticate();
+	signal(SIGINT, sigHandler); // ^C signali icin.
+	authenticate(); // Server'e katiliyoruz.
+	std::cout << "Bot created succesfully!" << std::endl;
 	checkChannels();
 	sendMessageToServer("QUIT");
-	std::cout << "Bot created succesfully!" << std::endl;
 }
 
 void	Bot::authenticate( void )
@@ -57,6 +57,14 @@ void	Bot::sendMessageToServer( std::string message )
 		throw (std::runtime_error( "Error: sendMessageToServer: Failed to send message." ));
 }
 
+/**
+ * @brief Bu fonksiyon server tarafindan gelen her mesajda calisacak.
+ * 
+ * @link https://docs.dal.net/docs/connection.html
+ * 
+ * @param arg 
+ * @return void* 
+ */
 void*	Bot::listen( void* arg )
 {
 	Bot		*bot;
@@ -66,6 +74,7 @@ void*	Bot::listen( void* arg )
 	bot = static_cast<Bot *>(arg);
 	while (bot->_isRun)
 	{
+		std::cout << "ben calisiyorm aq" << std::endl;
 		bytesRead = recv(bot->_botFd, buffer, sizeof(buffer) - 1, 0);
 		if (bytesRead > 0)
 		{
@@ -76,16 +85,19 @@ void*	Bot::listen( void* arg )
 		else if (bytesRead == 0)
 		{
 			std::cerr << RED "Connection lost!" END << std::endl;
-			exit(0);
+			exit(10050); // Network is down.
 		}
 		else
 		{
 			std::cerr << RED "Error: recv(): Socket error!" END << std::endl;
+			close(bot->_botFd);
+			pthread_exit((void*)-1);
 			break;
 		}
 	}
 	close(bot->_botFd);
-	return (NULL);
+	// return (NULL);
+	pthread_exit(EXIT_SUCCESS); // 0
 }
 
 /**
@@ -95,26 +107,54 @@ void*	Bot::listen( void* arg )
  * Her baglandiginda da Channel basina thread acacak.
  * Her thread bir channel'i tarayacak kontrol edecek.
  * 
+ * 
+ * pthread_create: Bu fonksiyon, yeni bir thread oluşturur.
+ *  Fonksiyonun ilk parametresi, oluşturulan thread’in tanımlayıcısını (ID) tutacak bir değişkenin adresini alır.
+ *  İkinci parametresi, thread’in özniteliklerini belirleyen bir yapıyı (attribute) alır.
+ *  Üçüncü parametresi, thread’in çalıştıracağı fonksiyonu belirtir.
+ *  Dördüncü parametresi ise, thread’in çalıştıracağı fonksiyona geçirilecek parametreleri belirtir.
+ * 
+ * pthread_join: Bu fonksiyon, belirtilen thread’in sonlanmasını bekler ve sonlandığında thread’in dönüş değerini alır.
+ *  Fonksiyonun ilk parametresi, beklenen thread’in tanımlayıcısını (ID) alır.
+ *  İkinci parametresi ise, thread’in dönüş değerini tutacak bir değişkenin adresini alır.
+ * 
+ * pthread_exit: Bu fonksiyon, çağrıldığı thread’i sonlandırır ve belirtilen dönüş değerini döndürür.
+ *  Fonksiyonun tek parametresi, thread’in dönüş değerini belirtir.
+ * 
+ * pthread_detach: Bu fonksiyon, belirtilen thread’i ayrılmış (detached) olarak işaretler.
+ *  Bir thread ayrıldığında, bu thread sonlandığında kaynakları otomatik
+ *  olarak sistem tarafından geri alınır ve başka bir thread’in sonlanan
+ *  thread ile birleşmesine (join) gerek kalmaz.
+ * 
  * @fn joinChannels(): pthread'in fonksiyonu; void* dondurmeli ve aldigi
  *  parametre ( void* ) olmali.
  */
 void	Bot::checkChannels( void )
 {
 	// Bakacak # ile baslayan channel varsa;
-	//  o channel'e de baglanmadiysa,
-	//  thread acacak be baglanacak.
-	// for (itChannels itC = this->_channels.begin();
-		// itC != this->_channels.end(); itC++)
-	// {
-		pthread_t	botThreadID;
+	//  o channel'e de baglanmadiysa baglanacak.
 
-		pthread_create(&botThreadID, NULL, &listen, this);
-		pthread_join(botThreadID, NULL);
-		pthread_detach(botThreadID);
-		std::cout << __LINE__ << std::endl;
-	// }
-	
+	pthread_t	botThreadID;
+	std::string	getMessage;
+	int			retResult; // *retResult
 
+	if (pthread_create(&botThreadID, NULL, &listen, this) != 0) // Bir tane thread butun kendisine gelen mesajlari dinlerken.
+		throw (std::runtime_error("pthread_create: Thread 'create' error!"));
+	std::cout << __LINE__ << std::endl;
+
+	// Bizde burada kanallara bakacagiz. Kanala girdigi anda zaten mesaj gelecegi icin listen o kanaldaki mesajlari da tarayip islemis olacak.
+	while (true)
+	{
+		// sleep(2);
+		if (getline(std::cin, getMessage))
+			sendMessageToServer(getMessage);
+	}
+
+	// std::to_string(retResult).c_str() 
+	if (pthread_join(botThreadID, (void **)&retResult) != 0) // Eger bu funciton'u acarsak yukaridaki functionun islemini bekler. Yani bu pthread'i acan thread islem yapmaz burada bekler.
+		throw (std::runtime_error("pthread_join: Thread 'wait' error!"));
+	if (pthread_detach(botThreadID) != 0) // Buradaki detach islemi olusturulan thread islemini bitirmeden gerceklesmemeli.
+		throw (std::runtime_error("pthread_detach: Thread 'detach' error!"));
 }
 
 /**
