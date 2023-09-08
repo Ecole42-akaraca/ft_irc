@@ -29,6 +29,7 @@ class Channel
 
 		std::string	getName( void ) { return (this->_name); }
 		// Client*		getAdmin( void ) { return (this->_admin); }
+		Client*		getAdmin( std::string nickname );
 		std::vector<Client*>	getAdmins( void ) { return (this->_admins); }
 		std::string getChannelTopic( void ) { return (this->_channelTopic); }
 		int			getClientCount( void ) { return (this->_clientCount); }
@@ -43,7 +44,7 @@ class Channel
 		void		setMaxClient( int maxClient ) {this->_l = maxClient; }
 
 		void		addClient( Client* client );
-		void		addAdmin( Client* admin ) { this->_admins.push_back(admin); }
+		void		addAdmin( Client* admin );
 
 		void		removeClient( Client* client );
 

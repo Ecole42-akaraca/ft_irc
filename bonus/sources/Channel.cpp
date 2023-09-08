@@ -12,12 +12,29 @@ Channel::~Channel( void )
 	std::cout << "Channel Deleting: Name: " << this->getName() << std::endl;
 }
 
+Client*		Channel::getAdmin( std::string nickname )
+{
+	for (size_t i = 0; i < this->_admins.size(); i++)
+	{
+		if (this->_admins[i]->getNickname().compare(nickname) == 0)
+			return (this->_admins[i]);
+	}
+	return (NULL);
+}
+
 void	Channel::addClient( Client* client )
 {
 	this->_channelClients.push_back(client);
 	this->_clientCount++;
 	std::cout << this->getName() << ": " << client->getNickname()
 		<< " joined." << std::endl;
+}
+
+void	Channel::addAdmin( Client* admin )
+{
+	if (admin == NULL)
+		return ;
+	this->_admins.push_back(admin);
 }
 
 void	Channel::removeClient( Client* client )
