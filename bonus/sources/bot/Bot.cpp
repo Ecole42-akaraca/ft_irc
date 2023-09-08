@@ -32,9 +32,9 @@ Bot::~Bot( void )
 
 void	Bot::start( void )
 {
+	signal(SIGINT, sigHandler);
 	authenticate();
-	listen();
-	sleep(100);
+	checkChannels();
 	sendMessageToServer("QUIT");
 	std::cout << "Bot created succesfully!" << std::endl;
 }
@@ -57,17 +57,85 @@ void	Bot::sendMessageToServer( std::string message )
 		throw (std::runtime_error( "Error: sendMessageToServer: Failed to send message." ));
 }
 
-void	Bot::listen( void )
+void*	Bot::listen( void* arg )
 {
-	while (this->_isRun)
+	Bot		*bot;
+	ssize_t	bytesRead;
+	char buffer[MAX_BUFFER];
+
+	bot = static_cast<Bot *>(arg);
+	while (bot->_isRun)
 	{
-		char buffer[MAX_BUFFER];
-		ssize_t bytesRead = recv(this->_botFd, buffer, sizeof(buffer) - 1, 0);
+		bytesRead = recv(bot->_botFd, buffer, sizeof(buffer) - 1, 0);
 		if (bytesRead > 0)
 		{
 			buffer[bytesRead] = '\0';
-			std::cout << buffer << std::endl;
+			std::cout << "-->" << buffer << std::endl;
+			// std::cout.write(buffer, bytesRead);
+		}
+		else if (bytesRead == 0)
+		{
+			std::cerr << RED "Connection lost!" END << std::endl;
+			exit(0);
+		}
+		else
+		{
+			std::cerr << RED "Error: recv(): Socket error!" END << std::endl;
+			break;
 		}
 	}
-	close(this->_botFd);
+	close(bot->_botFd);
+	return (NULL);
+}
+
+/**
+ * @brief Burada Channel'lere bakacak. Eger baglanmadigi
+ *  channel varsa ona baglanacak.
+ * 
+ * Her baglandiginda da Channel basina thread acacak.
+ * Her thread bir channel'i tarayacak kontrol edecek.
+ * 
+ * @fn joinChannels(): pthread'in fonksiyonu; void* dondurmeli ve aldigi
+ *  parametre ( void* ) olmali.
+ */
+void	Bot::checkChannels( void )
+{
+	// Bakacak # ile baslayan channel varsa;
+	//  o channel'e de baglanmadiysa,
+	//  thread acacak be baglanacak.
+	// for (itChannels itC = this->_channels.begin();
+		// itC != this->_channels.end(); itC++)
+	// {
+		pthread_t	botThreadID;
+
+		pthread_create(&botThreadID, NULL, &listen, this);
+		pthread_join(botThreadID, NULL);
+		pthread_detach(botThreadID);
+		std::cout << __LINE__ << std::endl;
+	// }
+	
+
+}
+
+/**
+ * @brief Biz olusturdugumuz 'thread'a bu function
+ *  uzerinde calismasini sagliyoruz.
+ * 
+ * Bunun saglanabilmesi icin;
+ * 
+ * @param arg 
+ * @return void* 
+ */
+void	Bot::joinChannels( void )
+{
+
+}
+
+void	Bot::sigHandler( int signalNum )
+{
+	if (signalNum == SIGINT)
+	{
+		std::cout << "Interrupt signal found! Bot terminating..." << std::endl;
+		exit(signalNum);
+	}
 }

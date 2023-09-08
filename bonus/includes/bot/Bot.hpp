@@ -9,15 +9,18 @@
 # include <netdb.h>
 # include <cstring>
 # include <limits>
+# include <pthread.h>
+# include <unistd.h>
 
 # include "../colors.hpp"
 # include "../Channel.hpp"
-
-# include <unistd.h>
+# include "../Server.hpp"
 
 # define MAX_BUFFER 1024
 
 class Channel;
+
+// typedef std::map<std::string, Channel *>::iterator	itChannels;
 
 class Bot
 {
@@ -40,12 +43,17 @@ class Bot
 	public:
 		Bot( int argc, char **argv );
 		~Bot();
-		void	start( void );
-		void	listen( void );
+		void			start( void );
+		static void*	listen( void * ); // POSIX thread's recv() function.
 /* -------------------------------------------------------------------------- */
 /* _________________________ COMMANDS _______________________________________ */
 		void	authenticate( void );
 		void	sendMessageToServer( std::string message );
+		void	checkChannels( void );
+		void	joinChannels( void );
+/* -------------------------------------------------------------------------- */
+/* _________________________ SIGNAL FUCTIONS ________________________________ */
+		static void	sigHandler( int signalNum );
 /* -------------------------------------------------------------------------- */
 /* _________________________ SOCKET FUCTIONS ________________________________ */
 	private:
@@ -54,10 +62,10 @@ class Bot
 /* -------------------------------------------------------------------------- */
 /* _________________________ UTILS __________________________________________ */
 	private:
-		bool								check( int argc );
-		unsigned short						port( std::string argv );
-		std::string							password( std::string argv );
-		std::string							welcomeBot( void );
+		bool			check( int argc );
+		unsigned short	port( std::string argv );
+		std::string		password( std::string argv );
+		std::string		welcomeBot( void );
 /* -------------------------------------------------------------------------- */	
 };
 
