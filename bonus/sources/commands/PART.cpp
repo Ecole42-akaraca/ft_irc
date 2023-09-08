@@ -41,7 +41,8 @@ void	Server::part( Client* it, std::vector<std::string> tokenArr )
 			Server::removeChannel(chan->getName());
 		else if (Server::isChannelAdmin(it, chan) == true) // Eğerki channel'dan ayrılan kişi admin ise,
 		{
-		 	chan->setAdmin(chan->_channelClients[0]); // Adminlik channele kayıtlı olan bir sonraki kişiye verilir.
+		 	// chan->setAdmin(chan->_channelClients[0]); // Adminlik channele kayıtlı olan bir sonraki kişiye verilir.
+		 	chan->addAdmin(chan->_channelClients[0]); // Adminlik channele kayıtlı olan bir sonraki kişiye verilir.
 			chan->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], "o", chan->_channelClients[0]->getNickname()));
 		}
 	}

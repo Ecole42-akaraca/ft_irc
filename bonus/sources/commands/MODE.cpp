@@ -136,7 +136,8 @@ void	Server::mode( Client* it, std::vector<std::string> tokenArr )
 				{
 					if (isChannelUser(user, itChan->second))
 					{
-						itChan->second->setAdmin(active ? user : NULL);
+						// itChan->second->setAdmin(active ? user : NULL);
+						itChan->second->addAdmin(active ? user : NULL);
 						itChan->second->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], (active ? "+o" : "-o"), (active ? tokenArr[3] : "")));
 					}
 					else

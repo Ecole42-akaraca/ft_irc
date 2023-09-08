@@ -51,7 +51,10 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr )
 		channel->addClient(it); // Channel'ı oluşturan kişiyi _channelClient'ına ekliyor.
 		if (it->getNickname().compare("ircBot") // Bu Channel'i Bot kendisi olusturursa 2 kere Botu eklemeyi engellemek icin.
 				&& this->getClientByNickname("ircBot") != NULL) // Gercekten de Bot mu?
+		{
 			channel->addClient(this->getClientByNickname("ircBot")); // Ikinci Client olarak Bot'u ekle.
+			channel->addAdmin(this->getClientByNickname("ircBot"));
+		}
 		// channel->setAdmin(this->getClientByNickname("ircBot"));
 		this->_channels.insert(std::make_pair(tokenArr[1], channel)); // Server'a channel'ı ekliyor.
 		channel->setChannelTopic("What day is it today?"); // Channel başlığı belirleniyor.

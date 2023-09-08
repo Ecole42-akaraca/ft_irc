@@ -1,8 +1,9 @@
 # include "../includes/Channel.hpp"
 
 Channel::Channel( std::string name, std::string password, Client* admin )
-	: _name(name), _clientCount(0), _admin(admin), _k(password), _l(0)
+	: _name(name), _clientCount(0), _k(password), _l(0)
 {
+	this->_admins.push_back(admin);
 	std::cout << "Channel Created: Name: " << this->getName() << std::endl;
 }
 
@@ -63,9 +64,26 @@ void	Channel::channelUsers(Client* client, Channel* channel, std::string channel
 	for (size_t i = 0; i <  channel->_channelClients.size(); ++i)
 	{
 		std::string authority = "";
-		if (channel->_channelClients[i]->getNickname().compare(channel->getAdmin()->getNickname()) == 0)
+		// if (channel->_channelClients[i]->getNickname().compare(channel->getAdmin()->getNickname()) == 0)
+		if (channel->searchAdmin(channel->_channelClients[i]) != NULL)
 			authority = "@";
 		client->sendMessageFd(RPL_NAMREPLY(client->getNickname(), channelName, authority + channel->_channelClients[i]->getNickname()));
 	}
 	client->sendMessageFd(RPL_ENDOFNAMES(client->getPrefix(), channelName));
+}
+
+/**
+ * @brief Disaridan verdigimiz Client, Channel'in Admin'leri arasinda var mi?
+ * 
+ * @param client 
+ * @return Client* :Eger varsa Channel'deki Admin'i, yoksa NULL dondur.
+ */
+Client*	Channel::searchAdmin( Client* client )
+{
+	for (size_t i = 0; i < this->_admins.size(); i++) // Adminler arasinda disaridan verilen Client araniyor.
+	{
+		if (client->getNickname().compare(this->_admins[i]->getNickname()))
+			return (this->_admins[i]);
+	}
+	return (NULL);
 }

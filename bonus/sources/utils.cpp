@@ -185,12 +185,15 @@ std::string	Server::combineMessage( size_t i, std::vector<std::string> vectorMes
 
 bool	Server::isChannelAdmin(Client* client, Channel* channel)
 {
-	if (channel->getAdmin() == NULL)
+	// if (channel->getAdmin() == NULL)
+	if (channel->searchAdmin(client) == NULL)
 		return (false);
-	if (channel->getAdmin()->getNickname().compare(client->getNickname()) == 0 && \
-		channel->getAdmin()->getNickname().size() == client->getNickname().size())
+	else
 		return (true);
-	return (false);
+	// if (channel->getAdmin()->getNickname().compare(client->getNickname()) == 0 && \
+		// channel->getAdmin()->getNickname().size() == client->getNickname().size())
+		// return (true);
+	// return (false);
 }
 
 bool	Server::isChannelUser(Client* client, Channel* channel)

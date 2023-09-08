@@ -39,7 +39,8 @@ void	Server::who( Client* it, std::vector<std::string> tokenArr )
 			{
 				Client* A = itChanel->_channelClients[i];
 				std::string isAdmin = "";
-				if (A == itChanel->getAdmin())
+				// if (A == itChanel->getAdmin())
+				if (itChanel->searchAdmin(A) != NULL)
 					isAdmin = "@";
 				it->sendMessageFd(RPL_WHOREPLY(it->getPrefix(), tokenArr[1], A->getUsername(), A->getHostname(), _serverName, A->getNickname(), isAdmin, "0", A->getRealname()));
 				// @ -> kullanıcının operator olduğunu temsil ediyor.
