@@ -8,6 +8,7 @@
 
 class Client;
 
+typedef	std::vector<Client *>::iterator itChannelAdmins;
 typedef	std::vector<Client *>::iterator itChannelClients;
 
 class Channel
@@ -47,6 +48,7 @@ class Channel
 		void		addAdmin( Client* admin );
 
 		void		removeClient( Client* client );
+		void		removeAdmin( Client* admin );
 
 		void		sendMessageBroadcast( std::string message );
 		void		sendMessageBroadcast( Client* exclude, std::string message );

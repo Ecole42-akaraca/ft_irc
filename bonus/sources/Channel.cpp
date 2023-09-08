@@ -3,7 +3,8 @@
 Channel::Channel( std::string name, std::string password, Client* admin )
 	: _name(name), _clientCount(0), _k(password), _l(0)
 {
-	this->_admins.push_back(admin);
+	this->addAdmin(admin);
+	// this->_admins.push_back(admin);
 	std::cout << "Channel Created: Name: " << this->getName() << std::endl;
 }
 
@@ -33,19 +34,36 @@ void	Channel::addClient( Client* client )
 void	Channel::addAdmin( Client* admin )
 {
 	if (admin == NULL)
+	{
+		std::cout << "Admin NULL olm NULLLLLLLL eklenemez nasil eklensin admin yok." << std::endl;
 		return ;
+	}
+	std::cout << "Admin EKLENDIIIIIIIII" << std::endl;
 	this->_admins.push_back(admin);
 }
 
 void	Channel::removeClient( Client* client )
 {
-	itChannelClients it = std::find(_channelClients.begin(), _channelClients.end(), client);
+	itChannelClients it = std::find(_channelClients.begin(),
+		_channelClients.end(), client);
 	if (it != _channelClients.end())
 	{
 		_channelClients.erase(it);
 		this->_clientCount--;
 		std::cout << this->getName() << ": " << client->getNickname()
 			<< " removed." << std::endl;
+	}
+}
+
+void	Channel::removeAdmin( Client* admin )
+{
+	itChannelAdmins itCA = std::find(this->_admins.begin(),
+		this->_admins.end(), admin);
+	if (itCA != this->_admins.end())
+	{
+		this->_admins.erase(itCA);
+		std::cout << this->getName() << ": " << admin->getNickname()
+			<< " is not admin anymore." << std::endl;
 	}
 }
 
@@ -99,7 +117,7 @@ Client*	Channel::searchAdmin( Client* client )
 {
 	for (size_t i = 0; i < this->_admins.size(); i++) // Adminler arasinda disaridan verilen Client araniyor.
 	{
-		if (client->getNickname().compare(this->_admins[i]->getNickname()))
+		if (!client->getNickname().compare(this->_admins[i]->getNickname()))
 			return (this->_admins[i]);
 	}
 	return (NULL);

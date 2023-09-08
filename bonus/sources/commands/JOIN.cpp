@@ -47,6 +47,7 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr )
 	}
 	else // Channel mevcut değilse, yeni channel oluşturulup, ayarlamalar gerçekleştiriliyor.
 	{
+		// std::vector<Client*>	newAdmins;
 		Channel *channel = new Channel(tokenArr[1], "\0", it); // Channel oluşturulur ve admini belirlenir. Channel şifresi için henüz bir şey yoktur.
 		channel->addClient(it); // Channel'ı oluşturan kişiyi _channelClient'ına ekliyor.
 		if (it->getNickname().compare("ircBot") // Bu Channel'i Bot kendisi olusturursa 2 kere Botu eklemeyi engellemek icin.
@@ -55,10 +56,13 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr )
 			std::cout << "Bot eklendi" << std::endl;
 			channel->addClient(this->getClientByNickname("ircBot")); // Ikinci Client olarak Bot'u ekle.
 			channel->addAdmin(this->getClientByNickname("ircBot"));
-			this->getClientByNickname("ircBot")->sendMessageFd(RPL_JOIN(this->getClientByNickname("ircBot")->getPrefix(), tokenArr[1])); // Kullanıcı kanal olsada, olmasada hertürlü o kanala katılacağından dolayı RPL yanıtını gönderiyoruz.
-			this->getClientByNickname("ircBot")->sendMessageFd(RPL_MODE(this->getClientByNickname("ircBot")->getNickname(), tokenArr[1], "+nto", this->getClientByNickname("ircBot")->getNickname())); // Kimlik doğrulaması gerçekleşiyor.
+			// this->getClientByNickname("ircBot")->sendMessageFd(RPL_JOIN(this->getClientByNickname("ircBot")->getPrefix(), tokenArr[1])); // Kullanıcı kanal olsada, olmasada hertürlü o kanala katılacağından dolayı RPL yanıtını gönderiyoruz.
+			// this->getClientByNickname("ircBot")->sendMessageFd(RPL_MODE(this->getClientByNickname("ircBot")->getNickname(), tokenArr[1], "+nto", this->getClientByNickname("ircBot")->getNickname())); // Kimlik doğrulaması gerçekleşiyor.
 		}
 		// channel->setAdmin(this->getClientByNickname("ircBot"));
+		// newAdmins.push_back(it);
+		// newAdmins.push_back(this->getClientByNickname("ircBot"));
+		// channel->setAdmins(newAdmins);
 		this->_channels.insert(std::make_pair(tokenArr[1], channel)); // Server'a channel'ı ekliyor.
 		channel->setChannelTopic("What day is it today?"); // Channel başlığı belirleniyor.
 		it->registerChannel(channel); // Client içinde bulunan, kayıtlı kullanıcıların olduğu listeye channel ekleniyor.
