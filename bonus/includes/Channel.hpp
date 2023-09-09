@@ -58,6 +58,7 @@ class Channel
 		void		channelUsers(Client* client, Channel* channel, std::string channelName ); // Channel'e girişte kullanıcıların listesini channel'e bastırıyor.
 
 		Client*		searchAdmin( Client* client );
+		Client*		searchClient( Client* client );
 };
 
 #endif

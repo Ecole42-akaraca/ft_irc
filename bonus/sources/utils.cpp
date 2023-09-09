@@ -1,6 +1,6 @@
 #include "../includes/Server.hpp"
 
-bool			Server::check( int argc )
+bool	Server::check( int argc )
 {
 	std::cout << YELLOW "Checking parameters..." END << std::endl;
 	if (argc != 3)
@@ -36,7 +36,7 @@ unsigned short	Server::port( std::string port )
 	return (portVal);
 }
 
-std::string		Server::password( std::string password )
+std::string	Server::password( std::string password )
 {
 	// for: ' $> ./ircserv 1234 "" '
 	//		' $> ./ircserv 1234 '' '
@@ -199,11 +199,15 @@ bool	Server::isChannelAdmin(Client* client, Channel* channel)
 
 bool	Server::isChannelUser(Client* client, Channel* channel)
 {
-	if (client->isRegisteredChannel(channel->getName()))
-	{
+	// if (client->isRegisteredChannel(channel->getName()))
+	// {
+	// 	return (true);
+	// }
+	// return (false);
+	if (channel->searchClient(client) == NULL)
+		return (false);
+	else
 		return (true);
-	}
-	return (false);
 }
 
 void	Server::leaveAllChannel( Client* client )

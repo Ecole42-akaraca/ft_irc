@@ -123,6 +123,23 @@ Client*	Channel::searchAdmin( Client* client )
 	return (NULL);
 }
 
+
+/**
+ * @brief Disaridan verdigimiz Client, Channel'in Client'leri arasinda var mi?
+ * 
+ * @param client 
+ * @return Client* :Eger varsa Channel'deki Client'i, yoksa NULL dondur.
+ */
+Client*	Channel::searchClient( Client* client )
+{
+	for (size_t i = 0; i < this->_channelClients.size(); i++) // Adminler arasinda disaridan verilen Client araniyor.
+	{
+		if (!client->getNickname().compare(this->_channelClients[i]->getNickname()))
+			return (this->_channelClients[i]);
+	}
+	return (NULL);
+}
+
 void	Channel::setChannelMods( std::string mod )
 {
 	if (!mod.empty())

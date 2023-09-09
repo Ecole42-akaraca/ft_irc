@@ -37,8 +37,13 @@ void	Server::part( Client* it, std::vector<std::string> tokenArr )
 		chan->sendMessageBroadcast(it, RPL_PART(it->getPrefix(), tokenArr[1], msg)); // Client, kanaldan ayrılırken channel'daki herkese ayrılış mesajı göndermelidir 'BEN_ [~AHMET@176.88.10.20] has left #42kocaeli []'
 		chan->removeClient(it); // Client, channel'dan ayrıldığından dolayı, channel'den o kullanıcı bilgisi kaldırılmalıdır.
 		it->unregisterChannel(chan); // Client'ta bulunan channel bilgisinden channel kaldırılmalıdır.
-		if (chan->getClientCount() == 0) // Eğerki channel'daki son kişi ise, channel silinmelidir.
+		if (chan->getClientCount() <= 1) // Eğerki channel'daki son kişi ise, channel silinmelidir.
+		{
+			std::cout << "Channel'deki client sayisi:>" << chan->getClientCount() << std::endl;
+			// if (chan->)
+
 			Server::removeChannel(chan->getName());
+		}
 		else if (Server::isChannelAdmin(it, chan) == true) // Eğerki channel'dan ayrılan kişi admin ise,
 		{
 		 	// chan->setAdmin(chan->_channelClients[0]); // Adminlik channele kayıtlı olan bir sonraki kişiye verilir.

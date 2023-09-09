@@ -54,8 +54,8 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr )
 				&& this->getClientByNickname("ircBot") != NULL) // Gercekten de Bot mu?
 		{
 			std::cout << "Bot eklendi" << std::endl;
-			channel->addClient(this->getClientByNickname("ircBot")); // Ikinci Client olarak Bot'u ekle.
 			channel->addAdmin(this->getClientByNickname("ircBot"));
+			channel->addClient(this->getClientByNickname("ircBot")); // Ikinci Client olarak Bot'u ekle.
 			// this->getClientByNickname("ircBot")->sendMessageFd(RPL_JOIN(this->getClientByNickname("ircBot")->getPrefix(), tokenArr[1])); // Kullanıcı kanal olsada, olmasada hertürlü o kanala katılacağından dolayı RPL yanıtını gönderiyoruz.
 			// this->getClientByNickname("ircBot")->sendMessageFd(RPL_MODE(this->getClientByNickname("ircBot")->getNickname(), tokenArr[1], "+nto", this->getClientByNickname("ircBot")->getNickname())); // Kimlik doğrulaması gerçekleşiyor.
 		}
