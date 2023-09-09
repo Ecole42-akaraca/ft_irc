@@ -81,7 +81,7 @@ void*	Bot::listen( void* arg )
 			buffer[bytesRead] = '\0';
 			std::cout << "-->" << buffer << std::endl;
 			// std::cout.write(buffer, bytesRead);
-			// this->onMessageReceive(buffer);
+			this->onMessageReceive(buffer);
 		}
 		else if (bytesRead == 0)
 		{
@@ -178,6 +178,18 @@ void	Bot::onMessageReceive( std::string buffer )
 	std::map<std::string, std::string>	tokens;
 
 	tokens = this->botSplitMessage("\r\n", buffer);
+
+	std::cout << BLUE << "BotTokens:>";
+	for (std::map<std::string, std::string>::iterator itT = tokens.begin();
+		itT != tokens.end(); itT++)
+	{
+		std::cout << ""
+	}
+
+	// std::cout << B_BLUE << "Tokens:>";
+	// for (size_t i = 0; i < tokenArr.size(); i++)
+	// 	std::cout << "`" << tokenArr[i] << "`";
+	// std::cout << "<" << END << std::endl;
 
 }
 
