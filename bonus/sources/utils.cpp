@@ -64,6 +64,7 @@ void	Server::initCommands( void )
 	t_cmdFunc["WHO"] = &Server::who;
 	t_cmdFunc["WHOIS"] = &Server::whois;
 	t_cmdFunc["KICK"] = &Server::kick;
+	t_cmdFunc["TOPIC"] = &Server::topic;
 }
 
 void	Server::addToPollfds( int fd,  short events, short revents )
@@ -190,7 +191,7 @@ bool	Server::isChannelAdmin(Client* client, Channel* channel)
 		return (false);
 	else
 		return (true);
-	// if (channel->getAdmin()->getNickname().compare(client->getNickname()) == 0 && \
+	// if (channel->getAdmin()->getNickname().compare(client->getNickname()) == 0 &&
 		// channel->getAdmin()->getNickname().size() == client->getNickname().size())
 		// return (true);
 	// return (false);

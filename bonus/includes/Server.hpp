@@ -88,6 +88,7 @@ class Server
 		void	mode( Client*, std::vector<std::string> );
 		void	info( Client*, std::vector<std::string> );
 		void	kick( Client*, std::vector<std::string> );
+		void	topic( Client*, std::vector<std::string> );
 /* -------------------------------------------------------------------------- */
 /* _________________________ SOCKET FUCTIONS ________________________________ */
 	private:

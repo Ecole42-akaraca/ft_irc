@@ -19,6 +19,7 @@ class Channel
 		// Client*		_admin;
 		std::vector<Client*>	_admins; // Birden fazla admin.
 		std::string				_channelTopic; // Channel'e bağlantı kurulduğunda konu başlığının belirlenmesinde yardımcı oluyor.
+		std::string _channelModes; // Channel'in modlarını tutar.
 
 		std::string	_k; // Channel şifresini belirliyor
 		int			_l; // Channel'a bağlanacak max client sayısını temsil ediyor.
@@ -36,6 +37,7 @@ class Channel
 		int			getClientCount( void ) { return (this->_clientCount); }
 		std::string	getPassword( void ) { return (this->_k); }
 		int			getMaxClient( void ) { return (this->_l); }
+		std::string getChannelMods( void ) { return (this->_channelModes); }
 
 		void		setName( std::string &name ) { this->_name = name; }
 		void		setChannelTopic( std::string topic ) { this->_channelTopic = topic; }
@@ -43,6 +45,7 @@ class Channel
 		void		setAdmins( std::vector<Client*> admins ) { this->_admins = admins; }
 		void		setPassword( std::string password ) {this->_k = password; }
 		void		setMaxClient( int maxClient ) {this->_l = maxClient; }
+		void		setChannelMods( std::string mod );
 
 		void		addClient( Client* client );
 		void		addAdmin( Client* admin );

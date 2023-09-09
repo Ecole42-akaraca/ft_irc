@@ -17,6 +17,7 @@ class Channel
 		int			_clientCount;
 		Client*		_admin;
 		std::string _channelTopic; // Channel'e bağlantı kurulduğunda konu başlığının belirlenmesinde yardımcı oluyor.
+		std::string _channelModes; // Channel'in modlarını tutar.
 
 		std::string	_k; // Channel şifresini belirliyor
 		int			_l; // Channel'a bağlanacak max client sayısını temsil ediyor.
@@ -32,12 +33,14 @@ class Channel
 		int			getClientCount( void ) { return (this->_clientCount); }
 		std::string	getPassword( void ) { return (this->_k); }
 		int			getMaxClient( void ) { return (this->_l); }
+		std::string getChannelMods( void ) { return (this->_channelModes); }
 
 		void		setName( std::string &name ) { this->_name = name; }
 		void		setChannelTopic( std::string topic ) { this->_channelTopic = topic; }
 		void		setAdmin( Client* admin ) { this->_admin = admin; }
 		void		setPassword( std::string password ) {this->_k = password; }
 		void		setMaxClient( int maxClient ) {this->_l = maxClient; }
+		void		setChannelMods( std::string mod );
 
 		void		addClient( Client* client );
 		void		removeClient( Client* client );

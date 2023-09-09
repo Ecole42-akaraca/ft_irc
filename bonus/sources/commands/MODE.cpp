@@ -98,63 +98,75 @@ void	Server::mode( Client* it, std::vector<std::string> tokenArr )
 		return ;
 	}
 
+	if (tokenArr.size() == 2) // client channel'e bağlandıktan sonra mod bilgisi almaktadır belli aralıklarla (MODE <CHANNEL_NAME>), yetkisiz giriş vermek istemiyorum.
+	{
+		std::string args = "";
+		args += "Key: " + itChan->second->getPassword();
+		std::stringstream maxClient;
+		maxClient << itChan->second->getMaxClient();
+		args += " Max Client: " + maxClient.str();
+		it->sendMessageFd(RPL_MODE(it->getPrefix(), tokenArr[1], "+" + itChan->second->getChannelMods(), args)); //Channel mod infosu gidiyor.
+		return ;
+	}
+
 	if (!isChannelAdmin(it, itChan->second))
 	{
 		it->sendMessageFd(ERR_CHANOPRIVSNEEDED(it->getPrefix(), tokenArr[1]));
 		return ;
 	}
 
-	size_t size = tokenArr.at(2).size();
-	for (size_t i = 0; i < size; ++i)
+	bool isAdded = (tokenArr.at(2)[0] == '+' ? true : false);
+	char c = tokenArr[2][1];
+	switch (c)
 	{
-		char c = tokenArr[2][i];
-		char prevC = i > 0 ? tokenArr[2][i - 1] : '\0';
-		bool active = prevC == '+';
-		switch (c)
+		case 'k':
 		{
-			case 'k':
-			{
-				itChan->second->setPassword( active ? tokenArr.at(3) : "\0" );
-				itChan->second->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], (active ? "+k" : "-k"), (active ? tokenArr[3] : "\0")));
-				break;
-			}
+			itChan->second->setPassword( isAdded ? tokenArr.at(3) : "\0" );
+			itChan->second->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], (isAdded ? "+k" : "-k"), (isAdded ? tokenArr[3] : "\0")));
+			itChan->second->setChannelMods( isAdded ? "+k" : "-k" );
+			break;
+		}
 
-			case 'l':
-			{
-				int count = atoi(tokenArr.at(3).c_str());
-				if (active && count < itChan->second->getMaxClient())
-					break ;
-				itChan->second->setMaxClient(active ? count : 0);
-				itChan->second->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], (active ? "+l" : "-l"), (active ? tokenArr[3] : "")));
-				break;
-			}
+		case 'l':
+		{
+			if (tokenArr.size() == 4 && atoi(tokenArr.at(3).c_str()) < itChan->second->getMaxClient()) // Channel'de kişi miktarından daha düşük bir değere atama yapmamak için konuldu
+				break ;
 
-			case 'o':
+			itChan->second->setMaxClient(isAdded ? atoi(tokenArr.at(3).c_str()) : 0);
+			itChan->second->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], (isAdded ? "+l" : "-l"), (isAdded ? tokenArr[3] : "")));
+			itChan->second->setChannelMods( isAdded ? "+l" : "-l" );
+			break;
+		}
+
+		case 'o':
+		{
+			Client* user = getClientByNickname(tokenArr.at(3));
+			if (user != NULL)
 			{
-				Client* user = getClientByNickname(tokenArr.at(3));
-				if (user != NULL)
+				if (isChannelUser(user, itChan->second))
 				{
-					if (isChannelUser(user, itChan->second))
-					{
-						// itChan->second->setAdmin(active ? user : NULL);
-						if (active == true)
-							itChan->second->addAdmin(active ? user : NULL);
-						else
-							itChan->second->removeAdmin(user);
-						itChan->second->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], (active ? "+o" : "-o"), (active ? tokenArr[3] : "")));
-					}
+					// itChan->second->setAdmin(active ? user : NULL);
+					if (isAdded == true)
+						itChan->second->addAdmin(isAdded ? user : NULL);
 					else
-						it->sendMessageFd(ERR_USERNOTINCHANNEL(it->getPrefix(), tokenArr[3], tokenArr[1]));
+						itChan->second->removeAdmin(user);
+					itChan->second->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], (isAdded ? "+o" : "-o"), (isAdded ? tokenArr[3] : "")));
 				}
 				else
-					it->sendMessageFd(ERR_NOSUCHNICK(it->getPrefix(), tokenArr[3]));
-				break;
+					it->sendMessageFd(ERR_USERNOTINCHANNEL(it->getPrefix(), tokenArr[3], tokenArr[1]));
 			}
-		
-			default:
-				break;
+			else
+				it->sendMessageFd(ERR_NOSUCHNICK(it->getPrefix(), tokenArr[3]));
+			break;
+		}
+	
+		default:
+		{
+			it->sendMessageFd(ERR_UNKNOWNCOMMAND(it->getPrefix(), tokenArr[2]));
+			break;
 		}
 	}
+
 }
 
 // **************************************

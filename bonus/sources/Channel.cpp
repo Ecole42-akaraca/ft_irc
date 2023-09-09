@@ -122,3 +122,26 @@ Client*	Channel::searchAdmin( Client* client )
 	}
 	return (NULL);
 }
+
+void	Channel::setChannelMods( std::string mod )
+{
+	if (!mod.empty())
+	{
+		if (mod[0] == '-')
+		{
+			for (size_t i = 1; i < mod.size(); ++i)
+			{
+				if (_channelModes.find(mod[i]) != std::string::npos)
+					_channelModes.erase(_channelModes.find(mod[i]), 1);
+			}
+		}
+		else
+		{
+			if (mod[0] == '+')
+				mod.erase(0, 1);
+			_channelModes += mod;
+		}
+	}
+
+	std::sort(_channelModes.begin(), _channelModes.end());
+}
