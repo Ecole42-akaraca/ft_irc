@@ -36,6 +36,7 @@ class Client
 		bool					_havePassword; // server'a bağlanırken password olmadığından dolayı pass kontrolü yapamıyoruz, server herzaman passwordlü olduğundan dolayı bu şekilde kullanıcı password girmiş mi girmemiş mi kontrol edebiliyoruz.
 		int						_ircstatus; // enum değerlerini tutmak için bulunuyor.
 		std::vector<Channel*>	_registeredChannels; // Kullanıcının kayıtlı olduğu channel'lara erişmek daha kolay olsun diye eklendi.
+		std::string				_clientModes; // Client'in modlarını tutar.
 
 	public:
 		Client( int fd, int port, const std::string &hostname );
@@ -50,6 +51,7 @@ class Client
 		std::string		getRealname( void ) { return (this->_realname); }
 		bool			getPasswordStatus( void ) { return (this->_havePassword); }
 		std::string		getPrefix() const;
+		std::string		getClientMods( void ) { return (this->_clientModes); }
 
 		void	setIRCstatus( int status ) { this->_ircstatus = status; }
 		void	setHostname( std::string name ) { this->_hostname = name; }
@@ -57,12 +59,13 @@ class Client
 		void	setUsername( std::string name ) { this->_username = name; }
 		void	setRealname( std::string name ) { this->_realname = name; }
 		void	setPasswordStatus( void ) { this->_havePassword = true; }
+		void	setClientMods( std::string mod );
 		void	sendMessageFd( std::string message );
 		void	sendWelcomeMessage( std::string message );
 
 		void	registerChannel( Channel* channel ); // Client içinde bulunan _registeredChannels'e Channele eklemek için vardır.
 		void	unregisterChannel( Channel* channel ); // Client içinde bulunan _registeredChannels'den Channele kaldırmak için vardır.
-		std::vector<Channel*> getRegisteredChannels( void ) { return (this->_registeredChannels); } // Client'tin kayıtlı olduğu clientlerin listesini döndürür.
+		std::vector<Channel*>	getRegisteredChannels( void ) { return (this->_registeredChannels); } // Client'tin kayıtlı olduğu clientlerin listesini döndürür.
 		bool	isRegisteredChannel( std::string channelName ); // Client'in o kanala kayıtlı olup olmadığı kontrol eder.
 		void	clearRegisteredChannels( void ) { this->_registeredChannels.clear(); } // Client quit attığı zaman kayıtlı olduğu tüm channelerden çıkarmak için yapıyoruz.
 };

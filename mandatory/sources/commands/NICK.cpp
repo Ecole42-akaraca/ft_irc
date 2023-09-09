@@ -53,6 +53,7 @@ void	Server::nick( Client* it, std::vector<std::string> tokenArr )
 			it->sendMessageFd(RPL_WELCOME(name, _serverName));  // ilk bağlantı olduğundan dolayı, selamlama mesajıdır
 			it->sendMessageFd(RPL_NOTICE(it->getPrefix() + ":" + ss.str() , it->getNickname(), "Client status is now: AUTHENTICATED."));
 			it->sendMessageFd(RPL_NICK(it->getPrefix(), name)); // Client'e kullanıcı adının değiştiği bilgisi verilir.
+			it->sendMessageFd(RPL_MODE(it->getPrefix(), it->getNickname(), it->getClientMods(), ""));
 		}
 	}
 }

@@ -20,12 +20,16 @@
 #define ERR_CHANNELISFULL(source, channel)				"471 " + source + " " + channel + " :Cannot join channel (+l)"
 #define ERR_CANNOTSENDTOCHAN(source, channel)			"404 " + source + " " + channel + " :Cannot send to channel"
 #define ERR_ERRONEUSNICKNAME(source, nick)				"432 " + source + " " + nick + " :Erroneous nickname"
+#define ERR_UMODEUNKNOWNFLAG(source, nick)				"501 " + source + " " + nick + " :Unknown MODE flag"
+#define ERR_USERSDONTMATCH(source)						"502 " + source + " :Cannot change mode for other users"
 
 // NUMERIC REPLIES
 #define RPL_WELCOME(source, server)															"001 " + source + " :" + B_GREEN + "Welcome " + source + " to the " + server + " server!" + END
 #define RPL_NAMREPLY(source, channel, users)												"353 " + source + " = " + channel + " :" + users
 #define RPL_ENDOFNAMES(source, channel)														"366 " + source + " " + channel + " :End of /NAMES list."
 #define RPL_WHOISUSER(source, nickname, username, hostname, port, realname)					"311 " + source + " " + nickname + " ~" + username + " " + hostname + ":" + port + " * :" + realname
+#define RPL_WHOISSERVER(source, server)														"312 " + source + " * :" + server
+#define RPL_WHOISCHANNELS(source, nickname, channels)										"319 " + source + " " + nickname + " :" + channels 
 #define RPL_ENDOFWHOIS(source, nickname)													"318 " + source + " " + nickname + " :End of /WHOIS list"
 #define RPL_TOPIC(source, channel, topic)													"332 " + source + " " + channel + " :" + topic
 #define RPL_WHOREPLY(source, channel, user, host, server, nick, flag, hopcount, realname)	"352 " + source + " " + channel + " " + user + " " + host + " " + server + " " + nick + " H" + flag + " :" + hopcount  + " " + realname

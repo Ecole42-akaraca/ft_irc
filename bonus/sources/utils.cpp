@@ -170,6 +170,21 @@ Client*	Server::getClientByFd( int fd )
 	return (NULL);
 }
 
+std::string	Server::getRegisteredChannels( Client* Client )
+{
+	std::string channelString = "";
+
+	for (itChannels itC = this->_channels.begin(); itC != this->_channels.end(); ++itC)
+	{
+		if (this->isChannelAdmin(Client, itC->second))
+			channelString += "@";
+		if (this->isChannelUser(Client, itC->second))
+			channelString += itC->second->getName();
+		channelString += " ";
+	}
+	return (channelString);
+}
+
 std::string	Server::combineMessage( size_t i, std::vector<std::string> vectorMessage )
 {
 	std::string msg;

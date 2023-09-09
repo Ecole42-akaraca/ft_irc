@@ -86,11 +86,42 @@ void	Server::mode( Client* it, std::vector<std::string> tokenArr )
 	}
 
 	if (tokenArr.at(1)[0] != '#')
-	{
-		it->sendMessageFd(ERR_NOSUCHCHANNEL(it->getPrefix(), tokenArr[1]));
-		return ;
-	}
+		Server::modeUser(it, tokenArr);
+	else
+		Server::modeChannel(it, tokenArr);
+}
 
+void	Server::modeUser( Client* it, std::vector<std::string> tokenArr )
+{
+	int fd = Server::getClientFdByNickname(tokenArr[1]);
+	if (fd == -1) // kişi yoksa
+		it->sendMessageFd(ERR_NOSUCHNICK(it->getPrefix(), tokenArr[1]));
+	else if (fd != it->getFd()) //başka birisinin modunu değiştirmek istendiğinde
+		it->sendMessageFd(ERR_USERSDONTMATCH(it->getPrefix()));
+	else // Kendi modunu değiştirmek isterse
+	{
+		bool isAdded = (tokenArr.at(2)[0] == '+' ? true : false);
+		char c = tokenArr[2][1];
+		switch (c)
+		{
+			case 'H':
+			{
+				it->sendMessageFd(RPL_MODE(it->getPrefix(), tokenArr[1], (isAdded ? "+H" : "-H"), ""));
+				it->setClientMods( isAdded ? "+H" : "-H");
+				break;
+			}
+
+			default:
+			{
+				it->sendMessageFd(ERR_UMODEUNKNOWNFLAG(it->getPrefix(), tokenArr[2]));
+				break;
+			}
+		}
+	}
+}
+
+void	Server::modeChannel( Client* it, std::vector<std::string> tokenArr )
+{
 	itChannels itChan = _channels.find(tokenArr[1]);
 	if (itChan == _channels.end())
 	{
@@ -162,7 +193,7 @@ void	Server::mode( Client* it, std::vector<std::string> tokenArr )
 	
 		default:
 		{
-			it->sendMessageFd(ERR_UNKNOWNCOMMAND(it->getPrefix(), tokenArr[2]));
+			it->sendMessageFd(ERR_UMODEUNKNOWNFLAG(it->getPrefix(), tokenArr[2]));
 			break;
 		}
 	}

@@ -69,6 +69,8 @@ class Server
 		void	removeClient( int clientFd );
 		void	quitReason( Client* client, std::string message );
 		void	serverInfo( void );
+		void	modeUser( Client* it, std::vector<std::string> tokenArr );
+		void	modeChannel( Client* it, std::vector<std::string> tokenArr );
 /* -------------------------------------------------------------------------- */
 /* _________________________ COMMANDS _______________________________________ */
 	private:
@@ -109,6 +111,7 @@ class Server
 		int									getClientFdByNickname( std::string name ); //Nickname'ye Client'in fd'sini döndürür.
 		Client*								getClientByNickname( std::string name ); // Nickname'ye Client'in pointerını döndürür.
 		Client* 							getClientByFd( int fd ); //Fd'ye client'in pointerini döndürür.
+		std::string							getRegisteredChannels( Client* Client ); // Client'in kayıtlı olduğu channellerin string listesi dönecektir. 
 		std::string							combineMessage( size_t i, std::vector<std::string> vectorMessage ); //splitMessage fonk. tam tersi.
 		bool								isChannelAdmin( Client* client, Channel* channel ); // Client'in belirtilen Channel'in admini mi, kontrol ediliyor.
 		bool								isChannelUser( Client* client, Channel* channel ); // Client'in belirtilen Channel'in kullanıcısı mı kontrol ediliyor.

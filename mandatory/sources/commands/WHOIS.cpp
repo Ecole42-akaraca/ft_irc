@@ -32,6 +32,9 @@ void	Server::whois( Client* it, std::vector<std::string> tokenArr )
 		std::stringstream ss;
 		ss << dest->getPort();
 		it->sendMessageFd(RPL_WHOISUSER(it->getPrefix(), dest->getNickname(), dest->getUsername(), dest->getHostname(), ss.str(), dest->getRealname())); // Aranan kullanıcı hakkında bilgiyi yazdırır
+		it->sendMessageFd(RPL_WHOISSERVER(it->getPrefix(), this->_serverName));
+		if (dest->getRegisteredChannels().size() != 0)
+			it->sendMessageFd(RPL_WHOISCHANNELS(it->getPrefix(), dest->getNickname(), Server::getRegisteredChannels(dest)));
 		it->sendMessageFd(RPL_ENDOFWHOIS(it->getPrefix(), dest->getNickname())); // Arama işleminin bittiğini ifade eder.
 	}
 	else

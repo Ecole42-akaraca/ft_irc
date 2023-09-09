@@ -156,7 +156,11 @@ void	Channel::setChannelMods( std::string mod )
 		{
 			if (mod[0] == '+')
 				mod.erase(0, 1);
-			_channelModes += mod;
+			for (size_t i = 0; i < mod.size(); ++i)
+			{
+				if (_channelModes.find(mod[i]) == std::string::npos)
+					_channelModes += mod[i];
+			}
 		}
 	}
 
