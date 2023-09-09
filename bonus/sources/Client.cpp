@@ -17,7 +17,7 @@ Client::~Client() {}
 std::string	Client::getPrefix() const
 {
 	return this->_nickname
-		+ (this->_username.empty() ? "" : "!" + this->_username)
+		+ (this->_username.empty() ? "" : "!~" + this->_username)
 		+ (this->_hostname.empty() ? "" : "@" + this->_hostname);
 }
 

@@ -42,7 +42,7 @@ void	Server::who( Client* it, std::vector<std::string> tokenArr )
 				// if (A == itChanel->getAdmin())
 				if (itChanel->searchAdmin(A) != NULL)
 					isAdmin = "@";
-				it->sendMessageFd(RPL_WHOREPLY(it->getPrefix(), tokenArr[1], A->getUsername(), A->getHostname(), _serverName, A->getNickname(), isAdmin, "0", A->getRealname()));
+				it->sendMessageFd(RPL_WHOREPLY(it->getPrefix(), tokenArr[1], "~" + A->getUsername(), A->getHostname(), _serverName, A->getNickname(), isAdmin, "0", A->getRealname()));
 				// @ -> kullanıcının operator olduğunu temsil ediyor.
 				// "0" ise kullanıcının o anki sunucu üzerinden mesajlaştığını ifade eder.
 
@@ -66,7 +66,7 @@ void	Server::who( Client* it, std::vector<std::string> tokenArr )
 		if (fd != -1)
 		{
 			Client *itC = _clients.at(fd);
-			it->sendMessageFd(RPL_WHOREPLY(it->getPrefix(), "*", itC->getUsername(), itC->getHostname(), _serverName, itC->getNickname(), "","0", itC->getRealname()));
+			it->sendMessageFd(RPL_WHOREPLY(it->getPrefix(), "*", "~" + itC->getUsername(), itC->getHostname(), _serverName, itC->getNickname(), "","0", itC->getRealname()));
 		}
 		it->sendMessageFd(RPL_ENDOFWHO(it->getPrefix(), "*"));
 	}

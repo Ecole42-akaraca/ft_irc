@@ -1,7 +1,7 @@
 # include "../includes/Channel.hpp"
 
 Channel::Channel( std::string name, std::string password, Client* admin )
-	: _name(name), _clientCount(0), _k(password), _l(0)
+	: _name(name), _clientCount(0), _channelModes(""), _k(password), _l(0)
 {
 	this->addAdmin(admin);
 	// this->_admins.push_back(admin);

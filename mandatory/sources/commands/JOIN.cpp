@@ -38,9 +38,9 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr )
 		}
 		itChannel->second->sendMessageBroadcast(it, RPL_JOIN(it->getPrefix(), tokenArr[1])); // Channel'da bulunan diğer Client'lara yeni katılan Client'ın katıldı bilgisi gönderiliyor.
 		itChannel->second->addClient(it); // Channel'e bağlı olan client'lar listesi güncelleniyor.
-		itChannel->second->channelUsers(it, itChannel->second, tokenArr[1]); // Client, channel'e bağlandığı zaman, channel'deki kullanıcılar listeleniyor.
 		it->registerChannel(itChannel->second); // Client içinde bulunan, kayıtlı kullanıcıların olduğu listeye channel ekleniyor.
 		it->sendMessageFd(RPL_JOIN(it->getPrefix(), tokenArr[1])); // Kullanıcı kanal olsada, olmasada hertürlü o kanala katılacağından dolayı RPL yanıtını gönderiyoruz.
+		itChannel->second->channelUsers(it, itChannel->second, tokenArr[1]); // Client, channel'e bağlandığı zaman, channel'deki kullanıcılar listeleniyor.
 		it->sendMessageFd(RPL_TOPIC(it->getPrefix(), tokenArr[1], itChannel->second->getChannelTopic())); // var olan bir Channel'e kullanıcı katıldığı zaman göreceği channel başlığı bilgisi gönderiliyor.
 		// it->sendMessageFd(RPL_MODE(it->getPrefix(), tokenArr[1], "+" + itChannel->second->getChannelMods(), tokenArr[1])); // Kimlik doğrulaması gerçekleşiyor.
 	}
@@ -48,13 +48,14 @@ void	Server::join( Client* it, std::vector<std::string> tokenArr )
 	{
 		Channel *channel = new Channel(tokenArr[1], "\0", it); // Channel oluşturulur ve admini belirlenir. Channel şifresi için henüz bir şey yoktur.
 		channel->addClient(it); // Channel'ı oluşturan kişiyi _channelClient'ına ekliyor.
-		channel->setChannelMods("nt");
+		// channel->setChannelMods("nt");
 		this->_channels.insert(std::make_pair(tokenArr[1], channel)); // Server'a channel'ı ekliyor.
 		channel->setChannelTopic("What day is it today?"); // Channel başlığı belirleniyor.
 		it->registerChannel(channel); // Client içinde bulunan, kayıtlı kullanıcıların olduğu listeye channel ekleniyor.
 		it->sendMessageFd(RPL_JOIN(it->getPrefix(), tokenArr[1])); // Kullanıcı kanal olsada, olmasada hertürlü o kanala katılacağından dolayı RPL yanıtını gönderiyoruz.
+		channel->channelUsers(it, channel, tokenArr[1]); // Client, channel'e bağlandığı zaman, channel'deki kullanıcılar listeleniyor.
 		it->sendMessageFd(RPL_TOPIC(it->getPrefix(), tokenArr[1], channel->getChannelTopic())); // Client kanala katıldığı zaman channel başlığı gönderiliyor.
-		it->sendMessageFd(RPL_MODE(it->getPrefix(), tokenArr[1], "+o" + channel->getChannelMods(), "")); // Channel'in modları atanıyor
+		// it->sendMessageFd(RPL_MODE(it->getPrefix(), tokenArr[1], "+o" + channel->getChannelMods(), "")); // Channel'in modları atanıyor
 	}
 }
 
