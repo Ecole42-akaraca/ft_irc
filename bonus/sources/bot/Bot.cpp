@@ -74,13 +74,14 @@ void*	Bot::listen( void* arg )
 	bot = static_cast<Bot *>(arg);
 	while (bot->_isRun)
 	{
-		std::cout << "ben calisiyorm aq" << std::endl;
+		std::cout << "Listen'e veri geldi yani mesaj." << std::endl;
 		bytesRead = recv(bot->_botFd, buffer, sizeof(buffer) - 1, 0);
 		if (bytesRead > 0)
 		{
 			buffer[bytesRead] = '\0';
 			std::cout << "-->" << buffer << std::endl;
 			// std::cout.write(buffer, bytesRead);
+			// this->onMessageReceive(buffer);
 		}
 		else if (bytesRead == 0)
 		{
@@ -169,6 +170,62 @@ void	Bot::checkChannels( void )
 void	Bot::joinChannels( void )
 {
 
+}
+
+
+void	Bot::onMessageReceive( std::string buffer )
+{
+	std::map<std::string, std::string>	tokens;
+
+	tokens = this->botSplitMessage("\r\n", buffer);
+
+}
+
+std::map<std::string, std::string>
+	Bot::botSplitMessage( std::string delimeter, std::string message )
+{
+	std::map<std::string, std::string> tokens;
+	size_t pos = 0;
+
+	// CAP LS\r\nNICK gsever\r\nUSER A B C D E F G asdf\r\n
+	while ((pos = message.find(delimeter)) != std::string::npos)
+	{
+		int posFirst = message.find(' ');
+
+		std::string firstWord = message.substr(0, posFirst);
+		// \r ve \n karakterlerini temizle // /info yazdığımızda sonunda \n bulunuyor, kaldırmak istiyorum bu yüzden ekledim.
+		for (size_t i = 0; i < firstWord.size(); ++i) {
+			if (firstWord[i] == '\r' || firstWord[i] == '\n') {
+				firstWord.erase(i, 1);
+				--i; // Karakter silindiği için i'yi azalt
+			}
+		}
+		// Ilk kelimeyi yani komutu büyük harfe çevirir
+		for (size_t i = 0; i < firstWord.size(); ++i)
+			firstWord[i] = std::toupper(firstWord[i]);
+
+		// 1. Kısım: USER 2. Kısım: A B C D E F G asdf
+		//posFirst + 1; CAP'ten sonra gelene boşluğun indexi
+		//pos - posFirst - 1; "CAP LS\r\n" yapısında LS'i almak için LS'in uzunluğuna bulmaya ihtiyaç var, -1 ise \r'ı almak istemiyoruz.
+		if (posFirst != -1)
+			tokens.insert(std::make_pair(firstWord, message.substr(posFirst + 1, pos - posFirst - 1)));
+		else
+			tokens.insert(std::make_pair(firstWord, "")); // nc localhost için 'TEK' argüman için kopya durumu söz konusu oluyor, bunu engellemek için eklendi. 'Message:>B-b<'
+		message.erase(0, pos + delimeter.length());
+	}
+	// mesaj komutsuz olarak geliyor. Kontrol için yapılandırılabilir.
+	if (!message.empty()) // Bilinmeyen komut ve netcat için parslama işlemini yapıyorum.
+	{
+		if (message[message.size() - 1] == '\n')
+			return (Bot::botSplitMessage("\n", message));
+		else
+		{
+			message.append("\n");
+			return (Bot::botSplitMessage("\n", message));
+			//tokens.insert(std::make_pair("UNKNOWN", message));
+		}
+	}
+	return (tokens);
 }
 
 void	Bot::sigHandler( int signalNum )

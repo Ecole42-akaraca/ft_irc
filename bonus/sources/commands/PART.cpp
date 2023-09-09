@@ -39,10 +39,12 @@ void	Server::part( Client* it, std::vector<std::string> tokenArr )
 		it->unregisterChannel(chan); // Client'ta bulunan channel bilgisinden channel kaldırılmalıdır.
 		if (chan->getClientCount() <= 1) // Eğerki channel'daki son kişi ise, channel silinmelidir.
 		{
-			std::cout << "Channel'deki client sayisi:>" << chan->getClientCount() << std::endl;
-			// if (chan->)
-
-			Server::removeChannel(chan->getName());
+			std::cout << "Channel'deki client sayisi: " << chan->getClientCount() << std::endl;
+			if (chan->getClientCount() == 0) // Channel'de kimse kalmadiysa Channel'i kapat.
+				Server::removeChannel(chan->getName());
+			else if (chan->searchClient(this->getClientByNickname("ircBot")) != NULL) // Channel'de kalan son 2 kisiden birisi 'ircBot'sa Channel'i kapat.
+				Server::removeChannel(chan->getName());
+			// Buraya kadar geldiyse demek ki bot olmadan 2 ya da daha cok kisi var Channel'de.
 		}
 		else if (Server::isChannelAdmin(it, chan) == true) // Eğerki channel'dan ayrılan kişi admin ise,
 		{

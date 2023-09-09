@@ -115,6 +115,8 @@ void	Channel::channelUsers(Client* client, Channel* channel, std::string channel
  */
 Client*	Channel::searchAdmin( Client* client )
 {
+	if (!client)
+		return (NULL);
 	for (size_t i = 0; i < this->_admins.size(); i++) // Adminler arasinda disaridan verilen Client araniyor.
 	{
 		if (!client->getNickname().compare(this->_admins[i]->getNickname()))
@@ -132,6 +134,8 @@ Client*	Channel::searchAdmin( Client* client )
  */
 Client*	Channel::searchClient( Client* client )
 {
+	if (!client)
+		return (NULL);
 	for (size_t i = 0; i < this->_channelClients.size(); i++) // Adminler arasinda disaridan verilen Client araniyor.
 	{
 		if (!client->getNickname().compare(this->_channelClients[i]->getNickname()))

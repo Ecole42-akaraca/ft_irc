@@ -147,7 +147,7 @@ void	Server::acceptClients( void )
 void	Server::commandHandler( Client* at )
 {
 	char buffer[MAX_BUFFER];
-	std::vector<std::string>	tokenArr;
+	// std::vector<std::string>	tokenArr;
 	ssize_t bytesRead = recv(at->getFd(), buffer, sizeof(buffer) - 1, 0);
 
 	if (bytesRead > 0)

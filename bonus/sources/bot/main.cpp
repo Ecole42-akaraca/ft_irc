@@ -1,5 +1,22 @@
 #include "Bot.hpp"
 
+/**
+ * @brief 
+ * 
+ * @note: Gelen mesaji parse ile tokenlerine ayir,
+ * tokenlerinin icerisinde;
+ * 	PRIVMSG ve #channel ismi olanlari ele al,
+ * 	Kufur token listesi olustur enum ile,
+ * 	if (kosulunun icerisine & kufur1 | kufur2 | kufur3 | kufur4)
+ * 		gibi olursa bunu kim yazarsa channel'den kickle.
+ * 
+ * Ekstra; isminde kufur olanlari da kickle,
+ * 	
+ * 
+ * @param argc 
+ * @param argv 
+ * @return int 
+ */
 int	main( int argc, char **argv )
 {
 	try
