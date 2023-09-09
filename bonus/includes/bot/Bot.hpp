@@ -51,8 +51,10 @@ class Bot
 		void	sendMessageToServer( std::string message );
 		void	checkChannels( void );
 		void	joinChannels( void );
-		void	onMessageReceive( std::string buffer );
-		std::map<std::string, std::string>\
+		static std::vector<std::string>\
+			tokenMessage( std::string message );
+		static void	onMessageReceive( std::string buffer );
+		static std::map<std::string, std::string>\
 			botSplitMessage( std::string delimeter, std::string message );
 /* -------------------------------------------------------------------------- */
 /* _________________________ SIGNAL FUCTIONS ________________________________ */

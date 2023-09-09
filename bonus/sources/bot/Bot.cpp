@@ -81,7 +81,7 @@ void*	Bot::listen( void* arg )
 			buffer[bytesRead] = '\0';
 			std::cout << "-->" << buffer << std::endl;
 			// std::cout.write(buffer, bytesRead);
-			this->onMessageReceive(buffer);
+			Bot::onMessageReceive(buffer);
 		}
 		else if (bytesRead == 0)
 		{
@@ -176,21 +176,45 @@ void	Bot::joinChannels( void )
 void	Bot::onMessageReceive( std::string buffer )
 {
 	std::map<std::string, std::string>	tokens;
+	std::vector<std::string>			asdfTokens;
 
-	tokens = this->botSplitMessage("\r\n", buffer);
+	tokens = Bot::botSplitMessage("\r\n", buffer);
 
-	std::cout << BLUE << "BotTokens:>";
-	for (std::map<std::string, std::string>::iterator itT = tokens.begin();
-		itT != tokens.end(); itT++)
-	{
-		std::cout << ""
-	}
+	std::map<std::string, std::string>::iterator itT = tokens.begin();
+
+	std::cout << BLUE << "BotTokensSplit:>" << itT->first << "-" << itT->second << std::endl;
+
+	asdfTokens = tokenMessage(buffer);
+
+	
+	// for (; itT != tokens.end(); itT++)
+	// {
+	// 	std::cout << itT->second << std::endl;
+	// }
+	// std::cout << "<" << std::endl;
 
 	// std::cout << B_BLUE << "Tokens:>";
 	// for (size_t i = 0; i < tokenArr.size(); i++)
 	// 	std::cout << "`" << tokenArr[i] << "`";
 	// std::cout << "<" << END << std::endl;
 
+}
+
+std::vector<std::string>	Bot::tokenMessage( std::string message )
+{
+	std::stringstream			ss(message);
+	std::string					token;
+	std::vector<std::string>	tokenArr;
+
+	while (ss >> token)
+		tokenArr.push_back(token);
+
+	// Print tokens.
+	std::cout << B_BLUE << "BotTokens:>";
+	for (size_t i = 0; i < tokenArr.size(); i++)
+		std::cout << "`" << tokenArr[i] << "`";
+	std::cout << "<" << END << std::endl;
+	return (tokenArr);
 }
 
 std::map<std::string, std::string>
