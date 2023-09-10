@@ -30,6 +30,15 @@ void	Server::kick( Client* it, std::vector<std::string> tokenArr )
 					itChan->second->sendMessageBroadcast(RPL_KICK(it->getPrefix(), tokenArr[1], tokenArr[2], combineMessage(3, tokenArr))); // kicklenen kişinin tüm channel'le duyurulması için ve kickleyen kişide işe yaraması için
 					user->unregisterChannel(itChan->second); // Client'a ait kayıtlı olunan channeler'dan, channel'ı kaldırıyorum.
 					itChan->second->removeClient(user); // Channel'a kayıtlı kullanıcılardan client'i kaldırıyorum.
+					if (itChan->second->getClientCount() <= 1)
+					{
+						std::cout << "Channel'deki client sayisi: " << itChan->second->getClientCount() << std::endl;
+						if (itChan->second->getClientCount() == 0) // Channel'de kimse kalmadiysa Channel'i kapat.
+							Server::removeChannel(itChan->second->getName());
+						else if (itChan->second->searchClient(this->getClientByNickname("ircBot")) != NULL) // Channel'de kalan son 2 kisiden birisi 'ircBot'sa Channel'i kapat.
+							Server::removeChannel(itChan->second->getName());
+						// Buraya kadar geldiyse demek ki bot olmadan 2 ya da daha cok kisi var Channel'de.
+					}
 				}
 				else
 					it->sendMessageFd(ERR_USERNOTINCHANNEL(it->getPrefix(), tokenArr[2], tokenArr[1])); // Channel'de atılacak kişi yoksa hata döndürülür.

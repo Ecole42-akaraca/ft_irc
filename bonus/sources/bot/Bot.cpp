@@ -2,6 +2,8 @@
 
 std::map<std::string, std::string> Bot::Bot::_dataBadWords;
 
+int Bot::_botFd = -1;
+
 /**
  * @brief Construct a new Bot:: Bot object
  * 
@@ -66,7 +68,7 @@ void	Bot::sendMessageToServer( std::string message )
 {
 	std::cout << YELLOW << "BotResponse:>" + message << "<" << END << std::endl;
 	message += "\r\n";
-	if (send(this->_botFd, message.c_str(), message.size(), 0) == -1)
+	if (send(Bot::getFd(), message.c_str(), message.size(), 0) == -1)
 		throw (std::runtime_error( "Error: sendMessageToServer: Failed to send message." ));
 }
 
@@ -211,14 +213,15 @@ void	Bot::onMessageReceive( std::string buffer )
 	nickname = Bot::scanNickname(tokens[0]); // Ilk tokenimizin icerisindeki :gsever!~gsever@127.0.0.1 icerisinden : ile ! arasindaki nickname'yi aliyoruz.
 	if (nickname == "")
 		return ;
-	std::cout << "NICKnamesi:" << nickname << std::endl;
+	if (tokens[3][0] == ':')
+		tokens[3].erase(0, 1); // En basindaki ':'i siliyor.
 	for (size_t i = 0; i < tokens.size(); i++)
 	{
 		// Burada token[3]'e mesajin baslangici : ile basladigi icin badword'le karsilasitirirken eslesmiyor.
 		if (Bot::_dataBadWords.find(Bot::toLowerCase(tokens[i])) != Bot::_dataBadWords.end())
 		{
 			std::cout << "Bad Words found: " << tokens[i] << std::endl;
-			// Bot::sendMessageToServer("KICK " + nickname);
+			Bot::sendMessageToServer("KICK " + tokens[2] + " " + nickname);
 		}
 	}
 }

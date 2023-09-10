@@ -40,12 +40,12 @@ class Bot
 		const unsigned short			_port; // 8888
 		const std::string				_password; // asdf
 		bool							_isRun;
-		int								_botFd;
 		std::map<std::string, Channel*>	_channels;
 		std::string						_botNickname;
 		std::string						_botUsername;
 		std::string						_botRealname;
 	public:
+		static int						_botFd;
 /* -------------------------------------------------------------------------- */
 /* _________________________ MAIN FUCTIONS __________________________________ */
 	private:
@@ -57,9 +57,13 @@ class Bot
 		void			start( void );
 		static void*	listen( void * ); // POSIX thread's recv() function.
 /* -------------------------------------------------------------------------- */
+/* _________________________ SET/GET FUNCTIONS ______________________________ */
+		static int	getFd( void ) { return (Bot::_botFd); }
+/* -------------------------------------------------------------------------- */
 /* _________________________ COMMANDS _______________________________________ */
 		void	authenticate( void );
-		void	sendMessageToServer( std::string message );
+		static void	sendMessageToServer( std::string message );
+		// void	Bot::sendMessageToServer( Bot& bot, std::string message );
 		void	checkChannels( void );
 		void	joinChannels( void );
 		static std::vector<std::string>\
