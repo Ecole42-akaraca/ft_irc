@@ -172,32 +172,31 @@ void	Bot::joinChannels( void )
 
 }
 
-
+/**
+ * @brief 
+ * 
+ * @note BotTokens:>`:gsever!~gsever@127.0.0.1``PRIVMSG``#asdf``:selam`<
+ * 	for[0]: :gsever!~gsever@127.0.0.1	-> Mesaji gonderen kisi.
+ * 	for[1]: PRIVMSG						-> Command
+ * 	for[2]: #asdf						-> Channel
+ * 	for[3]: :selam						-> Command arg
+ * 
+ * 1- [0] Mesaji gonderen kisinin token'ninde kotu soz
+ *  var ise Channel'den kicklenecek.
+ * 2- [3] Mesajin icerigininin toknen'inde kotu soz
+ *  var ise Channel'den kicklenecek.
+ * 
+ * @param buffer 
+ */
 void	Bot::onMessageReceive( std::string buffer )
 {
-	std::map<std::string, std::string>	tokens;
-	std::vector<std::string>			asdfTokens;
+	std::vector<std::string>	tokens;
 
-	tokens = Bot::botSplitMessage("\r\n", buffer);
-
-	std::map<std::string, std::string>::iterator itT = tokens.begin();
-
-	std::cout << BLUE << "BotTokensSplit:>" << itT->first << "-" << itT->second << std::endl;
-
-	asdfTokens = tokenMessage(buffer);
-
-	
-	// for (; itT != tokens.end(); itT++)
-	// {
-	// 	std::cout << itT->second << std::endl;
-	// }
-	// std::cout << "<" << std::endl;
-
-	// std::cout << B_BLUE << "Tokens:>";
-	// for (size_t i = 0; i < tokenArr.size(); i++)
-	// 	std::cout << "`" << tokenArr[i] << "`";
-	// std::cout << "<" << END << std::endl;
-
+	tokens = tokenMessage(buffer);
+	for (size_t i = 0; i < tokens.size(); i++)
+	{
+		std::cout << "for[" << i << "]: " << tokens[i] << std::endl;
+	}
 }
 
 std::vector<std::string>	Bot::tokenMessage( std::string message )

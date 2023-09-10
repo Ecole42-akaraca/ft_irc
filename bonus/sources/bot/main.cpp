@@ -3,7 +3,7 @@
 /**
  * @brief 
  * 
- * @note: Gelen mesaji parse ile tokenlerine ayir,
+ * @note: OK: Gelen mesaji parse ile tokenlerine ayir,
  * tokenlerinin icerisinde;
  * 	PRIVMSG ve #channel ismi olanlari ele al,
  * 	Kufur token listesi olustur enum ile,

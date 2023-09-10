@@ -18,6 +18,7 @@ void Server::user(Client* it, std::vector<std::string> tokenArr )
 	if (it->getIRCstatus() != HANDSHAKE) // User komutu sadece tanışma kısmında kullanılmalıdır
 	{
 		it->sendMessageFd(RPL_NOTICE(it->getPrefix(), it->getNickname(), "Client's status is insufficient."));
+		// Server::quitReason(it, "Client's status is insufficient!");
 		return ;	
 	}
 

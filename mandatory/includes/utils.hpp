@@ -50,5 +50,6 @@
 #define RPL_KICK(source, channel, target, reason)		":" + source + " KICK " + channel + " " + target + " " + reason // :" + reason
 #define RPL_MODE(source, channel, modes, args)			":" + source + " MODE " + channel + " " + modes + " " + args
 #define RPL_NICK(source, nickname)						":" + source + " NICK " + nickname
+#define RPL_PONG(source, token)							":" + source + " PING :" + token
 
 #endif

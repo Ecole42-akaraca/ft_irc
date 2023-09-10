@@ -10,7 +10,7 @@ void	Server::pass( Client* it, std::vector<std::string> tokenArr )
 	if (it->getIRCstatus() != HANDSHAKE)
 	{
 		it->sendMessageFd(RPL_NOTICE(it->getPrefix(), it->getNickname(), "Client's status is insufficient."));
-		return ;	
+		return ;
 	}
 
 	if (!tokenArr.empty() && !tokenArr.at(0).compare("PASS"))
