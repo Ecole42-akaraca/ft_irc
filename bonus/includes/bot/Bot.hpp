@@ -2,6 +2,7 @@
 # define BOT_HPP
 
 # include <iostream>
+# include <string>
 # include <exception>
 # include <sys/socket.h>
 # include <arpa/inet.h>
@@ -11,6 +12,8 @@
 # include <limits>
 # include <pthread.h>
 # include <unistd.h>
+# include <map>
+# include <algorithm>
 
 # include "../colors.hpp"
 # include "../Channel.hpp"
@@ -18,9 +21,15 @@
 
 # define MAX_BUFFER 1024
 
+// enum e_badWords
+// {
+	
+// };
+
 class Channel;
 
 // typedef std::map<std::string, Channel *>::iterator	itChannels;
+// typedef std::map<std::string, std::string>::iterator	itBadWords;
 
 class Bot
 {
@@ -36,6 +45,7 @@ class Bot
 		std::string						_botNickname;
 		std::string						_botUsername;
 		std::string						_botRealname;
+	public:
 /* -------------------------------------------------------------------------- */
 /* _________________________ MAIN FUCTIONS __________________________________ */
 	private:
@@ -43,6 +53,7 @@ class Bot
 	public:
 		Bot( int argc, char **argv );
 		~Bot();
+		static std::map<std::string, std::string>	_dataBadWords; // Static function'dan ulasabilmemiz icin bu variable'yi de static tanimlamamiz gerekiyor.
 		void			start( void );
 		static void*	listen( void * ); // POSIX thread's recv() function.
 /* -------------------------------------------------------------------------- */
@@ -56,6 +67,10 @@ class Bot
 		static void	onMessageReceive( std::string buffer );
 		static std::map<std::string, std::string>\
 			botSplitMessage( std::string delimeter, std::string message );
+		static void			initBadWords( void );
+		// static std::string	filterBadWords( std::string& text );
+		static std::string	scanNickname( std::string message );
+		static std::string	toLowerCase( const std::string& str );
 /* -------------------------------------------------------------------------- */
 /* _________________________ SIGNAL FUCTIONS ________________________________ */
 		static void	sigHandler( int signalNum );

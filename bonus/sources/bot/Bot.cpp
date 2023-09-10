@@ -1,5 +1,7 @@
 #include "Bot.hpp"
 
+std::map<std::string, std::string> Bot::Bot::_dataBadWords;
+
 /**
  * @brief Construct a new Bot:: Bot object
  * 
@@ -28,6 +30,17 @@ Bot::Bot( int argc, char **argv )
 Bot::~Bot( void )
 {
 	std::cout << "Bot succesfully closed!" << std::endl;
+}
+
+/**
+ * @brief Gelen girdi .tolower() seklinde geldikten sonra
+ *  burada stupid ise ****** olarak return edebiliri.
+ * 
+ */
+void	Bot::initBadWords( void )
+{
+	Bot::_dataBadWords["stupid"] = "******";
+	Bot::_dataBadWords["idiot"] = "*****";
 }
 
 void	Bot::start( void )
@@ -71,6 +84,7 @@ void*	Bot::listen( void* arg )
 	ssize_t	bytesRead;
 	char buffer[MAX_BUFFER];
 
+	initBadWords();
 	bot = static_cast<Bot *>(arg);
 	while (bot->_isRun)
 	{
@@ -191,12 +205,85 @@ void	Bot::joinChannels( void )
 void	Bot::onMessageReceive( std::string buffer )
 {
 	std::vector<std::string>	tokens;
+	std::string					nickname;
 
-	tokens = tokenMessage(buffer);
+	tokens = Bot::tokenMessage(buffer); // Gelen mesajin tamamini tokenlerine ayiriyoruz.
+	nickname = Bot::scanNickname(tokens[0]); // Ilk tokenimizin icerisindeki :gsever!~gsever@127.0.0.1 icerisinden : ile ! arasindaki nickname'yi aliyoruz.
+	if (nickname == "")
+		return ;
+	std::cout << "NICKnamesi:" << nickname << std::endl;
 	for (size_t i = 0; i < tokens.size(); i++)
 	{
-		std::cout << "for[" << i << "]: " << tokens[i] << std::endl;
+		// Burada token[3]'e mesajin baslangici : ile basladigi icin badword'le karsilasitirirken eslesmiyor.
+		if (Bot::_dataBadWords.find(Bot::toLowerCase(tokens[i])) != Bot::_dataBadWords.end())
+		{
+			std::cout << "Bad Words found: " << tokens[i] << std::endl;
+			// Bot::sendMessageToServer("KICK " + nickname);
+		}
 	}
+}
+
+/**
+ * @brief Disaridan aldigi kelimenin butun karakterlerini
+ *  kucuk harfe ceviriyor.
+ * 
+ * @param word 
+ * @return std::string 
+ */
+std::string Bot::toLowerCase( const std::string& string )
+{
+	std::string result;
+	result = string;
+
+	std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+	return result;
+}
+
+// std::string	Bot::toLowerCase( std::string word )
+// {
+// 	std::string	loweredString;
+
+// 	loweredString = "";
+// 	std::cout << "word;" << word << std::endl;
+// 	for (size_t i = 0; i < word.size(); i++)
+// 		loweredString[i] = std::tolower(word[i]);
+// 	std::cout << "LoweredStriing:" << loweredString << std::endl;
+// 	return (loweredString);
+// }
+
+// // Function to replace bad words in a string
+// std::string	Bot::filterBadWords( std::string& text )
+// {
+// 	// std::string result = text;
+// 	// for (std::map<std::string, std::string>::iterator it = Bot::_dataBadWords.begin(); it != Bot::_dataBadWords.end(); ++it) {
+// 	// 	std::string word = it->first;
+// 	// 	std::string lowerCaseWord = toLowerCase(word);
+// 	// 	// Find the bad word in the text
+// 	// 	size_t pos = toLowerCase(result).find(lowerCaseWord);
+// 	// 	while (pos != std::string::npos) {
+// 	// 		// Replace the bad word with asterisks
+// 	// 		result.replace(pos, word.length(), it->second);
+// 	// 		// Find the next occurrence of the bad word
+// 	// 		pos = toLowerCase(result).find(lowerCaseWord, pos + 1);
+// 	// 	}
+// 	// }
+// 	// return result;
+
+
+// }
+
+std::string	Bot::scanNickname( std::string message )
+{
+	size_t		start;
+	size_t		end;
+	std::string	result;
+
+	start = message.find(":");
+	end = message.find("!");
+	result = "";
+	if (start != std::string::npos && end != std::string::npos)
+		result = message.substr(start + 1, end - start - 1);
+	return (result);
 }
 
 std::vector<std::string>	Bot::tokenMessage( std::string message )
