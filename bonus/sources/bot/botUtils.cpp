@@ -47,9 +47,9 @@ std::string		Bot::password( std::string password )
 	return (password);
 }
 
-std::string	Bot::getPrefix() const
+std::string	Bot::getPrefixBot()
 {
-	return this->_
-		+ (this->_username.empty() ? "" : "!~" + this->_username)
-		+ (this->_hostname.empty() ? "" : "@" + this->_hostname);
+	return Bot::_botNickname
+		+ (Bot::_botUsername.empty() ? "" : "!~" + Bot::_botUsername)
+		+ (Bot::_host.empty() ? "" : "@" + Bot::_host);
 }

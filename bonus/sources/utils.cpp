@@ -227,6 +227,12 @@ bool	Server::isChannelUser(Client* client, Channel* channel)
 
 void	Server::leaveAllChannel( Client* client )
 {
+	if (!client->getNickname().compare("ircBot")) // Eger Client /quit ya da /part atarken Channel'de son kisiyse Channel'i silerken ayni anda Bot'a da QUIT attigimizda 2 Client ayni anda Channel'i silmeye calisiyor. Bot'un silmesini engelleyip sadece kullanicilarin kanallari silmesini sagliyoruz.
+	{
+		client->clearRegisteredChannels(); // Bot'un kayitli oldugu Channel'leri temizliyoruz ki tekrardan baglanti kurmaya calistiginda sorun cikartmasin.
+		return;
+	}
+
 	size_t size = client->getRegisteredChannels().size();
 	for (size_t i = size; i > 0; --i) // Quit ile ayrılan channel, kayıtlı olduğu channel'lardan ayrılmalıdır.
 	{

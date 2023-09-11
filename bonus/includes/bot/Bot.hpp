@@ -42,10 +42,10 @@ class Bot
 		std::map<std::string, Channel*>	_channels;
 	public:
 		static int						_botFd;
-		static const std::string				_host; // 127.0.0.1
-		static std::string						_botNickname;
-		static std::string						_botUsername;
-		static std::string						_botRealname;
+		static std::string				_host; // 127.0.0.1
+		static std::string				_botNickname;
+		static std::string				_botUsername;
+		static std::string				_botRealname;
 /* -------------------------------------------------------------------------- */
 /* _________________________ MAIN FUCTIONS __________________________________ */
 	private:
@@ -59,7 +59,7 @@ class Bot
 /* -------------------------------------------------------------------------- */
 /* _________________________ SET/GET FUNCTIONS ______________________________ */
 		static int	getFd( void ) { return (Bot::_botFd); }
-		static std::string	getPrefix() const;
+		static std::string	getPrefixBot();
 /* -------------------------------------------------------------------------- */
 /* _________________________ COMMANDS _______________________________________ */
 		void	authenticate( void );

@@ -2,7 +2,11 @@
 
 std::map<std::string, std::string> Bot::Bot::_dataBadWords;
 
-int Bot::_botFd = -1;
+int			Bot::_botFd = -1;
+std::string	Bot::_host = "";
+std::string	Bot::_botNickname = "";
+std::string	Bot::_botUsername = "";
+std::string	Bot::_botRealname = "";
 
 /**
  * @brief Construct a new Bot:: Bot object
@@ -15,14 +19,15 @@ int Bot::_botFd = -1;
 Bot::Bot( int argc, char **argv )
 	:
 	_isCheck(check( argc )),
-	_host( argv[1] ),
 	_port(port( argv[2] )),
 	_password(password( argv[3] )),
-	_isRun( true ),
-	_botNickname("ircBot"),
-	_botUsername("Bot"),
-	_botRealname("Poor Bot")
+	_isRun( true )
 {
+	Bot::_host = argv[1];
+	Bot::_botNickname = "ircBot";
+	Bot::_botUsername = "Bot";
+	Bot::_botRealname = "Poor Bot";
+
 	std::cout << "Bot Constructor called." << std::endl;
 	openSocket();
 	connectSocketAddress();
@@ -231,7 +236,10 @@ void	Bot::onMessageReceive( std::string buffer )
 	for (size_t i = 0; i < tokens.size(); i++)
 	{
 		if (!tokens[0].compare("QUIT"))
+		{
+			Bot::sendMessageToServer("QUIT :Bot exiting sir.");
 			exit(0);
+		}
 			// Bot::sendMessageToServer(RPL_PING(tokens[0], badNickname));
 		if (!tokens[i].compare("NICK")) // Eger bir Client ismini bad words'lerden biri yaparsa diye o degistirecegi ismi aliyoruz.
 			badNickname = tokens[i + 1]; // Bad nickname'yi bulduk sonra bu isimli Client'i kickleyecegiz.
@@ -378,7 +386,9 @@ void	Bot::sigHandler( int signalNum )
 	if (signalNum == SIGINT)
 	{
 		std::cout << "Interrupt signal found! Bot terminating..." << std::endl;
-		Bot::sendMessageToServer(RPL_QUIT())
-		// exit(signalNum);
+		// Bot::sendMessageToServer(RPL_QUIT(Bot::getPrefixBot(), "Bot exiting sir."));
+		Bot::sendMessageToServer("QUIT :Bot exiting sir.");
+		// sleep(5);
+		exit(signalNum);
 	}
 }
