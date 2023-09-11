@@ -236,6 +236,8 @@ void	Server::leaveAllChannel( Client* client )
 	size_t size = client->getRegisteredChannels().size();
 	for (size_t i = size; i > 0; --i) // Quit ile ayrılan channel, kayıtlı olduğu channel'lardan ayrılmalıdır.
 	{
+		// if (!client->getNickname().compare("ircBot"))
+		// 	if ()
 		std::vector<std::string> leaveChannel;
 		leaveChannel.push_back("PART");
 		leaveChannel.push_back(client->getRegisteredChannels()[i - 1]->getName());

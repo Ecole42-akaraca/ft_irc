@@ -33,8 +33,11 @@ void	Server::part( Client* it, std::vector<std::string> tokenArr )
 		std::string msg = "";
 		if (tokenArr.size() > 2) // Client, Channel'den ayrılırken, Channel'e kullancının ayrıldığı bilgisi gönderildiği için ve bu mesajda ayrılış nedenide olduğundan dolayı bu kısımda 'ayrılma nedeni' kontrol edilmektedir.
 			msg = Server::combineMessage(2, tokenArr); // Gelen mesajlar splitlendiğinden dolayı birleştirilmek zorundadır.
+	std::cout << __LINE__ << std::endl;
 		it->sendMessageFd(RPL_PART(it->getPrefix(), tokenArr[1], msg)); // Client'tın kanaldan ayrılması için eklenmiştir.
+	std::cout << __LINE__ << std::endl;
 		chan->sendMessageBroadcast(it, RPL_PART(it->getPrefix(), tokenArr[1], msg)); // Client, kanaldan ayrılırken channel'daki herkese ayrılış mesajı göndermelidir 'BEN_ [~AHMET@176.88.10.20] has left #42kocaeli []'
+	std::cout << __LINE__ << std::endl;
 		chan->removeClient(it); // Client, channel'dan ayrıldığından dolayı, channel'den o kullanıcı bilgisi kaldırılmalıdır.
 		it->unregisterChannel(chan); // Client'ta bulunan channel bilgisinden channel kaldırılmalıdır.
 		if (chan->getClientCount() <= 1) // Eğerki channel'daki son kişi ise, channel silinmelidir.
@@ -48,6 +51,7 @@ void	Server::part( Client* it, std::vector<std::string> tokenArr )
 		}
 		else if (Server::isChannelAdmin(it, chan) == true) // Eğerki channel'dan ayrılan kişi admin ise,
 		{
+			std::cout << __LINE__ << std::endl;
 		 	// chan->setAdmin(chan->_channelClients[0]); // Adminlik channele kayıtlı olan bir sonraki kişiye verilir.
 		 	chan->addAdmin(chan->_channelClients[0]); // Adminlik channele kayıtlı olan bir sonraki kişiye verilir.
 			chan->sendMessageBroadcast(RPL_MODE(it->getPrefix(), tokenArr[1], "o", chan->_channelClients[0]->getNickname()));
