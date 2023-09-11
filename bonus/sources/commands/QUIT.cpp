@@ -11,7 +11,8 @@ void	Server::quit( Client* it, std::vector<std::string> tokenArr )
 	std::cout << "Connection closed by client " << it->getHostname() << ":" << it->getPort() << std::endl;
 	it->setIRCstatus(DISCONNECTED);
 	it->sendMessageFd(RPL_QUIT(it->getPrefix(), tokenArr.at(0)));
-	it->sendMessageFd(RPL_PONG(it->getPrefix(), "PING"));
+	it->sendMessageFd(RPL_PONG(it->getPrefix(), "Exit authentication."));
+	// it->sendMessageFd(RPL_PONG(it->getPrefix(), "PING"));
 
 	// for (size_t i = 0; i < _pollfds.size(); i++)
 	// {

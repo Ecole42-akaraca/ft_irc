@@ -36,16 +36,16 @@ class Bot
 /* _________________________ VARIABLES ______________________________________ */
 	private:
 		bool							_isCheck;
-		const std::string				_host; // 127.0.0.1
 		const unsigned short			_port; // 8888
 		const std::string				_password; // asdf
 		bool							_isRun;
 		std::map<std::string, Channel*>	_channels;
-		std::string						_botNickname;
-		std::string						_botUsername;
-		std::string						_botRealname;
 	public:
 		static int						_botFd;
+		static const std::string				_host; // 127.0.0.1
+		static std::string						_botNickname;
+		static std::string						_botUsername;
+		static std::string						_botRealname;
 /* -------------------------------------------------------------------------- */
 /* _________________________ MAIN FUCTIONS __________________________________ */
 	private:
@@ -59,6 +59,7 @@ class Bot
 /* -------------------------------------------------------------------------- */
 /* _________________________ SET/GET FUNCTIONS ______________________________ */
 		static int	getFd( void ) { return (Bot::_botFd); }
+		static std::string	getPrefix() const;
 /* -------------------------------------------------------------------------- */
 /* _________________________ COMMANDS _______________________________________ */
 		void	authenticate( void );
@@ -68,7 +69,7 @@ class Bot
 		void	joinChannels( void );
 		static std::vector<std::string>\
 			tokenMessage( std::string message );
-		static void	onMessageReceive( std::string buffer );
+		void	onMessageReceive( std::string buffer );
 		static std::map<std::string, std::string>\
 			botSplitMessage( std::string delimeter, std::string message );
 		static void			initBadWords( void );

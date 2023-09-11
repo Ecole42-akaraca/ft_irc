@@ -97,7 +97,8 @@ void*	Bot::listen( void* arg )
 			buffer[bytesRead] = '\0';
 			std::cout << "-->" << buffer << std::endl;
 			// std::cout.write(buffer, bytesRead);
-			Bot::onMessageReceive(buffer);
+			// Bot::onMessageReceive(buffer);
+			bot->onMessageReceive(buffer);
 		}
 		else if (bytesRead == 0)
 		{
@@ -108,8 +109,8 @@ void*	Bot::listen( void* arg )
 		{
 			std::cerr << RED "Error: recv(): Socket error!" END << std::endl;
 			close(bot->_botFd);
-			pthread_exit((void*)-1);
-			break;
+			exit(-1); // Bu programin tamamini sonlandiracagi icin kapanacak direkt.
+			pthread_exit((void*)-1); // Burayi silebiliriz, ama yine de kalsin.
 		}
 	}
 	close(bot->_botFd);
@@ -172,6 +173,7 @@ void	Bot::checkChannels( void )
 		throw (std::runtime_error("pthread_join: Thread 'wait' error!"));
 	if (pthread_detach(botThreadID) != 0) // Buradaki detach islemi olusturulan thread islemini bitirmeden gerceklesmemeli.
 		throw (std::runtime_error("pthread_detach: Thread 'detach' error!"));
+
 }
 
 /**
@@ -208,23 +210,41 @@ void	Bot::onMessageReceive( std::string buffer )
 {
 	std::vector<std::string>	tokens;
 	std::string					nickname;
+	std::string					badNickname;
 
 	tokens = Bot::tokenMessage(buffer); // Gelen mesajin tamamini tokenlerine ayiriyoruz.
 	nickname = Bot::scanNickname(tokens[0]); // Ilk tokenimizin icerisindeki :gsever!~gsever@127.0.0.1 icerisinden : ile ! arasindaki nickname'yi aliyoruz.
+	if (Bot::_dataBadWords.find(Bot::toLowerCase(nickname)) != Bot::_dataBadWords.end()) // Eger Clien'tin Nickname'si 'bad words' ise direkt kickleyecegiz.
+	{
+		// :gsever!~gsever@127.0.0.1 NICK idiot
+		std::cout << B_RED "Bad Words found: " END << nickname << std::endl;
+		std::cout << B_RED "Inappropriate username: " END << nickname << std::endl;
+		Bot::sendMessageToServer("PRIVMSG " + tokens[2] + "Change your nickname: [" + nickname + "]");
+		Bot::sendMessageToServer("KICK " + tokens[2] + " " + nickname);
+		return;
+	}
+	badNickname = nickname; // Client ismini degistirmediyse ve mesajin iceriginde 'bad word' varsa kickleyebilmemiz icin.
 	if (nickname == "")
 		return ;
 	if (tokens[3][0] == ':')
 		tokens[3].erase(0, 1); // En basindaki ':'i siliyor.
 	for (size_t i = 0; i < tokens.size(); i++)
 	{
-		// Burada token[3]'e mesajin baslangici : ile basladigi icin badword'le karsilasitirirken eslesmiyor.
+		if (!tokens[0].compare("QUIT"))
+			exit(0);
+			// Bot::sendMessageToServer(RPL_PING(tokens[0], badNickname));
+		if (!tokens[i].compare("NICK")) // Eger bir Client ismini bad words'lerden biri yaparsa diye o degistirecegi ismi aliyoruz.
+			badNickname = tokens[i + 1]; // Bad nickname'yi bulduk sonra bu isimli Client'i kickleyecegiz.
+		if (!tokens[i].compare("PING"))
+			Bot::sendMessageToServer(RPL_PING(tokens[0], badNickname));
 		if (Bot::_dataBadWords.find(Bot::toLowerCase(tokens[i])) != Bot::_dataBadWords.end())
 		{
-			std::cout << "Bad Words found: " << tokens[i] << std::endl;
-			Bot::sendMessageToServer("KICK " + tokens[2] + " " + nickname);
+			std::cout << B_RED "Bad Words found: " END << tokens[i] << std::endl;
+			Bot::sendMessageToServer("KICK " + tokens[2] + " " + badNickname);
 		}
 	}
 }
+
 
 /**
  * @brief Disaridan aldigi kelimenin butun karakterlerini
@@ -358,6 +378,7 @@ void	Bot::sigHandler( int signalNum )
 	if (signalNum == SIGINT)
 	{
 		std::cout << "Interrupt signal found! Bot terminating..." << std::endl;
-		exit(signalNum);
+		Bot::sendMessageToServer(RPL_QUIT())
+		// exit(signalNum);
 	}
 }

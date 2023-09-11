@@ -46,3 +46,10 @@ std::string		Bot::password( std::string password )
 	std::cout << GREEN "Parameters okay." END << std::endl;
 	return (password);
 }
+
+std::string	Bot::getPrefix() const
+{
+	return this->_
+		+ (this->_username.empty() ? "" : "!~" + this->_username)
+		+ (this->_hostname.empty() ? "" : "@" + this->_hostname);
+}
