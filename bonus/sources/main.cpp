@@ -34,6 +34,10 @@
  * https://dd.ircdocs.horse/refs/commands/part
  * https://datatracker.ietf.org/doc/html/rfc2812#section-3.1.5
  * https://www.alien.net.au/irc/irc2numerics.html
+ * https://irssi.org/documentation/help/dcc/
+ * 
+ * /dcc send TEST_ ./Desktop/1.txt
+ * /dcc get TEST 1.txt /home/akaraca/Desktop
  * 
  * TODO: MODE; komutundaki parse'lenen inputa gore ayarla.
  * TODO: 11:53 -!- Irssi: (default) critical nicklist_set_host: assertion 'host != NULL' failed

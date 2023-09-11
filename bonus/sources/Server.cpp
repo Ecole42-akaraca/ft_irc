@@ -163,10 +163,13 @@ void	Server::commandHandler( Client* at )
 				{
 					try
 					{
-						std::vector<std::string> cmd = cmdMessage(itToken->second);
-						cmd.insert(cmd.begin(), itToken->first);
-						(this->*(itCF->second))(at, cmd);
-						cmd.clear();
+						if (at->getIRCstatus() != DISCONNECTED)
+						{
+							std::vector<std::string> cmd = cmdMessage(itToken->second);
+							cmd.insert(cmd.begin(), itToken->first);
+							(this->*(itCF->second))(at, cmd);
+							cmd.clear();
+						}
 						break;
 					}
 					catch (std::out_of_range& e) // std::vector::operator[]() tarzında doğrudan index'e erişirken gelen parametre sayısını kontrol etmek zorunda kalıyoruz, bunun yerine at() kullanarak, hatalı argüman girişi varsa trycatch bizim yerimize yakalıyor.

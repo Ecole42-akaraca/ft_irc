@@ -18,6 +18,8 @@
 # include <netdb.h>
 # include <sstream>
 # include <signal.h>
+# include <fstream>
+# include <sys/stat.h>
 
 # include "colors.hpp"
 # include "Client.hpp"
@@ -55,6 +57,7 @@ class Server
 		std::map<int, Client*>				_clients; // client's with fd numbers.
 		std::map<std::string, Channel *>	_channels; // channel's vector.
 		std::string							_serverName;
+		std::vector<std::string>			_dccSubVector;
 /* -------------------------------------------------------------------------- */
 /* _________________________ MAIN FUCTIONS __________________________________ */
 	private:
@@ -71,6 +74,8 @@ class Server
 		void	serverInfo( void );
 		void	modeUser( Client* it, std::vector<std::string> tokenArr );
 		void	modeChannel( Client* it, std::vector<std::string> tokenArr );
+		static void*	dccSend( void * );
+		static void*	dccGet( void * );
 /* -------------------------------------------------------------------------- */
 /* _________________________ COMMANDS _______________________________________ */
 	private:
@@ -91,6 +96,7 @@ class Server
 		void	info( Client*, std::vector<std::string> );
 		void	kick( Client*, std::vector<std::string> );
 		void	topic( Client*, std::vector<std::string> );
+		void	dcc( Client*, std::vector<std::string> );
 /* -------------------------------------------------------------------------- */
 /* _________________________ SOCKET FUCTIONS ________________________________ */
 	private:

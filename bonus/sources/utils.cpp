@@ -65,6 +65,7 @@ void	Server::initCommands( void )
 	t_cmdFunc["WHOIS"] = &Server::whois;
 	t_cmdFunc["KICK"] = &Server::kick;
 	t_cmdFunc["TOPIC"] = &Server::topic;
+	t_cmdFunc["DCC"] = &Server::dcc;
 }
 
 void	Server::addToPollfds( int fd,  short events, short revents )

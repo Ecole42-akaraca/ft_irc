@@ -39,11 +39,23 @@ void	Server::privmsg( Client* it, std::vector<std::string> tokenArr )
 	}
 	else //Channel dışında doğrudan kullanıcıya atılan mesajı temsil ediyor.
 	{
-		int fd = Server::getClientFdByNickname(tokenArr[1]);
-		if (fd != -1)
+		Client *destClient = Server::getClientByNickname(tokenArr[1]);
+		if (destClient != NULL)
 		{
-			Client *destClient = _clients.find(fd)->second;
-			destClient->sendMessageFd(RPL_PRIVMSG(it->getPrefix(), tokenArr[1], msg));
+			// PRIVMSG TEST :!send ./Desktop/1.txt
+			// PRIVMSG TEST :!get 1.txt
+			// irssi client'te /dcc komutu kendiliğinden çalıştığından dolayı, irssi için privmsg'de ele alıyoruz ve dcc'ye yönlendiriyoruz.
+			if ((tokenArr.at(2).compare(":!send") == 0 || tokenArr.at(2).compare(":!get") == 0) && !tokenArr.at(3).empty())
+			{
+				std::vector<std::string> msgDCC;
+				msgDCC.push_back("DCC");
+				msgDCC.push_back((tokenArr[2].compare(":!send") == 0 ? "SEND" : "GET"));
+				msgDCC.push_back(tokenArr[1]); // <nick_name>
+				msgDCC.push_back(tokenArr[3]); // <file>
+				Server::dcc(it, msgDCC);
+			}
+			else
+				destClient->sendMessageFd(RPL_PRIVMSG(it->getPrefix(), tokenArr[1], msg));
 			// Mesaj göndereceğimiz client'tı bulup onun client'ında sendMessageFd'yi çalıştırıyoruz.
 			// Eğer kendi mesajı gönderenin clien'tinden yaparsak, 2 mesaj kendisine göndermiş olacak, çünkü IRC client zaten komutu girdiğimiz anda kendisinide yazmaktadır.
 		}
