@@ -98,7 +98,12 @@ void	Server::dcc( Client* it, std::vector<std::string> tokenArr )
 	this->_dccSubVector = std::vector<std::string>(tokenArr.begin() + 2, tokenArr.end());
 	this->_dccSubVector.insert(this->_dccSubVector.begin(), it->getNickname());
 
+	#if defined(__APPLE__)
+	pthread_t	dccThreadID = NULL;
+	#elif defined(linux)
 	pthread_t	dccThreadID;
+	#endif
+
 
 	if (tokenArr[1].compare("SEND") == 0)
 	{
