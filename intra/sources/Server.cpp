@@ -154,8 +154,8 @@ void	Server::acceptClients( void )
 void	Server::commandHandler( Client* at )
 {
 	char buffer[MAX_BUFFER];
-	ssize_t bytesRead = recv(at->getFd(), buffer, sizeof(buffer) - 1, 0);
 
+	ssize_t bytesRead = recv(at->getFd(), buffer, sizeof(buffer) - 1, 0);
 	if (bytesRead > 0)
 	{
 		buffer[bytesRead] = '\0';
