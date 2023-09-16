@@ -51,6 +51,6 @@ void Server::user(Client* it, std::vector<std::string> tokenArr )
 	it->setIRCstatus(RENICK);
 	std::vector<std::string> arr;
 	arr.push_back("NICK");
-	arr.push_back(it->getNickname());
+	arr.push_back((it->getNickname().empty() ? tokenArr[1] : it->getNickname()));
 	Server::nick(it, arr);
 }
