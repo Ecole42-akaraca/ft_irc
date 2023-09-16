@@ -29,11 +29,9 @@ Server::Server( int argc, char **argv )
 {
 	std::cout << "Server Constructor called." << std::endl;
 	openSocket();
-	setSocketOptions();
 	createSocketAddress();
 	startListening();
 	initCommands();
-	// std::cout << welcomeServer() << std::endl;
 	std::cout << GREEN "Socket succesfully configured." END << std::endl;
 }
 
@@ -58,18 +56,13 @@ Server::~Server( void )
 
 void	Server::start( void )
 {
-
-	for (short i = 0; i < 23; i++)
-	{
-		signal(i, sigHandler); // ^C signali icin.
-	}
 	Server::addToPollfds( this->_serverFd, POLLIN, 0 );
 	std::cout << "Server listening on port: " << this->_port << std::endl;
 	std::cout << "Server password: " << this->_password << std::endl;
 	while (this->_isRun)
 	{
 		if (poll(_pollfds.begin().base(), _pollfds.size(), -1) < 0)
-			throw std::runtime_error("Error while polling from fd.");
+			throw std::runtime_error("Error while polling from fd: " + std::string(strerror(errno)));
 		for (itPoll it = _pollfds.begin(); it != _pollfds.end(); it++)
 		{
 			if (it->revents == 0)
@@ -85,8 +78,6 @@ void	Server::start( void )
 					_pollfds.erase(it);
 					Server::serverInfo();
 				}
-				// else
-				// 	_pollfds.erase(it);
 				std::cout << "Client disconnected." << std::endl;
 				break; // Move to the next socket
 			}
@@ -124,27 +115,36 @@ void	Server::acceptClients( void )
 {
 	sockaddr_in	clientAddress = {};
 	socklen_t	clientAddressSize = sizeof(clientAddress);
-	std::string	host;
 
 	int	clientFd = accept(this->_serverFd, (sockaddr *) &clientAddress, &clientAddressSize);
-	if (clientFd <= 0)
-		std::cerr << "Error while accepting client connection. Error code: " << errno << std::endl;
+	if (clientFd < 0)
+		std::cerr << "Error while accepting client connection: " << strerror(errno) << std::endl;
+	else if (clientFd == 0)
+		std::cerr << "Unexpected return value from accept(): 0" << std::endl; // Bu durum normal bir durum değildir ve genellikle hata işleme mantığı içinde değerlendirilmez.
 	else
 	{
-		Server::addToPollfds(clientFd, POLLIN, 0);
-		host = inet_ntoa(clientAddress.sin_addr);
-		struct hostent	*hostInfo = gethostbyname(host.c_str());
-		Client	*client = new Client(clientFd, ntohs(clientAddress.sin_port), hostInfo->h_name);
-		if (!client)
-			std::cerr << "Can't allocate memory for Client!" << strerror(errno) << std::endl;;
-		this->_clients.insert(std::make_pair(clientFd, client));
-		std::cout << "New Client connected." << std::endl;
-		std::cout << "Client's hostname: " << hostInfo->h_name << std::endl;
-		std::cout << "Client's address type: " << hostInfo->h_addrtype << std::endl;
-		std::cout << "Client's host length: " << hostInfo->h_length << std::endl;
-		std::cout << "Client's port: " << ntohs(clientAddress.sin_port) << std::endl;
-		std::cout << "Client's fd: " << clientFd << std::endl;
+		unsigned short clientPort = ntohs(clientAddress.sin_port);
+		std::string clientHostname = inet_ntoa(clientAddress.sin_addr);
+		if (clientPort != 0 && !clientHostname.empty())
+		{
+			Client	*client = new Client(clientFd, clientPort, clientHostname);
+			if (client)
+			{
+				this->_clients.insert(std::make_pair(clientFd, client));
+				std::cout << "New Client connected." << std::endl;
+				std::cout << "Client's hostname: " << clientHostname << std::endl;
+				std::cout << "Client's port: " << clientPort << std::endl;
+				std::cout << "Client's fd: " << clientFd << std::endl;
+				Server::addToPollfds(clientFd, POLLIN, 0);
+				return ;
+			}
+			else
+				std::cerr << "Error creating Client object: " << strerror(errno) << std::endl;
+		}
+		else
+			std::cerr << "Client information is incomplete. Not creating Client object." << std::endl;
 	}
+	close(clientFd);
 }
 
 /*
@@ -154,7 +154,6 @@ void	Server::acceptClients( void )
 void	Server::commandHandler( Client* at )
 {
 	char buffer[MAX_BUFFER];
-	// std::vector<std::string>	tokenArr;
 	ssize_t bytesRead = recv(at->getFd(), buffer, sizeof(buffer) - 1, 0);
 
 	if (bytesRead > 0)
@@ -192,7 +191,6 @@ void	Server::commandHandler( Client* at )
 	{
 		at->setIRCstatus(DISCONNECTED);
 		// bytesRead <= 0 durumunda POLLHUP otomatik olarak tetiklenir, bu nedenle burada ek bir işlem yapmanıza gerek yok
-		//Server::quitReason(at, "'bytesRead < 0'");
 	}
 }
 

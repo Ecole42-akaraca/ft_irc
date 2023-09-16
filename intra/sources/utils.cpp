@@ -65,7 +65,6 @@ void	Server::initCommands( void )
 	t_cmdFunc["WHOIS"] = &Server::whois;
 	t_cmdFunc["KICK"] = &Server::kick;
 	t_cmdFunc["TOPIC"] = &Server::topic;
-	t_cmdFunc["DCC"] = &Server::dcc;
 }
 
 void	Server::addToPollfds( int fd,  short events, short revents )
@@ -202,28 +201,16 @@ std::string	Server::combineMessage( size_t i, std::vector<std::string> vectorMes
 
 bool	Server::isChannelAdmin(Client* client, Channel* channel)
 {
-	// if (channel->getAdmin() == NULL)
 	if (channel->searchAdmin(client) == NULL)
 		return (false);
-	else
-		return (true);
-	// if (channel->getAdmin()->getNickname().compare(client->getNickname()) == 0 &&
-		// channel->getAdmin()->getNickname().size() == client->getNickname().size())
-		// return (true);
-	// return (false);
+	return (true);
 }
 
 bool	Server::isChannelUser(Client* client, Channel* channel)
 {
-	// if (client->isRegisteredChannel(channel->getName()))
-	// {
-	// 	return (true);
-	// }
-	// return (false);
 	if (channel->searchClient(client) == NULL)
 		return (false);
-	else
-		return (true);
+	return (true);
 }
 
 void	Server::leaveAllChannel( Client* client )
@@ -237,8 +224,6 @@ void	Server::leaveAllChannel( Client* client )
 	size_t size = client->getRegisteredChannels().size();
 	for (size_t i = size; i > 0; --i) // Quit ile ayrılan channel, kayıtlı olduğu channel'lardan ayrılmalıdır.
 	{
-		// if (!client->getNickname().compare("ircBot"))
-		// 	if ()
 		std::vector<std::string> leaveChannel;
 		leaveChannel.push_back("PART");
 		leaveChannel.push_back(client->getRegisteredChannels()[i - 1]->getName());
@@ -246,19 +231,6 @@ void	Server::leaveAllChannel( Client* client )
 		Server::part(client, leaveChannel);
 	}
 	client->clearRegisteredChannels();
-}
-
-void	Server::sigHandler( int signalNum )
-{
-	std::cout << "Signaln NUM: [" << signalNum << "]" << std::endl;
-	if (signalNum == SIGINT)
-	{
-		std::cout << "Interrupt signal found! Server terminating..." << std::endl;
-		// Server::sendMessageToServer(RPL_QUIT(Bot::getPrefixBot(), "Bot exiting sir."));
-		// Server::sendMessageToServer("QUIT :Server is closing.");
-		// sleep(5);
-		exit(signalNum);
-	}
 }
 
 std::string	Server::welcomeServer( void )

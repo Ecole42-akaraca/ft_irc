@@ -36,9 +36,6 @@ typedef std::vector<pollfd>::iterator					itPoll;
 typedef std::map<std::string, std::string>::iterator	itSplit;
 typedef std::map<int, Client *>::iterator				itClients;
 typedef std::map<std::string, Channel *>::iterator		itChannels;
-// typedef std::vector<std::string>::iterator			itCmd;
-// typedef std::vector<std::string>::iterator			itMessage;
-// typedef	std::vector<Client *>::iterator				itChannelClients;
 
 typedef void (Server::*CmdFunc)( Client*, std::vector<std::string> );
 typedef std::map<std::string, CmdFunc>::iterator	itCmdFunc;
@@ -57,7 +54,6 @@ class Server
 		std::map<int, Client*>				_clients; // client's with fd numbers.
 		std::map<std::string, Channel *>	_channels; // channel's vector.
 		std::string							_serverName;
-		std::vector<std::string>			_dccSubVector;
 /* -------------------------------------------------------------------------- */
 /* _________________________ MAIN FUCTIONS __________________________________ */
 	private:
@@ -72,10 +68,6 @@ class Server
 		void	removeClient( int clientFd );
 		void	quitReason( Client* client, std::string message );
 		void	serverInfo( void );
-		void	modeUser( Client* it, std::vector<std::string> tokenArr );
-		void	modeChannel( Client* it, std::vector<std::string> tokenArr );
-		static void*	dccSend( void * );
-		static void*	dccGet( void * );
 /* -------------------------------------------------------------------------- */
 /* _________________________ COMMANDS _______________________________________ */
 	private:
@@ -93,20 +85,17 @@ class Server
 		void	whois( Client*, std::vector<std::string> );
 		void	who( Client*, std::vector<std::string> );
 		void	mode( Client*, std::vector<std::string> );
+		void	modeUser( Client* it, std::vector<std::string> tokenArr );
+		void	modeChannel( Client* it, std::vector<std::string> tokenArr );
 		void	info( Client*, std::vector<std::string> );
 		void	kick( Client*, std::vector<std::string> );
 		void	topic( Client*, std::vector<std::string> );
-		void	dcc( Client*, std::vector<std::string> );
-/* -------------------------------------------------------------------------- */
-/* _________________________ SIGNAL FUCTIONS ________________________________ */
-		static void	sigHandler( int signalNum );
 /* -------------------------------------------------------------------------- */
 /* _________________________ SOCKET FUCTIONS ________________________________ */
 	private:
-		void			openSocket( void );
-		void			setSocketOptions( void );
-		void			createSocketAddress( void );
-		void			startListening( void );
+		void	openSocket( void );
+		void	createSocketAddress( void );
+		void	startListening( void );
 /* -------------------------------------------------------------------------- */
 /* _________________________ UTILS __________________________________________ */
 	private:

@@ -7,14 +7,11 @@ void	Server::quit( Client* it, std::vector<std::string> tokenArr )
 {
 	std::cout << YELLOW << "QUIT" << END << std::endl;
 	Server::serverInfo();
-	// eger kicklenmisse ve kaydi kala o channel'deyse quit atarken silerken seg yer.
-	// o yuzden kicklendikten sonra ya unregister olacak ya da quit atarken bakacak hala chanelde mi dite.
 	Server::leaveAllChannel(it);
 	std::cout << "Connection closed by client " << it->getHostname() << ":" << it->getPort() << std::endl;
 	it->setIRCstatus(DISCONNECTED);
 	it->sendMessageFd(RPL_QUIT(it->getPrefix(), tokenArr.at(0)));
-	// it->sendMessageFd(RPL_PONG(it->getPrefix(), "Exit authentication."));
-	it->sendMessageFd(RPL_PONG(it->getPrefix(), "PING"));
+	it->sendMessageFd(RPL_PONG(it->getPrefix(), it->getHostname()));
 
 	// for (size_t i = 0; i < _pollfds.size(); i++)
 	// {
