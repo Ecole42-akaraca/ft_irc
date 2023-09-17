@@ -19,6 +19,25 @@
  */
 # include "../includes/Server.hpp"
 
+/**
+ * @brief Construct a new Server:: Server object.
+ * 
+ * Creating Server and inits...
+ * 
+ * @fn Server::check(); Checking parameters. If parameters are okay return 'true'.
+ * @fn Server::port(); Checking parameters. If port argument is within
+ *  'unsigned short' range, returning port with unsigned short type.
+ * @fn Server::pasword(); Checking parameters. If password is okay,
+ *  returning password string.
+ * @fn Server::openSocket(); Creating(opening) a socket for Server.
+ * @fn Server::createSocketAddress(); Creating and seting
+ *  socket's address types. For example; Address Family...
+ * @fn Server::startListening(); Adding waiting list for connections...
+ * @fn Server::initCommands(); Initializing all IRC commands.
+ * 
+ * @param argc 
+ * @param argv 
+ */
 Server::Server( int argc, char **argv )
 	:	_isCheck(check( argc )),
 		_port(port( argv[1] )),
@@ -35,6 +54,14 @@ Server::Server( int argc, char **argv )
 	std::cout << GREEN "Socket succesfully configured." END << std::endl;
 }
 
+/**
+ * @brief Destroy the Server:: Server object
+ * 
+ * Deleting and terminating Server.
+ * 
+ * @fn std::map::clear(); Deleting container array.
+ * @fn close(); Closing opened fd.
+ */
 Server::~Server( void )
 {
 	t_cmdFunc.clear();
@@ -54,6 +81,31 @@ Server::~Server( void )
 	std::cout << "Server succesfully closed!" << std::endl;
 }
 
+/**
+ * @brief Server started. Main loop here.
+ * 
+ * TR:
+ * Events değişkeni, poll() fonksiyonuna gönderilen soketlerin
+ *  beklediği olayları temsil eder.
+ * Revents değişkeni, poll() fonksiyonunun döndürdüğü soketlerin
+ *  gerçekleşen olayları temsil eder. 
+ * poll() fonksiyonu, soketlerden gelen olayları beklemek için kullanılır.
+ *  Fonksiyon, beklediği olayların gerçekleşmesi için bir süre bekler.
+ *  Eğer beklediği olaylar gerçekleşmezse, fonksiyon 0 değeri döndürür.
+ *  Bu durumda, revents değişkeni de 0 olacaktır.
+ * 
+ * EN:
+ * The Events variable represents the events expected by sockets
+ *  sent to the poll() function.
+ * The Revents variable represents the events that occurred on the
+ *  sockets returned by the poll() function.
+ * The poll() function is used to wait for events from sockets.
+ *  The function waits for a while for the events it expects to occur.
+ *  If the expected events do not occur, the function returns 0.
+ *  In this case, the revents variable will also be 0.
+ * 
+ * @fn Server::addToPollfds(); 
+ */
 void	Server::start( void )
 {
 	Server::addToPollfds( this->_serverFd, POLLIN, 0 );

@@ -1,72 +1,53 @@
+/**
+ * @file main.cpp
+ * @author Görkem SEVER (gsever)
+ * @brief 
+ * @version 0.1
+ * @date 2023-09-16
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ * @link https://docs.racket-lang.org/irc/index.html#%28def._%28%28lib._irc%2Fmain..rkt%29._irc-set-nick%29%29
+ * @link https://www.irchelp.org/protocol/rfc/chapter6.html
+ * @link https://modern.ircdocs.horse/#rplliststart-321
+ * @link https://www.rfc-editor.org/rfc/rfc2812#section-3.2.6
+ * @link https://ircv3.net/specs/extensions/capability-negotiation.html
+ * @link https://dd.ircdocs.horse/refs/commands/part
+ * @link https://datatracker.ietf.org/doc/html/rfc2812#section-3.1.5
+ * @link https://www.alien.net.au/irc/irc2numerics.html
+ * @link https://irssi.org/documentation/help/dcc/
+ * @link https://www.youtube.com/watch?v=JpLwB14L2Rk&ab_channel=TallPaulTech
+ * @link https://www.youtube.com/watch?v=njKv66miR80&list=PL5tDlMcZytRqvYbDWLoayxAkUcHsOxX_p&index=9
+ * @link https://beej.us/guide/bgnet/html/split/
+ * 
+ * If you watch (MacOs): nettop -m tcp
+ */
 #include "../includes/Server.hpp"
 
 /**
- * @brief 
+ * @brief Main function. :D
  * 
- * @TODO: Server olusturulduktan sonra client'ten gelen baglanti aninda;
- * Server; baglanan client'in 
- * 'file descriptor',
- * 'address' ve 
- * 'port'unu printle. Bunlari --DEBUG=true flagiyle calistirirken printlesin.
- * ornek: ./ircserv --DEBUG=true <port> <password>
- * istemci ornek:	telnet localhost 8080
+ * Server sample:	./ircserv <port> <password>
+ * Client sample:	irssi -> /connect localhost 8888 asdf
+ * 					telnet localhost 8080
  * 					nc localhost  8080
- * 					url olarak: localhost:8080
+ * 					localhost:8080
  * 
- * nc veya telnet ile argüman giriş sırası:
- * CAP END
- * PASS 1
- * NICK AHMET
- * USER AHMET akaraca localhost :Ahmet Karaca
+ * If you connect with 'nc' or 'telnet', you have to write in this order.
+ * $> CAP END
+ * $> PASS 1
+ * $> NICK AHMET
+ * $> USER AHMET akaraca localhost :Ahmet Karaca
  * 
- * izlemek için(Mac'te): nettop -m tcp	
+ * If you want to transfer file, you must use 'irssi' client;
+ * For send;
+ * 	/dcc send TEST_ ./Desktop/1.txt
+ * For get;
+ * 	/dcc get TEST 1.txt /home/akaraca/Desktop
  * 
- * IRC url:	https://www.youtube.com/watch?v=JpLwB14L2Rk&ab_channel=TallPaulTech
- * 			https://www.youtube.com/watch?v=njKv66miR80&list=PL5tDlMcZytRqvYbDWLoayxAkUcHsOxX_p&index=9
+ * @fn start(): Starting the all server.
+ * @fn what(): Writes the meaning of the exception.
  * 
- * 			https://beej.us/guide/bgnet/html/split/
- * 
- * https://docs.racket-lang.org/irc/index.html#%28def._%28%28lib._irc%2Fmain..rkt%29._irc-set-nick%29%29
- * https://www.irchelp.org/protocol/rfc/chapter6.html
- * https://modern.ircdocs.horse/#rplliststart-321
- * https://www.rfc-editor.org/rfc/rfc2812#section-3.2.6
- * https://ircv3.net/specs/extensions/capability-negotiation.html
- * https://dd.ircdocs.horse/refs/commands/part
- * https://datatracker.ietf.org/doc/html/rfc2812#section-3.1.5
- * https://www.alien.net.au/irc/irc2numerics.html
- * https://irssi.org/documentation/help/dcc/
- * 
- * /dcc send TEST_ ./Desktop/1.txt
- * /dcc get TEST 1.txt /home/akaraca/Desktop
- * 
- * TODO: MODE; komutundaki parse'lenen inputa gore ayarla.
- * TODO: 11:53 -!- Irssi: (default) critical nicklist_set_host: assertion 'host != NULL' failed
- * TODO: NP: /nick ile ismimizi degistirdigimizde ana sayfada degil de channel'deyse channel'in icine
- *  ciktisini yazmasi lazim.
- * TODO: LEAK kontrolu gerekiyor.
- * TODO: Ilk baglantida ayni isimde nick varsa USER komutunda 
- * USER
-	Username:>yuandre
-	Nickname:>yuandre
-	Hostname:>localhost
-	Realname:>:Görkem Sever -> buradaki kisma girmiyor orasi duzeltilecek.
- * TODO: /msg ile olan durumu ele al; client'ten client'e ozel mesaj atma olayi.
- mode, part, privmsg info
- * TODO: Kayitli olmayan bir kullanici cikis yaparsa sever patliyor. nc localhost 8888
- * TODO: /msg #asdf hello -> diye kanala mesaj gonderdigimizde okay, ama
- * 	/msg #gsever naber -> diye kullaniciya gonderdigimizde patliyor cunku
- * 	kullanicilarin isimleri # ile baslayamaz.
- * TODO: PING var PONG'unu da ekle aynisi zaten kopyala yapistir pingi pong yap.
- * TODO: nc localhost ->dc problemi
- * TODO: Kişi channelde değilse ve channel varsa who komutunda patlıyor(/who channelname)
- * TODO: Not aliyorum; Mode, list, who, whois 
- * 		/ ":" kaldirma olaylari vardi, utilsden silmek daha mantikli 
- * 		/ main bloğunu düzenle, kaynak adreslerini ekle 
- * 		/ tüm test yapilarinin bulunduğu bir txt dosyasi hazirla 
- * 		/ mode komutunu diğer fonksiyonlara entegre et 
- * 		/ éger gerekirse utils sirasini düzelt 
- * 		/ bol bol test et.
- * 		/ github'daki yapılarıda ekle
  * @param argc: Server port number.
  * @param argv: Server password.
  * @return int 

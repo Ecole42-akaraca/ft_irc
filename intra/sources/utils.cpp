@@ -67,6 +67,15 @@ void	Server::initCommands( void )
 	t_cmdFunc["TOPIC"] = &Server::topic;
 }
 
+/**
+ * @brief Adds a new pollfd object to the Server class.
+ * 
+ * @fn std::vector::push_back(); Adds a new pollfd in container array.
+ * 
+ * @param fd The file descriptor to be added.
+ * @param events The events to be added.
+ * @param revents The events that occurred.
+ */
 void	Server::addToPollfds( int fd,  short events, short revents )
 {
 	pollfd newPoll;
@@ -77,7 +86,29 @@ void	Server::addToPollfds( int fd,  short events, short revents )
 	this->_pollfds.push_back(newPoll);
 }
 
-std::map<std::string, std::string>	Server::splitMessage(std::string delimeter, std::string message )
+/**
+ * @brief Splits a message into tokens based on a given delimiter(\\r\\n)
+ *  and stores them in a std::map.
+ * 
+ * @fn std::string::find(); If find this delimeter; return first
+ *  delimeter index. If not find this delimeter; return std::npos;
+ * @fn std::string::substr(); Getting start location to length.
+ *  Example -> "helloo" -> .substr(2, 3); -> "llo".
+ * @fn std::string::size(); Returns the length of the string,
+ *  in terms of bytes.
+ * @fn std::string::erase(); Erases part of the string,
+ *  reducing its length.
+ * @fn std::toupper(); Converting a character to uppercase.
+ * @fn std::string::insert(); Inserts additional characters into
+ *  the string right before the character indicated by pos (or p).
+ * @fn std::make_pair
+ * 
+ * @param delimeter The delimiter used to split the message.
+ * @param message The message to be split.
+ * @return std::map<std::string, std::string> A map containing the tokens as key-value pairs.
+ */
+std::map<std::string, std::string>\
+	Server::splitMessage(std::string delimeter, std::string message )
 {
 	std::map<std::string, std::string> tokens;
 	size_t pos = 0;
@@ -88,17 +119,20 @@ std::map<std::string, std::string>	Server::splitMessage(std::string delimeter, s
 		int posFirst = message.find(' ');
 
 		std::string firstWord = message.substr(0, posFirst);
-		// \r ve \n karakterlerini temizle // /info yazdığımızda sonunda \n bulunuyor, kaldırmak istiyorum bu yüzden ekledim.
-		for (size_t i = 0; i < firstWord.size(); ++i) {
-			if (firstWord[i] == '\r' || firstWord[i] == '\n') {
+		// If we write 'INFO' last index have '\n' so remove '\r' and '\n' characters from the first word.
+		for (size_t i = 0; i < firstWord.size(); ++i)
+		{
+			if (firstWord[i] == '\r' || firstWord[i] == '\n')
+			{
 				firstWord.erase(i, 1);
-				--i; // Karakter silindiği için i'yi azalt
+				--i; // Decrement i since a character is erased.
 			}
 		}
-		// Ilk kelimeyi yani komutu büyük harfe çevirir
+		// Convert the first word (command) to uppercase.
 		for (size_t i = 0; i < firstWord.size(); ++i)
 			firstWord[i] = std::toupper(firstWord[i]);
 
+		// Split the message into command and arguments
 		// 1. Kısım: USER 2. Kısım: A B C D E F G asdf
 		//posFirst + 1; CAP'ten sonra gelene boşluğun indexi
 		//pos - posFirst - 1; "CAP LS\r\n" yapısında LS'i almak için LS'in uzunluğuna bulmaya ihtiyaç var, -1 ise \r'ı almak istemiyoruz.
@@ -108,8 +142,8 @@ std::map<std::string, std::string>	Server::splitMessage(std::string delimeter, s
 			tokens.insert(std::make_pair(firstWord, "")); // nc localhost için 'TEK' argüman için kopya durumu söz konusu oluyor, bunu engellemek için eklendi. 'Message:>B-b<'
 		message.erase(0, pos + delimeter.length());
 	}
-	// mesaj komutsuz olarak geliyor. Kontrol için yapılandırılabilir.
-	if (!message.empty()) // Bilinmeyen komut ve netcat için parslama işlemini yapıyorum.
+	// Handle the case where the message comes without a command
+	if (!message.empty()) // Parsing unkown command anda netcat.
 	{
 		if (message[message.size() - 1] == '\n')
 			return (Server::splitMessage("\n", message));
