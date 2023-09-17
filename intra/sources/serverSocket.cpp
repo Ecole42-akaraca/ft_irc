@@ -34,9 +34,9 @@ void	Server::openSocket( void )
  * PARAM: INADDR_ANY: Bind all interfaces.
  * If you wish to bind your socket to localhost only, the syntax would be
  *  my_sockaddress.sin_addr.s_addr = inet_addr("127.0.0.1");.
- * PARAM: htons(): Converts the unsigned short integer this->_port
- *  from host byte order to network byte order.
  * 
+ * @fn htons(): Converts the unsigned short integer this->_port
+ *  from host byte order to network byte order.
  * @fn memset(); Allocating memory for serverAddress.
  * 	Setting 0 &serverAddress's sizeof() bytes.
  * @fn bind(); Assigns &serverAddress to sockfd address.

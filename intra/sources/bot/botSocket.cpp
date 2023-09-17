@@ -29,19 +29,20 @@ void	Bot::connectSocketAddress( void )
 		throw std::runtime_error("Error while getting address information: " + std::string(strerror(errno)));
 	}
 
-	struct sockaddr_in botAddress;
+	// struct sockaddr_in serverAddress;
 
-	// Setting 0 &botAddress's sizeof() bytes.
-	memset((char *) &botAddress, 0, sizeof(botAddress));
-	std::cout << YELLOW "Socket address created." END << std::endl;
+	// // Setting 0 &serverAddress's sizeof() bytes.
+	// memset((char *) &serverAddress, 0, sizeof(serverAddress));
+	// std::cout << YELLOW "Socket address created." END << std::endl;
 
-	botAddress.sin_family = AF_INET;
-	botAddress.sin_addr = ((struct sockaddr_in *)result->ai_addr)->sin_addr;///inet_addr(inet_ntoa(*(struct in_addr *)serverInfo->h_addr_list[0]));//inet_addr(_host.c_str()); // şeklinde bağlantı kuramayız çünkü host değeri "localhost"'tur yani string'tir 
-	botAddress.sin_port = ((struct sockaddr_in *)result->ai_addr)->sin_port;//htons(this->_port);
-	freeaddrinfo(result);
-	std::cout << YELLOW "Socket address settings set." END << std::endl;
+	// serverAddress.sin_family = AF_INET;
+	// serverAddress.sin_addr = ((struct sockaddr_in *)result->ai_addr)->sin_addr;///inet_addr(inet_ntoa(*(struct in_addr *)serverInfo->h_addr_list[0]));//inet_addr(_host.c_str()); // şeklinde bağlantı kuramayız çünkü host değeri "localhost"'tur yani string'tir 
+	// serverAddress.sin_port = ((struct sockaddr_in *)result->ai_addr)->sin_port;//htons(this->_port);
+	// freeaddrinfo(result);
+	// std::cout << YELLOW "Socket address settings set." END << std::endl;
 
-	if (connect(this->_botFd, (struct sockaddr *) &botAddress, sizeof(botAddress)) < 0)
+	// if (connect(this->_botFd, (struct sockaddr *) &serverAddress, sizeof(serverAddress)) < 0)
+	if (connect(this->_botFd, result->ai_addr, result->ai_addrlen) < 0)
 	{
 		close(this->_botFd);
 		throw std::runtime_error("Error while connecting to host: " + std::string(strerror(errno)));

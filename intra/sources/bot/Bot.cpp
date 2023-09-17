@@ -53,9 +53,7 @@ void	Bot::sigHandler( int signalNum )
 	if (signalNum == SIGINT)
 	{
 		std::cout << "Interrupt signal found! Bot terminating..." << std::endl;
-		// Bot::sendMessageToServer(RPL_QUIT(Bot::getPrefixBot(), "Bot exiting sir."));
 		Bot::sendMessageToServer("QUIT :Bot exiting sir.");
-		// sleep(5);
 		exit(signalNum);
 	}
 }
@@ -65,9 +63,9 @@ void	Bot::authenticate( void )
 	sendMessageToServer("CAP END");
 	sendMessageToServer("PASS " + this->_password);
 	sendMessageToServer("NICK " + _botNickname);
-	// USER <username> <nickname> <hostname> :<realname>
+	// USER <username> <username> <hostname> :<realname>
 	sendMessageToServer("USER " + _botUsername + " "\
-		+ _botNickname + " " + _host + " :" + _botRealname);
+		+ _botUsername + " " + _host + " :" + _botRealname);
 }
 
 /**
@@ -231,8 +229,10 @@ void	Bot::onMessageReceive( std::string buffer )
 		// :gsever!~gsever@127.0.0.1 NICK idiot
 		std::cout << B_RED "Bad Words found: " END << nickname << std::endl;
 		std::cout << B_RED "Inappropriate username: " END << nickname << std::endl;
-		Bot::sendMessageToServer("PRIVMSG " + tokens[2] + "Change your nickname: [" + nickname + "]");
-		Bot::sendMessageToServer("KICK " + tokens[2] + " " + nickname);
+		if (tokens[2][0] == ':')
+			tokens[2].erase(0, 1); // En basindaki ':'i siliyor.
+		Bot::sendMessageToServer("PRIVMSG " + nickname + " Change your nickname: [" + nickname + "]");
+		Bot::sendMessageToServer("KICK " + tokens[2] + " " + nickname + " Change your nickname: [" + nickname + "]");
 		return;
 	}
 	badNickname = nickname; // Client ismini degistirmediyse ve mesajin iceriginde 'bad word' varsa kickleyebilmemiz icin.
@@ -274,51 +274,6 @@ std::string Bot::toLowerCase( const std::string& string )
 
 	std::transform(result.begin(), result.end(), result.begin(), ::tolower);
 	return result;
-}
-
-// std::string	Bot::toLowerCase( std::string word )
-// {
-// 	std::string	loweredString;
-
-// 	loweredString = "";
-// 	std::cout << "word;" << word << std::endl;
-// 	for (size_t i = 0; i < word.size(); i++)
-// 		loweredString[i] = std::tolower(word[i]);
-// 	std::cout << "LoweredStriing:" << loweredString << std::endl;
-// 	return (loweredString);
-// }
-
-// // Function to replace bad words in a string
-// std::string	Bot::filterBadWords( std::string& text )
-// {
-// 	// std::string result = text;
-// 	// for (std::map<std::string, std::string>::iterator it = Bot::_dataBadWords.begin(); it != Bot::_dataBadWords.end(); ++it) {
-// 	// 	std::string word = it->first;
-// 	// 	std::string lowerCaseWord = toLowerCase(word);
-// 	// 	// Find the bad word in the text
-// 	// 	size_t pos = toLowerCase(result).find(lowerCaseWord);
-// 	// 	while (pos != std::string::npos) {
-// 	// 		// Replace the bad word with asterisks
-// 	// 		result.replace(pos, word.length(), it->second);
-// 	// 		// Find the next occurrence of the bad word
-// 	// 		pos = toLowerCase(result).find(lowerCaseWord, pos + 1);
-// 	// 	}
-// 	// }
-// 	// return result;
-// }
-
-/**
- * @brief Biz olusturdugumuz 'thread'a bu function
- *  uzerinde calismasini sagliyoruz.
- * 
- * Bunun saglanabilmesi icin;
- * 
- * @param arg 
- * @return void* 
- */
-void	Bot::joinChannels( void )
-{
-
 }
 
 std::string	Bot::scanNickname( std::string message )

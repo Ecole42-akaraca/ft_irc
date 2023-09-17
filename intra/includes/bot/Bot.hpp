@@ -21,15 +21,7 @@
 
 # define MAX_BUFFER 1024
 
-// enum e_badWords
-// {
-	
-// };
-
 class Channel;
-
-// typedef std::map<std::string, Channel *>::iterator	itChannels;
-// typedef std::map<std::string, std::string>::iterator	itBadWords;
 
 class Bot
 {
@@ -66,7 +58,6 @@ class Bot
 		static void	sendMessageToServer( std::string message );
 		// void	Bot::sendMessageToServer( Bot& bot, std::string message );
 		void	checkChannels( void );
-		void	joinChannels( void );
 		static std::vector<std::string>\
 			tokenMessage( std::string message );
 		void	onMessageReceive( std::string buffer );

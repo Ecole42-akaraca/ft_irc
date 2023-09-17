@@ -11,7 +11,7 @@ Channel::~Channel( void )
 	std::cout << "Channel Deleting: Name: " << this->getName() << std::endl;
 }
 
-Client*		Channel::getAdmin( std::string nickname )
+Client*	Channel::getAdmin( std::string nickname )
 {
 	for (size_t i = 0; i < this->_admins.size(); i++)
 	{

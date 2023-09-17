@@ -37,7 +37,9 @@ void	Server::kick( Client* it, std::vector<std::string> tokenArr )
 						user->unregisterChannel(itChan->second); // Client'a ait kayıtlı olunan channeler'dan, channel'ı kaldırıyorum.
 						if ((itChan->second->getClientCount() == 1 && itChan->second->searchClient(this->getClientByNickname("ircBot")) != NULL)) // Channel'da kullanıcı kalmadıysa silinmelidir
 						{
-							itChan->second->searchClient(this->getClientByNickname("ircBot"))->unregisterChannel(itChan->second);
+							Client *bot = Server::getClientByNickname("ircBot");
+							bot->sendMessageFd(RPL_PART(bot->getPrefix(), tokenArr[1], std::string("I can't stand being alone!")));
+							bot->unregisterChannel(itChan->second);
 							Server::removeChannel(itChan->second->getName());
 						}
 					}

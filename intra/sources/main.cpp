@@ -1,6 +1,6 @@
 /**
  * @file main.cpp
- * @author Görkem SEVER (gsever)
+ * @author Ahmet KARACA (akaraca), Görkem SEVER (gsever)
  * @brief 
  * @version 0.1
  * @date 2023-09-16
@@ -19,8 +19,6 @@
  * @link https://www.youtube.com/watch?v=JpLwB14L2Rk&ab_channel=TallPaulTech
  * @link https://www.youtube.com/watch?v=njKv66miR80&list=PL5tDlMcZytRqvYbDWLoayxAkUcHsOxX_p&index=9
  * @link https://beej.us/guide/bgnet/html/split/
- * 
- * If you watch (MacOs): nettop -m tcp
  */
 #include "../includes/Server.hpp"
 
@@ -32,6 +30,8 @@
  * 					telnet localhost 8080
  * 					nc localhost  8080
  * 					localhost:8080
+ * 
+ * If you watch (MacOs): nettop -m tcp
  * 
  * If you connect with 'nc' or 'telnet', you have to write in this order.
  * $> CAP END
